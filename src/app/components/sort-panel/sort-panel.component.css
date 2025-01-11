@@ -1,0 +1,87 @@
+.sort-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background: white;
+    padding: 20px;
+    box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid gray;
+  }
+  
+  .reset-btn {
+    background: transparent;
+    border: none;
+    color: orange;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: -22px;
+  }
+  
+  h4 {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #333;
+  }
+
+  
+  .sort-btn {
+    /* display: block; */
+    /* width: 100%; */
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background:  #d35400;;
+    cursor: pointer;
+    text-align: left;
+    font-size: 14px;
+    color: #ffffff;
+    transition: background 0.2s;
+    border-radius: 16px;
+  }
+  
+  .sort-btn:hover {
+    background: #f0f0f0;
+  }
+  .sort-btns-container{
+    display: flex;
+    flex-direction: row ;
+    gap: 10px ;
+
+  }
+  
+  /* Disabled and Blurred Sort Button */
+  .btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .apply-btn {
+    margin-top: auto;
+    background: #d35400;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+  }
+  
+  .apply-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+ 
