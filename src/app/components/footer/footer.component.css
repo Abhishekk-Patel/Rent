@@ -1,0 +1,61 @@
+.footer {
+  display: flex;
+  justify-content: space-between; /* Ensures items are spaced out horizontally */
+  align-items: center; /* Vertically align items */
+  padding: 20px;
+  background: black;
+  color: white;
+  border-top: 5px solid white;
+}
+
+.footer-column {
+  display: flex; /* Use flexbox to align content */
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center content by default */
+}
+
+.footer .left {
+  text-align: left; /* Align logo and text to the left */
+  align-items: flex-start; /* Align items to the left */
+}
+
+.footer .center {
+  text-align: center; /* Center text */
+}
+
+.footer .right {
+  text-align: right; /* Align content to the right */
+  align-items: flex-end; /* Align content to the right */
+}
+
+.footer img {
+  max-width: 100px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.footer nav a {
+  margin: 5px 0; /* Space between links */
+  color: white;
+  text-decoration: none;
+}
+
+.footer nav a:hover {
+  text-decoration: underline;
+}
+
+.left-nav {
+  display: flex;
+  flex-direction: column; /* Stack links vertically */
+  align-items: flex-start; /* Align links to the left */
+}
+
+.left-nav a {
+  margin: 5px 0; /* Space between links */
+  color: white;
+  text-decoration: none;
+}
+
+.left-nav a:hover {
+  text-decoration: underline;
+}
