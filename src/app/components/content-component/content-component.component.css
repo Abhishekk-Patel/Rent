@@ -1,0 +1,198 @@
+.search-section {
+  margin-bottom: 16px;
+  background-color: #ffffff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-section .search-bar .mat-mdc-form-field {
+  --mat-mdc-form-field-floating-label-scale: 0.75;
+  display: block;
+  flex-direction: column;
+  min-width: 0;
+  text-align: left;
+}
+
+.search-section h2 {
+  margin: 0 0 16px;
+  font-size: 20px;
+  color: #333;
+}
+
+.filters {
+  /* margin-top: 16px; */
+}
+
+.filters span {
+  font-size: 14px;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.filters .filter {
+  margin-right: 8px;
+  background-color: #d9e4ff;
+  color: #003f8a;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 12px;
+  opacity: .7;
+}
+
+.filter .mat-icon {
+  order: 2;
+}
+
+/* Layout for Categories on the Left and Rewards on the Right */
+.layout {
+  display: flex;
+  gap: 20px;
+}
+
+/* Left Column: Categories */
+.categories {
+  width: 15%;
+  
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+}
+
+.categories h3 {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+.category-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.category-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+}
+
+.expand-icon {
+  margin-right: 8px;
+  color: #666;
+}
+
+.status-icon {
+  color: #666;
+}
+
+.status-icon.selected {
+  color: #d32f2f; /* Red color to indicate selected state */
+}
+
+/* Right Column: Rewards */
+.rewards {
+  flex: 1;
+  padding-left: 10px;
+  border-bottom: 2px solid black;
+  padding-bottom: 20px;
+}
+
+/* Rewards Header (Count + Sort Button) */
+.rewards-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-right: 10px;
+}
+
+.reward-count {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.sort-btn {
+  background: brown;
+  color: white;
+  padding: 5px 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.reward-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.valid-date span {
+  opacity: .5;
+}
+
+.reward-card {
+  padding: 10px;
+  background: white;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative; /* So the text appears on top */
+}
+
+.out-of-stock-blur img,
+.out-of-stock-blur h4,
+.out-of-stock-blur p {
+  filter: blur(4px);
+}
+
+.out-of-stock-blur {
+  pointer-events: none;  /* Prevent interaction */
+}
+
+.out-of-stock {
+  color: red;
+  font-weight: bold;
+  position: static; /* Keep it on top of the blur */
+  z-index: 1;
+}
+
+.reward-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.out-of-stock {
+  color: red;
+}
+
+.high-demand {
+  color: orange;
+}
+
+.pagination {
+  padding: 10px 20px;
+  width: fit-content;
+  padding-left: 90%;
+  gap: 10px;
+  display: flex;
+ 
+}
+.pagination .select-page{
+  background-color: white;
+}
+.cat-title{
+  padding-left: 10px;
+}
