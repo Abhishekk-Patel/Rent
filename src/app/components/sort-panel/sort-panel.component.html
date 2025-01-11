@@ -1,0 +1,21 @@
+<div class="sort-panel">
+    <div class="header">
+        <h3>Filter By</h3>
+        <button class="reset-btn" (click)="resetAll()">Reset All</button>
+
+    </div>
+    <h4>Sort</h4>
+    <div class="sort-btns-container">
+        <button class="sort-btn" [ngClass]="{ 'btn-disabled': isAscApplied }" [disabled]="isAscApplied"
+            (click)="applySort('asc')">
+            A to Z
+        </button>
+        <button class="sort-btn" [ngClass]="{ 'btn-disabled': isDescApplied }" [disabled]="isDescApplied"
+            (click)="applySort('desc')">
+            Z to A
+        </button>
+    </div>
+    <button class="apply-btn" (click)="apply()" [disabled]="!isAscApplied && !isDescApplied">
+        Apply
+    </button>
+</div>
