@@ -44,6 +44,5 @@ export class ContentComponentComponent {
   closePanel() {
     this.closeSortPanel();
   }
- 
 
 }
