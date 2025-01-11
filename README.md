@@ -1,3 +1,5 @@
+#Requirement:- Angular@15 Node@18
+
 # FrontendAssessmentRewardz
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.11.
