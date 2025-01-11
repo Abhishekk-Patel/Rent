@@ -1,0 +1,49 @@
+.header-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: orangered;
+   
+  
+    .logo-section {
+      display: flex;
+      align-items: center;
+  
+      .company-logo {
+        height: 40px;
+      }
+    }
+  
+    .spacer {
+      flex: 1;
+    }
+  
+    .icon-section {
+      display: flex;
+      gap: 10px;
+  
+      button {
+        color: white; /* Adjust icon color */
+      }
+    }
+  }
+  
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: red;
+  
+    .logo {
+      height: 40px;
+    }
+  
+    .icons img {
+      margin-left: 15px;
+      height: 30px;
+      cursor: pointer;
+    }
+  }
+  
