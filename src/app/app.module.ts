@@ -16,22 +16,37 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SortPanelComponent } from './components/sort-panel/sort-panel.component';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatBadgeModule } from '@angular/material/badge';
+import { AlertMsgsComponent } from './components/alert-msgs/alert-msgs.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatMenuModule } from '@angular/material/menu';
+import { MyCartComponent } from './components/my-cart/my-cart.component';
 
+import { MatDialogModule } from '@angular/material/dialog';
 
+import { MatStepperModule } from '@angular/material/stepper';
 
+import { MatDividerModule } from '@angular/material/divider';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatRadioModule } from '@angular/material/radio';
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
     FooterComponent,
     ContentComponentComponent,
-    SortPanelComponent
+    SortPanelComponent,
+    AlertMsgsComponent,
+    MyCartComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
+    MatToolbarModule,
+    MatDialogModule,
     MatIconModule,
     MatButtonModule,
     FormsModule,
@@ -47,10 +62,19 @@ import { MatExpansionModule } from '@angular/material/expansion';
     BrowserAnimationsModule,
     MatExpansionModule,
     MatIconModule,
-   
-  
+    MatBadgeModule,
+    MatSnackBarModule,
+    MatPaginatorModule,
+    MatToolbarModule,
+    MatMenuModule,
+    MatStepperModule,
+    MatDividerModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+
+    MatRadioModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
