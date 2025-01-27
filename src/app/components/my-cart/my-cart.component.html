@@ -1,0 +1,64 @@
+
+<mat-dialog-content>
+  <mat-horizontal-stepper #stepper>
+    <!-- Step 1: Product Details -->
+    <mat-step [stepControl]="productFormGroup">
+      <form [formGroup]="productFormGroup">
+        <ng-template matStepLabel>Product Details</ng-template>
+        <div *ngFor="let item of cartItems">
+          <p><strong>Name:</strong> {{ item.name }}</p>
+          <p><strong>Points:</strong> {{ item.points }}</p>
+          <button mat-button (click)="removeFromCart(item)">Remove</button>
+          <mat-divider></mat-divider>
+        </div>
+        <div>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- Step 2: Delivery Details -->
+    <mat-step [stepControl]="deliveryFormGroup">
+      <form [formGroup]="deliveryFormGroup">
+        <ng-template matStepLabel>Delivery Details</ng-template>
+        <mat-form-field>
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" required>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Address</mat-label>
+          <input matInput formControlName="address" required>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" required>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Mobile No</mat-label>
+          <input matInput formControlName="mobile" required>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- Step 3: Payment Mode -->
+    <mat-step [stepControl]="paymentFormGroup">
+      <form [formGroup]="paymentFormGroup">
+        <ng-template matStepLabel>Payment Mode</ng-template>
+        <mat-radio-group formControlName="paymentMode">
+          <mat-radio-button value="creditCard">Credit Card</mat-radio-button>
+          <mat-radio-button value="debitCard">Debit Card</mat-radio-button>
+          <mat-radio-button value="paypal">PayPal</mat-radio-button>
+        </mat-radio-group>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button (click)="placeOrder()">Place Order</button>
+        </div>
+      </form>
+    </mat-step>
+  </mat-horizontal-stepper>
+</mat-dialog-content>
+
