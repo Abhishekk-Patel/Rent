@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -22,14 +21,12 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatMenuModule } from '@angular/material/menu';
 import { MyCartComponent } from './components/my-cart/my-cart.component';
-
 import { MatDialogModule } from '@angular/material/dialog';
-
 import { MatStepperModule } from '@angular/material/stepper';
-
 import { MatDividerModule } from '@angular/material/divider';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
+import { ProductDetailsPopupComponent } from './components/product-details-popup/product-details-popup.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -39,6 +36,7 @@ import { MatRadioModule } from '@angular/material/radio';
     SortPanelComponent,
     AlertMsgsComponent,
     MyCartComponent,
+    ProductDetailsPopupComponent,
   ],
   imports: [
     BrowserModule,
