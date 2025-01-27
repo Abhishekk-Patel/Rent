@@ -1,21 +1,81 @@
-import { Component } from '@angular/core';
-import { REWARD_LIST } from 'src/mock-data';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { debounceTime, fromEvent } from 'rxjs';
+import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
+import { Category_LIST, REWARD_LIST } from 'src/mock-data';
 
 @Component({
   selector: 'app-content-component',
   templateUrl: './content-component.component.html',
-  styleUrls: ['./content-component.component.css']
+  styleUrls: ['./content-component.component.css'],
 })
-export class ContentComponentComponent {
-  categories = [
-    { name: 'e-Voucher', isExpanded: true, isSelected: true },
-    { name: 'Products', isExpanded: false, isSelected: false },
-    { name: 'Evergreen', isExpanded: false, isSelected: false },
-    { name: 'Fashion & Retail', isExpanded: false, isSelected: false }
-  ];
- 
+export class ContentComponentComponent implements OnInit, AfterViewInit {
+  alertMsg: string = 'Opps! No match found';
+  public totalPages: any;
+
   rewards = REWARD_LIST;
+  categories = Category_LIST;
+  filteredRewards = REWARD_LIST;
   isSortPanelOpen = false;
+  searchValue = '';
+  @ViewChild('searchInput', { static: true }) searchInput!: ElementRef;
+
+  constructor(public mycartService: MyCartServiceService) {}
+
+  ngOnInit() {
+    this.filterRewardsByCategory('All');
+    this.calculateTotalPages();
+  }
+
+  ngAfterViewInit() {
+    fromEvent(this.searchInput.nativeElement, 'input')
+      .pipe(debounceTime(300))
+      .subscribe(() => {
+        const searchValue = this.searchInput.nativeElement.value.trim();
+        this.searchValue = searchValue;
+        this.filterRewardsByCategory(searchValue || 'All');
+      });
+  }
+
+  getExpandedCategory() {
+    return this.categories.find((category) => category.isExpanded);
+  }
+
+  handleKeyPress(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.search();
+    }
+  }
+
+  search(): void {
+    const searchValue = this.searchInput.nativeElement.value.trim();
+    this.searchValue = searchValue;
+    this.filterRewardsByCategory(searchValue || 'All');
+  }
+
+  clear() {
+    this.searchValue = '';
+    this.searchInput.nativeElement.value = '';
+    this.filterRewardsByCategory('All');
+  }
+
+  onPanelChange() {
+    const expandedCategory = this.getExpandedCategory();
+    this.filterRewardsByCategory(expandedCategory ? expandedCategory.name : 'All');
+  }
+
+  filterRewardsByCategory(categoryName: string) {
+    if (categoryName === 'All') {
+      this.filteredRewards = this.rewards;
+    } else {
+      this.filteredRewards = this.rewards.filter((reward) => {
+        const lowerCategoryName = categoryName.toLocaleLowerCase();
+        return (
+          reward.category.toLocaleLowerCase() === lowerCategoryName ||
+          reward.name.toLocaleLowerCase() === lowerCategoryName
+        );
+      });
+    }
+  }
 
   openSortPanel() {
     this.isSortPanelOpen = true;
@@ -26,23 +86,51 @@ export class ContentComponentComponent {
   }
 
   sortRewards(order: string) {
-    this.rewards.sort((a, b) => {
-      return order === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+    this.filteredRewards.sort((a, b) => {
+      return order === 'asc'
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name);
     });
   }
 
   isValidUntilWithin7Days(validUntil: string): boolean {
     const today = new Date();
     const validUntilDate = new Date(validUntil);
-    
     const timeDifference = validUntilDate.getTime() - today.getTime();
     const daysDifference = timeDifference / (1000 * 3600 * 24);
-    
     return daysDifference <= 7 && daysDifference >= 0;
   }
- 
+
   closePanel() {
     this.closeSortPanel();
   }
 
+  addToCart(pk: number) {
+    this.mycartService.addToCart(pk);
+  }
+  
+  calculateTotalPages() {
+    const pageSize = 10;
+    this.totalPages = Array.from({ length: Math.ceil(this.rewards.length / pageSize) }, (_, i) => i + 1);
+  }
+
+  onPageChange($event: any) {
+    const pageIndex = $event.pageIndex;
+    const pageSize = $event.pageSize;
+    const startIndex = pageIndex * pageSize;
+    const endIndex = startIndex + pageSize;
+
+    if (this.searchValue) {
+      const searchValue = this.searchValue.toLocaleLowerCase();
+      const filteredRewards = this.rewards.filter((reward) => {
+        return (
+          reward.category.toLocaleLowerCase().includes(searchValue) ||
+          reward.name.toLocaleLowerCase().includes(searchValue)
+        );
+      });
+      this.filteredRewards = filteredRewards.slice(startIndex, endIndex);
+    } else {
+      this.filteredRewards = this.rewards.slice(startIndex, endIndex);
+    }
+  }
 }

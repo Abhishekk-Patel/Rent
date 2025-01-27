@@ -1,20 +1,17 @@
-<div class="search-section">
-  <!-- <h2>Search</h2> -->
+<div class="search-section stylish-search-section">
   <div class="search-bar">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Search</mat-label>
-      <input matInput placeholder="Search items...">
-      <button mat-icon-button matSuffix>
+      <input matInput #searchInput (keypress)="handleKeyPress($event)" placeholder="Search">
+      <button mat-icon-button matSuffix (click)="search()">
         <mat-icon>search</mat-icon>
       </button>
     </mat-form-field>
   </div>
-  <div class="filters">
+  <div class="filters" *ngIf="searchValue">
     <span>Applied Filters:</span>
-    <button mat-button class="filter">e-Voucher
-      <mat-icon>close</mat-icon>
-    </button>
-    <button mat-button class="filter">Clear Filters
+    <button mat-button class="filter">{{searchValue}}</button>
+    <button mat-button class="filter clearFilterBtn" (click)="clear()">clear
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -25,34 +22,39 @@
     <div class="categories">
       <h3>Categories</h3>
       <mat-accordion>
-        <!-- Categories Accordion -->
-        <mat-expansion-panel class="category-item" *ngFor="let category of categories; let i = index"
-          [(expanded)]="category.isExpanded">
+        <mat-expansion-panel class="category-item" *ngFor="let category of categories; let i = index" 
+          [(expanded)]="category.isExpanded" (opened)="onPanelChange()" (closed)="onPanelChange()">
           <mat-expansion-panel-header>
             <mat-panel-description>
-              <mat-icon class="status-icon" [ngClass]="{'selected': category.isSelected}">
+              <mat-icon class="status-icon" [ngClass]="{
+                'selected': category.isSelected, 
+                'unselected': !category.isSelected, 
+                'expanded': category.isExpanded
+              }" [style.color]="category.isExpanded ? 'green' : 'red'">
                 {{ category.isSelected ? 'check_circle' : 'check_circle_outline' }}
               </mat-icon>
               <mat-panel-title class="cat-title">
                 {{ category.name }}
               </mat-panel-title>
             </mat-panel-description>
-
           </mat-expansion-panel-header>
         </mat-expansion-panel>
       </mat-accordion>
     </div>
-    <!-- Right Column Rewards Section -->
+
     <div class="rewards">
       <div class="rewards-header">
-        <p class="reward-count">{{ rewards.length }} Results Found</p>
-        <button class="sort-btn" (click)="openSortPanel()">Sort</button>
+        <p class="reward-count">{{ filteredRewards.length }} Results Found</p>
+        <button class="sort-btn" *ngIf="filteredRewards.length" (click)="openSortPanel()">Sort</button>
       </div>
       <div class="reward-list">
-        <div *ngFor="let reward of rewards" class="reward-card">
+        <div *ngFor="let reward of filteredRewards" class="reward-card">
           <div class="reward-card-content" [ngClass]="{'out-of-stock-blur': reward.quantity === 0}">
-            <img [src]="reward.display_img_url || 'assets/placeholder.png'" alt="{{ reward.name }}">
-            <h4>{{ reward.name }}</h4>
+            <div class="image-container">
+              <img [src]="reward.display_img_url || 'assets/placeholder.png'" alt="{{ reward.name }}">
+              <a class="add-to-fav-btn"><mat-icon>favorite_border</mat-icon></a>
+            </div>
+            <h2>{{ reward.name }}</h2>
             <p>{{ reward.points }} Points</p>
             <p *ngIf="reward.quantity && reward.quantity <= reward.low_quantity" class="high-demand">
               ON High Demand (Only {{ reward.quantity }} left)
@@ -62,18 +64,23 @@
             </p>
           </div>
           <p *ngIf="reward.quantity === 0" class="out-of-stock">Out of Stock</p>
+          <div class="reward-card-footer">
+            <button class="order-now-btn">Subscribe</button>
+            <a class="add-to-cart-btn" (click)="addToCart(reward.pk)"><mat-icon>add_shopping_cart</mat-icon></a>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-
-  <div class="pagination">
-    <select class="select-page">
-      <option>1</option>
-      <option>2</option>
-    </select><label>Per Page</label>
-  </div>
+  <mat-paginator *ngIf="filteredRewards.length>5" [length]="filteredRewards.length"
+    [pageSize]="5"
+    [pageSizeOptions]="[5, 10, 25, 100]"
+    (page)="onPageChange($event)"
+    aria-label="Select page">
+  </mat-paginator>
   <app-sort-panel (mouseleave)="closePanel()" *ngIf="isSortPanelOpen" (close)="closeSortPanel()"
     (sort)="sortRewards($event)"></app-sort-panel>
+
+  <app-alert-msgs *ngIf="!filteredRewards.length" [message]="alertMsg"></app-alert-msgs>
 </section>

@@ -44,16 +44,22 @@
   order: 2;
 }
 
+.clearFilterBtn {
+  color: #d32f2f !important;
+}
+
 /* Layout for Categories on the Left and Rewards on the Right */
 .layout {
   display: flex;
   gap: 20px;
+  padding: 10px;
+
 }
 
 /* Left Column: Categories */
 .categories {
   width: 15%;
-  
+
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -96,7 +102,8 @@
 }
 
 .status-icon.selected {
-  color: #d32f2f; /* Red color to indicate selected state */
+  color: #d32f2f;
+  /* Red color to indicate selected state */
 }
 
 /* Right Column: Rewards */
@@ -123,13 +130,28 @@
 }
 
 .sort-btn {
-  background: brown;
+  /* background: linear-gradient(45deg, #ff6b6b, #f06595); */
+  background: linear-gradient(45deg, black, transparent);
   color: white;
-  padding: 5px 16px;
+  padding: 8px 20px;
   cursor: pointer;
   border: none;
-  border-radius: 8px;
+  border-radius: 25px;
   font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.sort-btn:hover {
+  background: linear-gradient(45deg, #f06595, #ff6b6b);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.sort-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .reward-list {
@@ -137,6 +159,39 @@
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 15px;
   margin-top: 15px;
+}
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 150px;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.add-to-fav-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.257); /* Optional: Add a background for better visibility */
+  border-radius: 50%;
+  padding: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.add-to-fav-btn mat-icon {
+  font-size: 24px;
+  height: 21px; 
+  color: white;/* Adjust the size of the icon */
+}
+
+.add-to-fav-btn:hover {
+  opacity: 0.8;
 }
 
 .valid-date span {
@@ -146,9 +201,10 @@
 .reward-card {
   padding: 10px;
   background: white;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  position: relative; /* So the text appears on top */
+  box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.1);
+  text-align: justify;
+  position: relative;
+  /* So the text appears on top */
 }
 
 .out-of-stock-blur img,
@@ -158,13 +214,15 @@
 }
 
 .out-of-stock-blur {
-  pointer-events: none;  /* Prevent interaction */
+  pointer-events: none;
+  /* Prevent interaction */
 }
 
 .out-of-stock {
   color: red;
   font-weight: bold;
-  position: static; /* Keep it on top of the blur */
+  position: static;
+  /* Keep it on top of the blur */
   z-index: 1;
 }
 
@@ -172,6 +230,8 @@
   width: 100%;
   height: 150px;
   object-fit: cover;
+  border-bottom-left-radius: 13px;
+  border-bottom-right-radius: 13px;
 }
 
 .out-of-stock {
@@ -188,11 +248,61 @@
   padding-left: 90%;
   gap: 10px;
   display: flex;
- 
+
 }
-.pagination .select-page{
+
+.pagination .select-page {
   background-color: white;
 }
-.cat-title{
+
+.cat-title {
   padding-left: 10px;
+}.reward-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.reward-card-footer .order-now-btn {
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.reward-card-footer .add-to-cart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  padding: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Add hover effect for the add-to-cart icon */
+.reward-card-footer .add-to-cart-btn:hover {
+  opacity: 0.8;
+
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .reward-card-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .reward-card-footer .order-now-btn,
+  .reward-card-footer .add-to-cart-btn {
+    width: 100%;
+    text-align: center;
+  }
 }
