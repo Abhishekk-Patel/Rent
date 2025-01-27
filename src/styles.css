@@ -2,3 +2,24 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+body.dark-mode mat-toolbar {
+  background-color: #333333 !important;
+}
+
+body.dark-mode .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: #ffffff;
+}
+
+body.dark-mode .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+  color: #ffffff;
+}
+
+body.dark-mode .mat-input-element {
+  color: #ffffff;
+}
