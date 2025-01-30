@@ -5,7 +5,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 body.dark-mode {
   background-color: #121212;
-  color: #ffffff;
+  color: #ffffff ;
 }
 
 body.dark-mode mat-toolbar {

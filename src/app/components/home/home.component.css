@@ -1,0 +1,54 @@
+/* ...existing code... */
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  display: flex;
+  background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white background for glassy effect */
+  padding: 20px;
+  border-radius: 10px;
+  width: 30%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow with black color */
+  backdrop-filter: blur(10px); /* Blur effect for the glassy background */
+  -webkit-backdrop-filter: blur(10px); /* For Safari support */
+}
+
+.card {
+  flex: 1;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.card p {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
+  margin-top: 10px;
+}
+
+.divider {
+  width: 2px;
+  background-color: black;
+  margin: 0 20px;
+}
+/* ...existing code... */

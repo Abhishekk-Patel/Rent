@@ -1,7 +1,7 @@
 <mat-toolbar color="primary" class="header-toolbar">
   <!-- Left Section: Logo -->
   <div class="logo-section">
-    <img src="./assets/Screenshot 2025-01-23 133108.png" alt="Company Logo" class="company-logo" />
+    <img src="./assets/RentLogo.jpg" alt="Company Logo" class="company-logo" />
   </div>
 
  
@@ -11,7 +11,7 @@
 
   <!-- Right Section: Icons -->
   <div class="icon-section">
-    <button mat-icon-button aria-label="Language">
+    <button mat-icon-button aria-label="Language" matTooltip="{{countryCode}}" (click)="openLanguageDialog()"> 
       <mat-icon>language</mat-icon>
     </button>
     <button mat-icon-button aria-label="Notifications">

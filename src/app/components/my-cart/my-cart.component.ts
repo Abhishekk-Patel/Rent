@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
+import { REWARD_LIST } from 'src/mock-data';
 
 @Component({
   selector: 'app-my-cart',
@@ -13,14 +14,15 @@ export class MyCartComponent implements OnInit {
   productFormGroup: FormGroup;
   deliveryFormGroup: FormGroup;
   paymentFormGroup: FormGroup;
+ public productDetails = REWARD_LIST;
+
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly dialogRef: MatDialogRef<MyCartComponent>,
     private readonly myCartService: MyCartServiceService
   ) {
-    console.log("test");
-
+    
     this.productFormGroup = this.fb.group({});
     this.deliveryFormGroup = this.fb.group({
       name: ['', Validators.required],
@@ -38,12 +40,15 @@ export class MyCartComponent implements OnInit {
     this.myCartService.cartItems$.subscribe(items => {
       this.cartItems = items;
     });
-    this.cartItems = this.myCartService.getCartItems(); // Ensure cart items are fetched on init
+   // this.cartItems = this.myCartService.getCartItems(); // Ensure cart items are fetched on init
+  
+   this.fetchCartItems();
   }
 
   removeFromCart(item: any): void {
     this.myCartService.removeFromCart(item);
     this.cartItems = this.myCartService.getCartItems();
+    
   }
 
   placeOrder(): void {
@@ -52,5 +57,13 @@ export class MyCartComponent implements OnInit {
       console.log('Order placed successfully');
       this.dialogRef.close();
     }
+  }
+
+  fetchCartItems(): void {
+    this.cartItems = this.myCartService.getCartItems().map(cartItem => {
+      const productDetail = this.productDetails.find(product => product.pk === cartItem);
+      console.log("productDetail",productDetail);
+      return { ...cartItem, ...productDetail };
+    });
   }
 }

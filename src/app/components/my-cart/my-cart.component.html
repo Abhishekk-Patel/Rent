@@ -1,13 +1,15 @@
-
 <mat-dialog-content>
   <mat-horizontal-stepper #stepper>
     <!-- Step 1: Product Details -->
     <mat-step [stepControl]="productFormGroup">
       <form [formGroup]="productFormGroup">
         <ng-template matStepLabel>Product Details</ng-template>
-        <div *ngFor="let item of cartItems">
-          <p><strong>Name:</strong> {{ item.name }}</p>
-          <p><strong>Points:</strong> {{ item.points }}</p>
+        <div *ngFor="let item of cartItems" class="cart-item">
+          <div class="product-details">
+            <p><strong>Name:</strong> {{ item.name }}</p>
+            <p><strong>Rent:</strong> {{ item.Rent }}</p>
+          </div>
+          <img [src]="item.display_img_url" alt="{{ item.name }}" class="product-image">
           <button mat-button (click)="removeFromCart(item)">Remove</button>
           <mat-divider></mat-divider>
         </div>
@@ -49,10 +51,14 @@
       <form [formGroup]="paymentFormGroup">
         <ng-template matStepLabel>Payment Mode</ng-template>
         <mat-radio-group formControlName="paymentMode">
+          <mat-radio-button value="upi">QR CODE</mat-radio-button>
           <mat-radio-button value="creditCard">Credit Card</mat-radio-button>
           <mat-radio-button value="debitCard">Debit Card</mat-radio-button>
           <mat-radio-button value="paypal">PayPal</mat-radio-button>
         </mat-radio-group>
+        <div *ngIf="paymentFormGroup.get('paymentMode')?.value === 'upi'" class="qr-code-section">
+          <img src=".\assets\QR.jpeg" alt="QR Code" class="qr-code-image">
+        </div>
         <div>
           <button mat-button matStepperPrevious>Back</button>
           <button mat-button (click)="placeOrder()">Place Order</button>

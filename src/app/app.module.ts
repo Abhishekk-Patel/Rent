@@ -27,6 +27,9 @@ import { MatDividerModule } from '@angular/material/divider';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
 import { ProductDetailsPopupComponent } from './components/product-details-popup/product-details-popup.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { HomeComponent } from './components/home/home.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,6 +40,7 @@ import { ProductDetailsPopupComponent } from './components/product-details-popup
     AlertMsgsComponent,
     MyCartComponent,
     ProductDetailsPopupComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,7 +73,9 @@ import { ProductDetailsPopupComponent } from './components/product-details-popup
     MatDividerModule,
     ReactiveFormsModule,
     MatDialogModule,
-
+    MatToolbarModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
     MatRadioModule,
   ],
   providers: [],

@@ -1,0 +1,144 @@
+.product-details-popup {
+    width: 400px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.popup-header {
+    background: #f7f7f7;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.popup-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.popup-content {
+    padding: 20px;
+    text-align: center;
+}
+
+.product-image {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    /* border-radius: 10px; */
+    border-bottom-left-radius: 13px;
+    border-bottom-right-radius: 13px;
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
+  border: none;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  z-index: 1;
+  transition: background-color 0.3s ease;
+}
+
+.nav-btn.left {
+  left: 0;
+}
+
+.nav-btn.right {
+  right: 0;
+}
+
+.nav-btn:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.product-name {
+    font-size: 22px;
+    margin: 15px 0;
+}
+
+.product-description {
+    font-size: 16px;
+    color: #555;
+}
+
+.product-valid-until {
+    font-size: 16px;
+    color: #555;
+    margin: 10px 0;
+}
+
+.product-quantity {
+    font-size: 16px;
+    color: #555;
+    margin: 10px 0;
+}
+
+.product-price {
+    font-size: 20px;
+    color: #e74c3c;
+    margin: 15px 0;
+}
+
+.popup-footer {
+    padding: 15px;
+    text-align: center;
+    border-top: 1px solid #ddd;
+}
+
+.add-to-cart-btn {
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.add-to-cart-btn:hover {
+    background: #c0392b;
+}
+
+.product-details-columns {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.product-details-column {
+    flex: 1;
+    padding: 0 10px;
+}
+
+.product-details-column:first-child {
+    border-right: 1px solid #ddd;
+}

@@ -172,25 +172,53 @@
   object-fit: cover;
 }
 
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
+  border: none;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  z-index: 1;
+  transition: background-color 0.3s ease;
+}
+
+.nav-btn.left {
+  left: 0;
+}
+
+.nav-btn.right {
+  right: 0;
+}
+
+.nav-btn:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
 .add-to-fav-btn {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: rgba(255, 255, 255, 0.257); /* Optional: Add a background for better visibility */
+  background-color: transparent; /* No background by default */
   border-radius: 50%;
   padding: 5px;
   cursor: pointer;
   text-decoration: none;
   color: inherit;
+  transition: background-color 0.3s ease;
 }
 
 .add-to-fav-btn mat-icon {
   font-size: 24px;
   height: 21px; 
-  color: white;/* Adjust the size of the icon */
+  color: white; /* Adjust the size of the icon */
 }
 
 .add-to-fav-btn:hover {
+  background-color: rgba(255, 255, 255, 0.257); /* Background on hover */
   opacity: 0.8;
 }
 
@@ -306,3 +334,15 @@
     text-align: center;
   }
 }
+
+/* ...existing code... */
+
+.spinner-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000; /* Ensure it appears above other content */
+}
+
+/* ...existing code... */

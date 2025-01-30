@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { debounceTime, fromEvent } from 'rxjs';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { Category_LIST, REWARD_LIST } from 'src/mock-data';
@@ -10,6 +11,7 @@ import { Category_LIST, REWARD_LIST } from 'src/mock-data';
 })
 export class ContentComponentComponent implements OnInit, AfterViewInit {
   alertMsg: string = 'Opps! No match found';
+  //isProductAddedInCart: boolean = false;
   public totalPages: any;
 
   rewards = REWARD_LIST;
@@ -18,12 +20,28 @@ export class ContentComponentComponent implements OnInit, AfterViewInit {
   isSortPanelOpen = false;
   searchValue = '';
   @ViewChild('searchInput', { static: true }) searchInput!: ElementRef;
+  isLoading: boolean = false;
 
-  constructor(public mycartService: MyCartServiceService) {}
+  constructor(public mycartService: MyCartServiceService,public router: Router) {}
 
   ngOnInit() {
+    this.isLoading = true; // Show spinner on init
+    const loggedUser=    this.mycartService.getUser();
+    console.log(loggedUser, 'loggedUser');
+
+    if(loggedUser === 'Bride'){
+      this.rewards = REWARD_LIST.filter(reward => reward.userRole === 'Bride'|| reward.userRole === 'Both');
+      this.categories = this.categories.filter(cat => cat.useRole === 'Bride'|| cat.useRole === 'Both');
+    }
+    else if(loggedUser === 'Groom'){
+      this.categories = this.categories.filter(cat => cat.useRole === 'Groom'|| cat.useRole === 'Both');
+        
+        this.rewards = REWARD_LIST.filter(reward => reward.userRole === 'Groom' || reward.userRole === 'Both');
+    }
+    else this.router.navigate(['']);
     this.filterRewardsByCategory('All');
-    this.calculateTotalPages();
+    this.rewards.forEach(reward => reward.currentImageIndex = 0);
+    this.isLoading = false; // Hide spinner after data is loaded
   }
 
   ngAfterViewInit() {
@@ -32,6 +50,8 @@ export class ContentComponentComponent implements OnInit, AfterViewInit {
       .subscribe(() => {
         const searchValue = this.searchInput.nativeElement.value.trim();
         this.searchValue = searchValue;
+    console.log(searchValue, 'searchValue');
+
         this.filterRewardsByCategory(searchValue || 'All');
       });
   }
@@ -48,6 +68,7 @@ export class ContentComponentComponent implements OnInit, AfterViewInit {
 
   search(): void {
     const searchValue = this.searchInput.nativeElement.value.trim();
+    console.log(searchValue, 'searchValue');
     this.searchValue = searchValue;
     this.filterRewardsByCategory(searchValue || 'All');
   }
@@ -67,11 +88,11 @@ export class ContentComponentComponent implements OnInit, AfterViewInit {
     if (categoryName === 'All') {
       this.filteredRewards = this.rewards;
     } else {
+      const lowerCategoryName = categoryName.toLocaleLowerCase();
       this.filteredRewards = this.rewards.filter((reward) => {
-        const lowerCategoryName = categoryName.toLocaleLowerCase();
         return (
-          reward.category.toLocaleLowerCase() === lowerCategoryName ||
-          reward.name.toLocaleLowerCase() === lowerCategoryName
+          reward.category.toLocaleLowerCase().includes(lowerCategoryName) ||
+          reward.name.toLocaleLowerCase().includes(lowerCategoryName)
         );
       });
     }
@@ -132,5 +153,17 @@ export class ContentComponentComponent implements OnInit, AfterViewInit {
     } else {
       this.filteredRewards = this.rewards.slice(startIndex, endIndex);
     }
+  }
+
+  productDetails(primaryKey: number) {
+    this.mycartService.openProductDetails(primaryKey);
+  }
+
+  nextImage(reward: any) {
+    reward.currentImageIndex = (reward.currentImageIndex + 1) % reward.display_img_urls.length;
+  }
+
+  prevImage(reward: any) {
+    reward.currentImageIndex = (reward.currentImageIndex - 1 + reward.display_img_urls.length) % reward.display_img_urls.length;
   }
 }
