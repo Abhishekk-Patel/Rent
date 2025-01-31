@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MyCartComponent } from '../components/my-cart/my-cart.component'; // Adjust the path as necessary
 import { ProductDetailsPopupComponent } from '../components/product-details-popup/product-details-popup.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
-// import { signal } from '@angular/core';
+ import { signal } from '@angular/core';
 
 
 @Injectable({
@@ -13,18 +13,22 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class MyCartServiceService {
 
-  private cartItems = new BehaviorSubject<any[]>([]);
+  private readonly cartItems = new BehaviorSubject<any[]>([]);
   cartItems$ = this.cartItems.asObservable();
-  // private _isMsg: string = '';
-  // isProductAddedInCart: boolean = false;
   isUser:string = '';
-// myCartValue = signal(0);
-  constructor(private readonly router: Router, private readonly dialog: MatDialog,private snackBar: MatSnackBar) {
+ myCartValue = signal(0);
+  constructor(private readonly router: Router, private readonly dialog: MatDialog,private readonly snackBar: MatSnackBar) {
    }
  
   addToCart(item: any): void {
     const currentItems = this.cartItems.value;
-    this.cartItems.next([...currentItems, item]);
+    const itemExists = currentItems.some(cartItem => cartItem == item ); // Check for duplicate
+   if (!itemExists) {
+      this.cartItems.next([...currentItems, item]);
+      this.myCartValue.update(value => value + 1); // Update cart value
+    } else {
+      this.showMessage('Item already in cart'); // Show message if item exists
+    }
   }
 
   getCartItems(): any[] {
@@ -33,10 +37,14 @@ export class MyCartServiceService {
 
   removeFromCart(item: any): void {
     const currentItems = this.cartItems.value;
-    const index = currentItems.indexOf(item);
-    if (index > -1) {
-      currentItems.splice(index, 1);
-      this.cartItems.next([...currentItems]);
+    const updatedItems = currentItems.filter(cartItem => cartItem !== item.pk);
+
+    if (updatedItems.length !== currentItems.length) {
+      this.cartItems.next(updatedItems);
+      this.myCartValue.update(value => value - 1); // Update cart value
+    } else {
+      this.showMessage('Item not found in cart'); // Show message if item not found
+      
     }
   }
 
@@ -63,6 +71,10 @@ export class MyCartServiceService {
 
   getUser(): string {
     return this.isUser;
+  }
+
+  getCartValue(): number {
+    return this.myCartValue();
   }
 }
 

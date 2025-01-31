@@ -17,7 +17,7 @@
     <button mat-icon-button aria-label="Notifications">
       <mat-icon>notifications</mat-icon>
     </button>
-    <button [disabled]="cartItemCount===0" mat-icon-button class="cart" aria-label="Cart" matBadge="{{cartItemCount}}" matBadgePosition="above after" matBadgeColor="accent" (click)="openMyCard()">
+    <button [disabled]="cartService.getCartValue() === 0" mat-icon-button class="cart" aria-label="Cart" matBadge="{{cartService.getCartValue()}}" matBadgePosition="above after" matBadgeColor="accent" (click)="openMyCard()">
       <mat-icon>shopping_cart</mat-icon>
     </button>
     <button mat-icon-button aria-label="Dark Mode" (click)="toggleDarkMode()">

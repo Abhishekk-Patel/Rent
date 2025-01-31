@@ -27,8 +27,7 @@ export class ContentComponentComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.isLoading = true; // Show spinner on init
     const loggedUser=    this.mycartService.getUser();
-    console.log(loggedUser, 'loggedUser');
-
+   
     if(loggedUser === 'Bride'){
       this.rewards = REWARD_LIST.filter(reward => reward.userRole === 'Bride'|| reward.userRole === 'Both');
       this.categories = this.categories.filter(cat => cat.useRole === 'Bride'|| cat.useRole === 'Both');
@@ -50,8 +49,6 @@ export class ContentComponentComponent implements OnInit, AfterViewInit {
       .subscribe(() => {
         const searchValue = this.searchInput.nativeElement.value.trim();
         this.searchValue = searchValue;
-    console.log(searchValue, 'searchValue');
-
         this.filterRewardsByCategory(searchValue || 'All');
       });
   }

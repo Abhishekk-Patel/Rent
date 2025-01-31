@@ -1,65 +1,75 @@
-<mat-dialog-content>
+<mat-dialog-content class="my-cart-content">
   <mat-horizontal-stepper #stepper>
     <!-- Step 1: Product Details -->
     <mat-step [stepControl]="productFormGroup">
       <form [formGroup]="productFormGroup">
         <ng-template matStepLabel>Product Details</ng-template>
-        <div *ngFor="let item of cartItems" class="cart-item">
-          <div class="product-details">
-            <p><strong>Name:</strong> {{ item.name }}</p>
-            <p><strong>Rent:</strong> {{ item.Rent }}</p>
+        <ng-container *ngIf="cartItems.length > 0">
+          <div *ngFor="let item of cartItems" class="cart-item">
+            <img [src]="item.display_img_urls[0]" alt="{{ item.name }}" class="product-image">
+            <div class="product-details">
+              <p><strong>Name:</strong> {{ item.name }}</p>
+              <p><strong>Rent:</strong> {{ item.Rent }}</p>
+            </div>
+            <button mat-button (click)="removeFromCart(item)">Remove</button>
           </div>
-          <img [src]="item.display_img_url" alt="{{ item.name }}" class="product-image">
-          <button mat-button (click)="removeFromCart(item)">Remove</button>
-          <mat-divider></mat-divider>
-        </div>
-        <div>
-          <button mat-button matStepperNext>Next</button>
-        </div>
+          <div class="step-buttons">
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </ng-container>
       </form>
     </mat-step>
 
     <!-- Step 2: Delivery Details -->
-    <mat-step [stepControl]="deliveryFormGroup">
+    <mat-step [stepControl]="deliveryFormGroup" class="delivery-step">
       <form [formGroup]="deliveryFormGroup">
-        <ng-template matStepLabel>Delivery Details</ng-template>
-        <mat-form-field>
-          <mat-label>Name</mat-label>
-          <input matInput formControlName="name" required>
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Address</mat-label>
-          <input matInput formControlName="address" required>
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" required>
-        </mat-form-field>
-        <mat-form-field>
-          <mat-label>Mobile No</mat-label>
-          <input matInput formControlName="mobile" required>
-        </mat-form-field>
-        <div>
+        <ng-template matStepLabel>Personal Details</ng-template>
+        <div class="delivery-details">
+          <mat-form-field>
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" required>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Address</mat-label>
+            <input matInput formControlName="address" required>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" required>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Mobile No</mat-label>
+            <input matInput formControlName="mobile" required>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Rental Period</mat-label>
+            <mat-date-range-input [formGroup]="deliveryFormGroup" formGroupName="rentalPeriod">
+              <input matStartDate formControlName="start" placeholder="Start date">
+              <input matEndDate formControlName="end" placeholder="End date">
+            </mat-date-range-input>
+            <mat-date-range-picker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+        <div class="step-buttons">
           <button mat-button matStepperPrevious>Back</button>
           <button mat-button matStepperNext>Next</button>
         </div>
       </form>
     </mat-step>
 
-    <!-- Step 3: Payment Mode -->
+    <!-- Step 3: Confirmation -->
     <mat-step [stepControl]="paymentFormGroup">
       <form [formGroup]="paymentFormGroup">
-        <ng-template matStepLabel>Payment Mode</ng-template>
-        <mat-radio-group formControlName="paymentMode">
-          <mat-radio-button value="upi">QR CODE</mat-radio-button>
-          <mat-radio-button value="creditCard">Credit Card</mat-radio-button>
-          <mat-radio-button value="debitCard">Debit Card</mat-radio-button>
-          <mat-radio-button value="paypal">PayPal</mat-radio-button>
-        </mat-radio-group>
-        <div *ngIf="paymentFormGroup.get('paymentMode')?.value === 'upi'" class="qr-code-section">
-          <img src=".\assets\QR.jpeg" alt="QR Code" class="qr-code-image">
+        <ng-template matStepLabel>Final</ng-template>
+        <div class="confirmation-box">
+          <p><strong>Name:</strong> {{ deliveryFormGroup.get('name')?.value }}</p>
+          <p><strong>Address:</strong> {{ deliveryFormGroup.get('address')?.value }}</p>
+          <p><strong>Email:</strong> {{ deliveryFormGroup.get('email')?.value }}</p>
+          <p><strong>Mobile No:</strong> {{ deliveryFormGroup.get('mobile')?.value }}</p>
+          <p><strong>Rental Period:</strong> {{ deliveryFormGroup.get('rentalPeriod.start')?.value | date }} - {{ deliveryFormGroup.get('rentalPeriod.end')?.value | date }}</p>
+          <p>Below details ready to send to owner</p>
         </div>
-        <div>
+        <div class="step-buttons">
           <button mat-button matStepperPrevious>Back</button>
           <button mat-button (click)="placeOrder()">Place Order</button>
         </div>

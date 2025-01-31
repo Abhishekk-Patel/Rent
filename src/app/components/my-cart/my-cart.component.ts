@@ -28,7 +28,11 @@ export class MyCartComponent implements OnInit {
       name: ['', Validators.required],
       address: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      mobile: ['', Validators.required]
+      mobile: ['', Validators.required],
+      rentalPeriod: this.fb.group({
+        start: ['', Validators.required],
+        end: ['', Validators.required]
+      })
     });
     this.paymentFormGroup = this.fb.group({
       paymentMode: ['', Validators.required]
@@ -36,26 +40,34 @@ export class MyCartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log("ngOnInit called");
     this.myCartService.cartItems$.subscribe(items => {
       this.cartItems = items;
     });
-   // this.cartItems = this.myCartService.getCartItems(); // Ensure cart items are fetched on init
-  
-   this.fetchCartItems();
+    this.fetchCartItems(); // Ensure cart items are fetched on init
   }
 
   removeFromCart(item: any): void {
     this.myCartService.removeFromCart(item);
-    this.cartItems = this.myCartService.getCartItems();
-    
+    this.fetchCartItems(); // Update cart items after removal
+
+    if (!this.cartItems.length) {
+      this.dialogRef.close();
+    }
   }
 
   placeOrder(): void {
-    if (this.deliveryFormGroup.valid && this.paymentFormGroup.valid) {
+  //  console.log(this.deliveryFormGroup.value);
+   // console.log(this.paymentFormGroup.value);
+    if (this.deliveryFormGroup.valid) {
       // Handle order placement logic here
-      console.log('Order placed successfully');
+     
+      this.myCartService.showMessage('Order placed successfully');
       this.dialogRef.close();
+    }
+    else{
+     
+      this.myCartService.showMessage('Error! Please fill all the details');
+
     }
   }
 

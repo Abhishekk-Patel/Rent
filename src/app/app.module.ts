@@ -30,6 +30,9 @@ import { ProductDetailsPopupComponent } from './components/product-details-popup
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { HomeComponent } from './components/home/home.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -47,36 +50,26 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     AppRoutingModule,
     BrowserAnimationsModule,
     MatToolbarModule,
-    MatToolbarModule,
     MatDialogModule,
     MatIconModule,
     MatButtonModule,
     FormsModule,
-    MatToolbarModule,
-    MatIconModule,
     MatGridListModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    BrowserModule,
-    BrowserAnimationsModule,
     MatExpansionModule,
-    MatIconModule,
     MatBadgeModule,
     MatSnackBarModule,
     MatPaginatorModule,
-    MatToolbarModule,
     MatMenuModule,
     MatStepperModule,
     MatDividerModule,
     ReactiveFormsModule,
-    MatDialogModule,
-    MatToolbarModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatRadioModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   providers: [],
   bootstrap: [AppComponent],

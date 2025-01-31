@@ -7,14 +7,10 @@ import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
-  cartItemCount: number = 0;
   countryCode: string = '';
-  constructor(private readonly cartService: MyCartServiceService) {}
+  constructor(public cartService: MyCartServiceService) {}
 
   ngOnInit() {
-    this.cartService.cartItems$.subscribe((items: any[]) => {
-      this.cartItemCount = items.length;
-    });
     this.openLanguageDialog();
   }
 
@@ -26,7 +22,6 @@ export class HeaderComponent {
     this.cartService.openCart();
   }
 
-  
   openLanguageDialog(): void {
 
     // Logic to open the language dialog
