@@ -23,9 +23,12 @@ export class MyCartServiceService {
   addToCart(item: any): void {
     const currentItems = this.cartItems.value;
     const itemExists = currentItems.some(cartItem => cartItem == item ); // Check for duplicate
+    this.showMessage('Item already in cart'); // Show message if item exists
+
    if (!itemExists) {
       this.cartItems.next([...currentItems, item]);
       this.myCartValue.update(value => value + 1); // Update cart value
+      this.showMessage('Product successfully added in cart'); // Show message if item is added
     } else {
       this.showMessage('Item already in cart'); // Show message if item exists
     }
@@ -59,6 +62,10 @@ export class MyCartServiceService {
     });
 }
 
+  itemExistsInCart(pk: number): boolean {
+    return this.cartItems.value.some(cartItem => cartItem === pk);
+  }
+
   showMessage(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 3000, // Duration in milliseconds
@@ -67,10 +74,11 @@ export class MyCartServiceService {
 
   setUser(user: string): void {
     this.isUser = user;
+    localStorage.setItem('user', user);
   }
 
   getUser(): string {
-    return this.isUser;
+    return localStorage.getItem('user') || this.isUser;
   }
 
   getCartValue(): number {

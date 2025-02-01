@@ -28,8 +28,12 @@ export class ProductDetailsPopupComponent {
     this.dialogRef.close();
   }
   addToCart() {
-    this.mycartService.addToCart(this.data.primaryKey);
-    this.mycartService.showMessage('Product successfully added in cart');
+    if (this.mycartService.itemExistsInCart(this.data.primaryKey)) {
+      this.mycartService.showMessage('Product is already in the cart');
+    } else {
+      this.mycartService.addToCart(this.data.primaryKey);
+      this.mycartService.showMessage('Product successfully added in cart');
+    }
   }
 
   nextImage() {
