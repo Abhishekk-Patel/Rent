@@ -1,31 +1,32 @@
 .footer {
   display: flex;
-  justify-content: space-between; /* Ensures items are spaced out horizontally */
-  align-items: center; /* Vertically align items */
+  justify-content: space-between;
+  align-items: center;
   padding: 20px;
-  background: black;
-  color: white;
-  border-top: 5px solid white;
+  background: #333;
+  color: #fff;
+  border-top: 5px solid #fff;
+  font-family: 'Arial', sans-serif;
 }
 
 .footer-column {
-  display: flex; /* Use flexbox to align content */
-  flex-direction: column; /* Stack items vertically */
-  align-items: center; /* Center content by default */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .footer .left {
-  text-align: left; /* Align logo and text to the left */
-  align-items: flex-start; /* Align items to the left */
+  text-align: left;
+  align-items: flex-start;
 }
 
 .footer .center {
-  text-align: center; /* Center text */
+  text-align: center;
 }
 
 .footer .right {
-  text-align: right; /* Align content to the right */
-  align-items: flex-end; /* Align content to the right */
+  text-align: right;
+  align-items: flex-end;
 }
 
 .footer img {
@@ -35,27 +36,44 @@
 }
 
 .footer nav a {
-  margin: 5px 0; /* Space between links */
-  color: white;
+  margin: 5px 0;
+  color: #fff;
   text-decoration: none;
+  transition: color 0.3s;
 }
 
 .footer nav a:hover {
-  text-decoration: underline;
+  color: #ddd;
 }
 
-.left-nav {
+.center-nav {
   display: flex;
-  flex-direction: column; /* Stack links vertically */
-  align-items: flex-start; /* Align links to the left */
+  flex-direction: column;
+  align-items: center;
 }
 
-.left-nav a {
-  margin: 5px 0; /* Space between links */
-  color: white;
+.center-nav a {
+  margin: 5px 0;
+  color: #fff;
   text-decoration: none;
 }
 
-.left-nav a:hover {
-  text-decoration: underline;
+.center-nav a:hover {
+  color: #ddd;
+}
+
+.social-media {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.social-media img {
+  width: 24px;
+  height: 24px;
+  transition: transform 0.3s;
+}
+
+.social-media img:hover {
+  transform: scale(1.2);
 }
