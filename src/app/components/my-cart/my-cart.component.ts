@@ -24,14 +24,16 @@ export class MyCartComponent implements OnInit {
   ) {
     
     this.productFormGroup = this.fb.group({});
+    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+
     this.deliveryFormGroup = this.fb.group({
       name: ['', Validators.required],
       address: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       mobile: ['', Validators.required],
       rentalPeriod: this.fb.group({
-        start: ['', Validators.required],
-        end: ['', Validators.required]
+      start: [today, Validators.required],
+      end: [today, Validators.required]
       })
     });
     this.paymentFormGroup = this.fb.group({

@@ -52,7 +52,7 @@
         </div>
         <div class="step-buttons">
           <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
+          <button mat-button matStepperNext [disabled]="!deliveryFormGroup.valid" [style.opacity]="!deliveryFormGroup.valid ? '0.5' : ''">Next</button>
         </div>
       </form>
     </mat-step>
@@ -62,12 +62,12 @@
       <form [formGroup]="paymentFormGroup">
         <ng-template matStepLabel>Final</ng-template>
         <div class="confirmation-box">
-          <p><strong>Name:</strong> {{ deliveryFormGroup.get('name')?.value }}</p>
-          <p><strong>Address:</strong> {{ deliveryFormGroup.get('address')?.value }}</p>
-          <p><strong>Email:</strong> {{ deliveryFormGroup.get('email')?.value }}</p>
-          <p><strong>Mobile No:</strong> {{ deliveryFormGroup.get('mobile')?.value }}</p>
-          <p><strong>Rental Period:</strong> {{ deliveryFormGroup.get('rentalPeriod.start')?.value | date }} - {{ deliveryFormGroup.get('rentalPeriod.end')?.value | date }}</p>
-          <p>Below details ready to send to owner</p>
+          <p><strong>Name:</strong> <span class="highlight">{{ deliveryFormGroup.get('name')?.value }}</span></p>
+          <p><strong>Address:</strong> <span class="highlight">{{ deliveryFormGroup.get('address')?.value }}</span></p>
+          <p><strong>Email:</strong> <span class="highlight">{{ deliveryFormGroup.get('email')?.value }}</span></p>
+          <p><strong>Mobile No:</strong> <span class="highlight">{{ deliveryFormGroup.get('mobile')?.value }}</span></p>
+          <p><strong>Rental Period:</strong> <span class="highlight">{{ deliveryFormGroup.get('rentalPeriod.start')?.value | date }} - {{ deliveryFormGroup.get('rentalPeriod.end')?.value | date }}</span></p>
+          <p class="highlight-message">Below details ready to send to owner</p>
         </div>
         <div class="step-buttons">
           <button mat-button matStepperPrevious>Back</button>
