@@ -29,7 +29,7 @@ export class ProductDetailsPopupComponent {
   }
   addToCart() {
     if (this.mycartService.itemExistsInCart(this.data.primaryKey)) {
-      this.mycartService.showMessage('Product is already in the cart');
+      this.mycartService.showMessage('Item already in cart');
     } else {
       this.mycartService.addToCart(this.data.primaryKey);
       this.mycartService.showMessage('Product successfully added in cart');
