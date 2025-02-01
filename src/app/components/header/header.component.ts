@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 
 @Component({
@@ -8,7 +9,7 @@ import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 })
 export class HeaderComponent {
   countryCode: string = '';
-  constructor(public cartService: MyCartServiceService) {}
+  constructor(public cartService: MyCartServiceService,public readonly router: Router) {}
 
   ngOnInit() {
     this.openLanguageDialog();
