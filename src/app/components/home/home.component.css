@@ -8,18 +8,52 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('src\assets\HomeBg.jpg') no-repeat center center/cover;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .modal-content {
   display: flex;
   background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white background for glassy effect */
-  padding: 20px;
+  padding: 65px;
   border-radius: 10px;
   width: 30%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow with black color */
   backdrop-filter: blur(10px); /* Blur effect for the glassy background */
   -webkit-backdrop-filter: blur(10px); /* For Safari support */
+  animation: slideIn 0.5s ease-in-out;
+  position: relative;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); }
+  to { transform: translateY(0); }
+}
+
+.back-arrow {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  color: white;
+  font-size: 24px;
+  transition: transform 0.3s, color 0.3s;
+}
+
+.back-arrow:hover {
+  transform: scale(1.2);
+  color: #ffcc00; /* Change color on hover */
+}
+
+.back-arrow img {
+  width: 30px;
+  height: 30px;
 }
 
 .card {
@@ -42,13 +76,13 @@
 .card p {
   font-size: 1.2em;
   font-weight: bold;
-  color: #333;
+  color: #fff; /* Change text color to white for better contrast */
   margin-top: 10px;
 }
 
 .divider {
   width: 2px;
-  background-color: black;
+  background-color: white; /* Change divider color to white for better contrast */
   margin: 0 20px;
 }
 /* ...existing code... */

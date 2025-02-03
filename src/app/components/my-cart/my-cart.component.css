@@ -54,7 +54,7 @@ button {
 }
 
 button[mat-button] {
-  background-color: #f44336;
+  background-color: brown;
   color: white;
   border-radius: 4px;
   padding: 8px 16px;
@@ -62,7 +62,7 @@ button[mat-button] {
 }
 
 button[mat-button]:hover {
-  background-color: #d32f2f;
+  background-color: black;
 }
 
 .qr-code-section {
@@ -127,7 +127,7 @@ button[mat-button]:hover {
 
 .highlight {
   font-weight: bold;
-  color: #d32f2f;
+  color: brown;
 }
 
 .highlight-message {

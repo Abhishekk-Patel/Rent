@@ -1,6 +1,6 @@
 .search-section {
   margin-bottom: 16px;
-  background-color: #ffffff;
+  /* background-color: #ffffff; */
   padding: 16px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -128,7 +128,7 @@
 }
 
 .sort-btn {
-  background: linear-gradient(45deg, #333, #555);
+  background: linear-gradient(45deg, brown, black);
   color: white;
   padding: 8px 20px;
   cursor: pointer;
@@ -292,7 +292,7 @@
 }
 
 .reward-card-footer .order-now-btn {
-  background-color: #333;
+  background-color: brown;
   color: white;
   border: none;
   padding: 10px 20px;

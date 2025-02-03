@@ -1,8 +1,10 @@
 .header-toolbar {
-    display: flex;
+  /* background-image: url('https://mobirise.com/extensions/weddingamp/wedding/assets/images/background2.jpg');
+  */
+  display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: black;
+    background: linear-gradient(135deg, brown, black);
    
   
     .logo-section {

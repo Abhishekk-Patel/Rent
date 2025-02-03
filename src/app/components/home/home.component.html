@@ -1,7 +1,16 @@
-
-
 <div class="modal">
-  <div class="modal-content">
+  <div class="modal-content" *ngIf="!showRentOptions">
+    <div class="card rent" (click)="navigateToRent()">
+      <img src="./assets/RentLogo.jpg" alt="Rent">
+      <p>Rent</p>
+    </div>
+    <div class="divider"></div>
+    <div class="card sell" (click)="navigateToSell()">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI1m0tsDlTqxr3knGTCXiC5D0IrSHh8xqA4w&s" alt="Sell">
+      <p>Sell</p>
+    </div>
+  </div>
+  <div class="modal-content" *ngIf="showRentOptions">
     <div class="card groom" (click)="navigateTo('Groom')">
       <img src="./assets/groom.png" alt="Groom">
       <p>Groom</p>
@@ -10,6 +19,9 @@
     <div class="card bride" (click)="navigateTo('Bride')">
       <img src="./assets/bride.png" alt="Bride">
       <p>Bride</p>
+    </div>
+    <div class="back-arrow" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
     </div>
   </div>
 </div>

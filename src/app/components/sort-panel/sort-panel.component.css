@@ -1,10 +1,11 @@
 .sort-panel {
+  z-index: 1;
   position: fixed;
   right: 0;
   top: 0;
   width: 300px;
   height: 100%;
-  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+  background: linear-gradient(135deg, brown, black);
   padding: 20px;
   box-shadow: -2px 0px 10px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease-in-out;
@@ -26,7 +27,7 @@
 .reset-btn {
   background: transparent;
   border: none;
-  color: #ff6347;
+  color: white;
   cursor: pointer;
   font-size: 14px;
   margin-top: -22px;
@@ -34,13 +35,13 @@
 }
 
 .reset-btn:hover {
-  color: #ff4500;
+  color: black;
 }
 
 h4 {
   margin: 10px 0;
   font-size: 18px;
-  color: #333;
+  color: black;
   font-weight: bold;
 }
 
@@ -48,7 +49,7 @@ h4 {
   margin: 10px 0;
   padding: 12px;
   border: 1px solid #ddd;
-  background: #ff6347;
+  background: brown;
   cursor: pointer;
   text-align: left;
   font-size: 14px;
@@ -74,7 +75,7 @@ h4 {
 
 .apply-btn {
   margin-top: auto;
-  background: #ff6347;
+  background: brown;
   color: white;
   border: none;
   cursor: pointer;
@@ -91,7 +92,8 @@ h4 {
   cursor: not-allowed;
 }
 
-.apply-btn:hover:not(:disabled) {
-  background: #ff4500;
-  transform: scale(1.05);
-}
+.apply-btn:hover:not(:disabled) 
+
+  { background: linear-gradient(45deg, black, transparent);
+    transform: scale(1.05);
+  }
