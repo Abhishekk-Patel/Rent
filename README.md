@@ -1,6 +1,6 @@
 #Requirement:- Angular@15 Node@18
 
-# Rent a online plateform where use can sell or take weeding cloths on rent
+# Rent a online plateform where user can sell or take weeding cloths on rent
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.11.
 
