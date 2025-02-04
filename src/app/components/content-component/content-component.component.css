@@ -1,6 +1,5 @@
 .search-section {
   margin-bottom: 16px;
-  /* background-color: #ffffff; */
   padding: 16px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -21,7 +20,6 @@
 }
 
 .filters {
-  /* margin-top: 16px; */
 }
 
 .filters span {
@@ -48,14 +46,12 @@
   color: #d32f2f !important;
 }
 
-/* Layout for Categories on the Left and Rewards on the Right */
 .layout {
   display: flex;
   gap: 20px;
   padding: 10px;
 }
 
-/* Left Column: Categories */
 .categories {
   width: 15%;
   padding: 15px;
@@ -102,10 +98,8 @@
 
 .status-icon.selected {
   color: #d32f2f;
-  /* Red color to indicate selected state */
 }
 
-/* Right Column: Rewards */
 .rewards {
   flex: 1;
   padding-left: 10px;
@@ -200,7 +194,7 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: transparent; /* No background by default */
+  background-color: transparent;
   border-radius: 50%;
   padding: 5px;
   cursor: pointer;
@@ -211,12 +205,12 @@
 
 .add-to-fav-btn mat-icon {
   font-size: 24px;
-  height: 21px; 
-  color: white; /* Adjust the size of the icon */
+  height: 21px;
+  color: white;
 }
 
 .add-to-fav-btn:hover {
-  background-color: rgba(255, 255, 255, 0.257); /* Background on hover */
+  background-color: rgba(255, 255, 255, 0.257);
   opacity: 0.8;
 }
 
@@ -230,7 +224,6 @@
   box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.1);
   text-align: justify;
   position: relative;
-  /* So the text appears on top */
 }
 
 .out-of-stock-blur img,
@@ -241,14 +234,12 @@
 
 .out-of-stock-blur {
   pointer-events: none;
-  /* Prevent interaction */
 }
 
 .out-of-stock {
   color: red;
   font-weight: bold;
   position: static;
-  /* Keep it on top of the blur */
   z-index: 1;
 }
 
@@ -314,12 +305,10 @@
   color: inherit;
 }
 
-/* Add hover effect for the add-to-cart icon */
 .reward-card-footer .add-to-cart-btn:hover {
   opacity: 0.8;
 }
 
-/* Media queries for responsiveness */
 @media (max-width: 768px) {
   .reward-card-footer {
     flex-direction: column;
@@ -338,5 +327,5 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 1000; /* Ensure it appears above other content */
+  z-index: 1000;
 }
