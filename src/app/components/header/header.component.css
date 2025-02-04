@@ -1,60 +1,44 @@
 .header-toolbar {
-  /* background-image: url('https://mobirise.com/extensions/weddingamp/wedding/assets/images/background2.jpg');
-  */
   display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(135deg, brown, black);
-   
-  
-    .logo-section {
-      display: flex;
-      align-items: center;
-  
-      .company-logo {
-        /* height: 40px; */
-        border-radius: 1px solid white;
-        height: 40px;
-      }
-    }
-  
-    .spacer {
-      flex: 1;
-    }
-  
-    .icon-section {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-  
-      button {
-        color: white; /* Adjust icon color */
-        margin-left: 10px;
-        .mat-badge-content {
-        
-          top: 0px;
-      }
-      }
-    }
-
-   
-  }
-  
-
-  .header {
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, brown, black);
+  .logo-section {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
-    background-color: red;
-  
-    .logo {
+    .company-logo {
+      border-radius: 1px solid white;
       height: 40px;
     }
-  
-    .icons img {
-      margin-left: 15px;
-      height: 30px;
-      cursor: pointer;
+  }
+  .spacer {
+    flex: 1;
+  }
+  .icon-section {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    button {
+      color: white;
+      margin-left: 10px;
+      .mat-badge-content {
+        top: 0px;
+      }
     }
   }
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: red;
+  .logo {
+    height: 40px;
+  }
+  .icons img {
+    margin-left: 15px;
+    height: 30px;
+    cursor: pointer;
+  }
+}
