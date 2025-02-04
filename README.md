@@ -24,6 +24,24 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
+## How to Access the Hosted Application
+
+1. Ensure that you have built the project for production:
+   ```sh
+   ng build --prod --base-href /Rent/
+   ```
+
+2. Deploy the contents of the `dist/frontend-assessment-rewardz` folder to your hosting service.
+
+3. Access the hosted application at:
+   ```
+   https://your-github-username.github.io/Rent/
+   ```
+
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Additional Information
+
+For more details on Angular deployment, refer to the [Angular Deployment Guide](https://angular.io/guide/deployment).
