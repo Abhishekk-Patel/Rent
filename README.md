@@ -28,7 +28,7 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 
 1. Ensure that you have built the project for production:
    ```sh
-   ng build --prod --base-href /Rent/
+   ng build --configuration production --base-href /Rent/
    ```
 
 2. Deploy the contents of the `dist/frontend-assessment-rewardz` folder to your hosting service.
