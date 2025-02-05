@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { REWARD_LIST } from 'src/mock-data';
 
@@ -9,31 +10,60 @@ import { REWARD_LIST } from 'src/mock-data';
   styleUrls: ['./product-details-popup.component.css']
 })
 export class ProductDetailsPopupComponent {
+  productDetails = REWARD_LIST;
+  isAddNewProduct: boolean = false;
+
   constructor(
     public mycartService: MyCartServiceService,
+    public readonly router: Router,
     public dialogRef: MatDialogRef<ProductDetailsPopupComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any // Inject the data
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-   // console.log(data, 'dialogRef.data'); // Access the data here
+    if (typeof this.data.primaryKey === 'object') {
+    
+    }
+    this.mycartService.isAddNewProduct$.subscribe(res => {
+      this.isAddNewProduct = res;
+
+    });
   }
 
-   productDetails = REWARD_LIST;
-   isAdded: boolean = false;
+  getProductDetails() {
+    if (typeof this.data.primaryKey === 'number') {
+      return this.productDetails.find((product) => product.pk === this.data.primaryKey);
+    } else if (typeof this.data.primaryKey === 'object') {
+      return this.data['primaryKey'];
+    } else {
+      return null;
+    }
+  }
 
-   getProductDetails() {
-    return this.productDetails.find((product) => product.pk === this.data.primaryKey);
-
-   }
-   closeProductDetailDialog(): void {
+  closeProductDetailDialog(): void {
     this.dialogRef.close();
   }
+
   addToCart() {
-    if (this.mycartService.itemExistsInCart(this.data.primaryKey)) {
-      this.mycartService.showMessage('Item already in cart');
-    } else {
-      this.mycartService.addToCart(this.data.primaryKey);
-      this.mycartService.showMessage('Product successfully added in cart');
+
+    this.mycartService.isAddNewProduct$.subscribe(res=>{
+      if (res) {
+        this.mycartService.showMessage('Product listed Successfully');
+        this.dialogRef.close();
+        this.router.navigate(['/content']);
+      }
+    })
+    if (typeof this.data.primaryKey === 'number') {
+      if (this.mycartService.itemExistsInCart(this.data.primaryKey)) {
+        this.mycartService.showMessage('Item already in cart');
+      } 
+      else {
+        this.mycartService.addToCart(this.data.primaryKey);
+        this.mycartService.showMessage('Product successfully added in cart');
+        this.dialogRef.close();
+      }
+    
     }
+   
+   
   }
 
   nextImage() {
