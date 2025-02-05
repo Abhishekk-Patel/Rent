@@ -1,0 +1,75 @@
+<app-header></app-header>
+<div class="product-container-top">
+  <div class="add-product-container">
+    <h2>Add New Product</h2>
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Product Name</mat-label>
+          <input matInput placeholder="Exp:- Bridal's Lehnga, Groom's Sherwani" formControlName="name" required>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Rent</mat-label>
+          <input matInput type="number" placeholder="Enter rent amount" formControlName="rent" required>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Quantity</mat-label>
+          <input matInput type="number" placeholder="Enter quantity" formControlName="quantity" required>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Valid Until</mat-label>
+          <input matInput type="date" placeholder="Enter valid until date" formControlName="valid_until" required>
+        </mat-form-field>
+
+        <!-- <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Low Quantity Threshold</mat-label>
+          <input matInput type="number" placeholder="Enter low quantity threshold" formControlName="low_quantity" required>
+        </mat-form-field> -->
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Category</mat-label>
+          <input matInput placeholder="Ex:- Lehnga,Saree,Sherwani,suite.." formControlName="category" required>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput placeholder="Enter product description" formControlName="description" required></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Choose User Type</mat-label>
+            <mat-select formControlName="userRole" required>
+            <mat-option value="Bride">Bride</mat-option>
+            <mat-option value="Groom">Groom</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row image-upload">
+        <label for="file-upload" class="custom-file-upload">
+          <mat-icon>cloud_upload</mat-icon> Upload Images (at least 3)
+        </label>
+        <input id="file-upload" type="file" (change)="onFilesSelected($event)" accept="image/*" multiple>
+        <div *ngIf="selectedImages.length" class="image-preview">
+          <img *ngFor="let image of selectedImages" [src]="image" alt="Selected Image">
+        </div>
+      </div>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="!productForm.valid || selectedImages.length < 3">Add Product</button>
+    </form>
+  </div>
+</div>
+<app-footer></app-footer>
