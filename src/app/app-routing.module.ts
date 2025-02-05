@@ -7,6 +7,7 @@ import { HomeComponent } from './components/home/home.component';
 import { ContentComponentComponent } from './components/content-component/content-component.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { AddProductComponent } from './components/add-product/add-product.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent }, // Set HomeComponent as the default route
@@ -16,6 +17,7 @@ const routes: Routes = [
   { path: 'sort-panel', component: SortPanelComponent },
   { path: 'myCart', component: MyCartComponent }, // Ensure this path matches the one used in openCart
   { path: 'productDetails', component: ProductDetailsPopupComponent }, // product details component will call on click know more btn
+  { path: 'add-product', component: AddProductComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' } // Redirect any unknown paths to HomeComponent
 
 ];
