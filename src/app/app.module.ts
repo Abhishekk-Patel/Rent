@@ -31,7 +31,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { HomeComponent } from './components/home/home.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
+import { AddProductComponent } from './components/add-product/add-product.component';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -44,6 +46,7 @@ import { MatNativeDateModule } from '@angular/material/core';
     MyCartComponent,
     ProductDetailsPopupComponent,
     HomeComponent,
+    AddProductComponent,
   ],
   imports: [
     BrowserModule,
@@ -69,7 +72,10 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatTooltipModule,
     MatRadioModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatOptionModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
