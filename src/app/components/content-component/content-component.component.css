@@ -322,6 +322,30 @@
   }
 }
 
+@media (max-width: 768px) {
+  .categories {
+    width: 100%;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .categories {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+
+  .rewards {
+    width: 100%;
+    padding: 0;
+  }
+}
+
 .spinner-container {
   position: fixed;
   top: 50%;
