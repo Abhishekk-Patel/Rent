@@ -11,9 +11,7 @@ import { Category_LIST, REWARD_LIST } from 'src/mock-data';
 })
 export class ContentComponentComponent implements OnInit, AfterViewInit {
   alertMsg: string = 'Opps! No match found';
-  //isProductAddedInCart: boolean = false;
   public totalPages: any;
-
   rewards = REWARD_LIST;
   categories = Category_LIST;
   filteredRewards = REWARD_LIST;
@@ -22,25 +20,26 @@ export class ContentComponentComponent implements OnInit, AfterViewInit {
   @ViewChild('searchInput', { static: true }) searchInput!: ElementRef;
   isLoading: boolean = false;
 
-  constructor(public mycartService: MyCartServiceService,public router: Router) {}
+  constructor(public mycartService: MyCartServiceService, public router: Router) {}
 
   ngOnInit() {
-    this.isLoading = true; // Show spinner on init
-    const loggedUser=    this.mycartService.getUser();
-   
-    if(loggedUser === 'Bride'){
-      this.rewards = REWARD_LIST.filter(reward => reward.userRole === 'Bride'|| reward.userRole === 'Both');
-      this.categories = this.categories.filter(cat => cat.useRole === 'Bride'|| cat.useRole === 'Both');
+    this.isLoading = true;
+    const loggedUser = this.mycartService.getUser();
+    this.mycartService.setIsAddNewProduct(false);
+
+    if (loggedUser === 'Bride') {
+      this.rewards = REWARD_LIST.filter(reward => reward.userRole === 'Bride' || reward.userRole === 'Both');
+      this.categories = this.categories.filter(cat => cat.useRole === 'Bride' || cat.useRole === 'Both');
+    } else if (loggedUser === 'Groom') {
+      this.categories = this.categories.filter(cat => cat.useRole === 'Groom' || cat.useRole === 'Both');
+      this.rewards = REWARD_LIST.filter(reward => reward.userRole === 'Groom' || reward.userRole === 'Both');
+    } else {
+      this.router.navigate(['']);
     }
-    else if(loggedUser === 'Groom'){
-      this.categories = this.categories.filter(cat => cat.useRole === 'Groom'|| cat.useRole === 'Both');
-        
-        this.rewards = REWARD_LIST.filter(reward => reward.userRole === 'Groom' || reward.userRole === 'Both');
-    }
-    else this.router.navigate(['']);
+
     this.filterRewardsByCategory('All');
     this.rewards.forEach(reward => reward.currentImageIndex = 0);
-    this.isLoading = false; // Hide spinner after data is loaded
+    this.isLoading = false;
   }
 
   ngAfterViewInit() {
@@ -65,7 +64,6 @@ export class ContentComponentComponent implements OnInit, AfterViewInit {
 
   search(): void {
     const searchValue = this.searchInput.nativeElement.value.trim();
-    console.log(searchValue, 'searchValue');
     this.searchValue = searchValue;
     this.filterRewardsByCategory(searchValue || 'All');
   }
