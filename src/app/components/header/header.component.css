@@ -26,6 +26,15 @@
         
       }
     }
+    .blink {
+      animation: blinker 5.5s linear infinite;
+    }
+  }
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
   }
 }
 .header {
