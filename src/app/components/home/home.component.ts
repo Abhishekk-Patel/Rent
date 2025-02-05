@@ -9,10 +9,12 @@ import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 })
 export class HomeComponent {
   showRentOptions: boolean = false;
-  constructor(public router: Router, public myCartSercvice: MyCartServiceService) {}
+  constructor(public router: Router, public myCartSercvice: MyCartServiceService) {
+  }
 
   navigateTo(user: string) {
     this.myCartSercvice.setUser(user);
+   
     this.router.navigate(['/content']);
   }
 
@@ -21,7 +23,7 @@ export class HomeComponent {
   }
 
   navigateToSell() {
-    this.router.navigate(['/sell']);
+    this.router.navigate(['/add-product']);
   }
 
   goBack() {

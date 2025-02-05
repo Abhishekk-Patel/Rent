@@ -11,19 +11,28 @@
 
   <!-- Right Section: Icons -->
   <div class="icon-section">
+
+    <button *ngIf="!isAddNewProduct" mat-raised-button color="accent" aria-label="Rent It" class="blink" (click)="openAddProductDialog()">	
+      <mat-icon>add</mat-icon>
+      Rent Your Clothes
+    </button>
+    
     <button mat-icon-button aria-label="Language" matTooltip="{{countryCode}}" (click)="openLanguageDialog()"> 
       <mat-icon>language</mat-icon>
-    </button>
-    <button mat-icon-button aria-label="Notifications">
+    </button> 
+    <button mat-icon-button aria-label="Notifications" *ngIf="!isAddNewProduct" matTooltip="New product listed" [matBadge]="!isAddNewProduct ? 1 : 0" matBadgePosition="above after" matBadgeColor="accent">
       <mat-icon>notifications</mat-icon>
     </button>
-    <button [disabled]="cartService.getCartValue() === 0" mat-icon-button class="cart" aria-label="Cart" matBadge="{{cartService.getCartValue()}}" matBadgePosition="above after" matBadgeColor="accent" (click)="openMyCard()">
+   
+    <button *ngIf="!isAddNewProduct"  [disabled]="cartService.getCartValue() === 0" mat-icon-button class="cart" aria-label="Cart" matBadge="{{cartService.getCartValue()}}" matBadgePosition="above after" matBadgeColor="accent" (click)="openMyCard()">
       <mat-icon>shopping_cart</mat-icon>
     </button>
     <button mat-icon-button aria-label="Dark Mode" (click)="toggleDarkMode()">
       <mat-icon>brightness_4</mat-icon>
     </button>
-    <mat-menu #userMenu="matMenu">
+    
+    <div *ngIf="!isAddNewProduct">
+    <mat-menu  #userMenu="matMenu">
       <button mat-menu-item>Profile</button>
       <button mat-menu-item>Settings</button>
       <button mat-menu-item (click)="this.router.navigate([''])">Logout</button>
@@ -31,5 +40,6 @@
     <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Profile">
       <mat-icon>account_circle</mat-icon>
     </button>
+  </div>
   </div>
 </mat-toolbar>
