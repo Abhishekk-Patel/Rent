@@ -120,7 +120,7 @@ export class ContentComponentComponent implements OnInit, AfterViewInit {
   }
 
   closeSortPanel() {
-    //this.isSortPanelOpen = false;
+    this.isSortPanelOpen = false;
   }
 
   sortRewards(order: string) {

@@ -3,7 +3,7 @@
   position: fixed;
   right: 0;
   top: 0;
-  width: 300px;
+  width: 320px;
   height: 100%;
   background: linear-gradient(135deg, brown, black);
   padding: 20px;
@@ -13,6 +13,7 @@
   flex-direction: column;
   justify-content: space-between;
   border-radius: 10px 0 0 10px;
+  overflow: hidden;
 }
 
 .header {
@@ -38,6 +39,15 @@
   color: black;
 }
 
+.content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
 h4 {
   margin: 10px 0;
   font-size: 18px;
@@ -58,7 +68,8 @@ h4 {
   border-radius: 20px;
 }
 
-.sort-btn:hover { background: linear-gradient(45deg, black, transparent);
+.sort-btn:hover {
+  background: linear-gradient(45deg, black, transparent);
   transform: scale(1.05);
 }
 
@@ -74,7 +85,6 @@ h4 {
 }
 
 .apply-btn {
-  margin-top: auto;
   background: brown;
   color: white;
   border: none;
@@ -82,9 +92,11 @@ h4 {
   padding: 12px;
   font-size: 14px;
   text-transform: uppercase;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   border-radius: 20px;
   transition: background 0.3s, transform 0.2s;
+
+ 
 }
 
 .apply-btn:disabled {
@@ -92,11 +104,10 @@ h4 {
   cursor: not-allowed;
 }
 
-.apply-btn:hover:not(:disabled) 
-
-  { background: linear-gradient(45deg, black, transparent);
-    transform: scale(1.05);
-  }
+.apply-btn:hover:not(:disabled) {
+  background: linear-gradient(45deg, black, transparent);
+  transform: scale(1.05);
+}
 
 .price-filter {
   display: flex;
