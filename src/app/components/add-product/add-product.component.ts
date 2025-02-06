@@ -48,7 +48,6 @@ export class AddProductComponent implements OnInit {
         ...this.productForm.value,
         display_img_urls: this.selectedImages
       };
-      console.log('Product added successfully', productData);
       this.myCartService.openProductDetails(productData);
     }
   }
