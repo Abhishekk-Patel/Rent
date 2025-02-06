@@ -1,7 +1,3 @@
-body {
-  margin: 0;
-  padding: 0;
-}
 
 .product-container-top {
   background-image: url("../../../assets/download.jpeg");
@@ -12,10 +8,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-bottom: 0; /* Remove bottom padding */
 }
 
 .add-product-container {
-width: 60%;
+  width: 60%;
   margin: 40px auto; /* Added margin to top and bottom */
   padding: 40px 20px; /* Added padding to top and bottom */
   background: rgba(255, 255, 255, 0.4); /* More transparent background */
@@ -181,9 +178,4 @@ button:hover {
   button {
     font-size: 14px;
   }
- 
 }
-/* .addProduct{
-  background: linear-gradient(135deg, brown, black);
-  color: white;
-} */

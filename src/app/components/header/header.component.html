@@ -4,17 +4,14 @@
     <img src="./assets/RentLogo.jpg" alt="Company Logo" class="company-logo" />
   </div>
 
- 
-
   <!-- Spacer -->
   <span class="spacer"></span>
 
   <!-- Right Section: Icons -->
   <div class="icon-section">
-
     <button *ngIf="!isAddNewProduct" mat-raised-button color="accent" aria-label="Rent It" class="blink" (click)="openAddProductDialog()">	
       <mat-icon>add</mat-icon>
-      Rent Your Clothes
+      <span class="rent-text">Rent Your Clothes</span>
     </button>
     
     <button mat-icon-button aria-label="Language" matTooltip="{{countryCode}}" (click)="openLanguageDialog()"> 

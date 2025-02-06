@@ -12,8 +12,8 @@
         </div>
         <div class="product-details-columns">
             <div class="product-details-column">
-                <!-- <h3 class="product-name">Product Name: {{getProductDetails()?.name}}</h3> -->
                 <p class="product-description">{{getProductDetails()?.description}}</p>
+                <p class="product-category">{{getProductDetails()?.category}}</p>
             </div>
             <div class="product-details-column">
                 <p class="product-price">Price: ${{getProductDetails()?.Rent}}</p>
@@ -26,5 +26,3 @@
         <button class="add-to-cart-btn" (click)="addToCart()">{{isAddNewProduct ? 'Confirm' : 'Add to Cart'}}</button>
     </div>
 </div>
-
-<!-- <app-alert-msgs *ngIf="this" [message]="alertMsg"></app-alert-msgs> -->

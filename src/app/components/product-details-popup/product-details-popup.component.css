@@ -1,5 +1,6 @@
 .product-details-popup {
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -19,6 +20,11 @@
 .popup-header h2 {
     margin: 0;
     font-size: 18px;
+    word-wrap: break-word;
+    max-width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .close-btn {
@@ -37,7 +43,6 @@
     width: 100%;
     height: auto;
     max-height: 200px;
-    /* border-radius: 10px; */
     border-bottom-left-radius: 13px;
     border-bottom-right-radius: 13px;
 }
@@ -88,6 +93,23 @@
 .product-description {
     font-size: 16px;
     color: #555;
+    word-wrap: break-word;
+    max-height: 100px;
+    overflow-y: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.product-category {
+    font-size: 16px;
+    color: #555;
+    word-wrap: break-word;
+    max-height: 50px;
+    overflow-y: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .product-valid-until {
@@ -130,15 +152,23 @@
 
 .product-details-columns {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     margin-top: 20px;
 }
 
 .product-details-column {
     flex: 1;
     padding: 0 10px;
+    margin-bottom: 10px;
 }
 
-.product-details-column:first-child {
-    border-right: 1px solid #ddd;
+@media (min-width: 600px) {
+    .product-details-columns {
+        flex-direction: row;
+    }
+
+    .product-details-column:first-child {
+        border-right: 1px solid #ddd;
+        margin-bottom: 0;
+    }
 }
