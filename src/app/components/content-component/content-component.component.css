@@ -4,6 +4,10 @@
   border-radius: 0 0 40px 40px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   background: linear-gradient(135deg, brown, black);
+  /* position: fixed;
+  top: 60px; 
+  width: 100%;
+  z-index: 1000; */
 }
 
 .search-section .search-bar .mat-mdc-form-field {
@@ -81,6 +85,7 @@
   display: flex;
   gap: 20px;
   padding: 10px;
+  margin-top: 140px; /* Adjust this value based on the combined height of your header and search section */
 }
 
 .categories {
