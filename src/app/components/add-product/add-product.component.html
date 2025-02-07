@@ -1,4 +1,3 @@
-
 <div class="product-container-top">
   <div class="add-product-container">
     <h2>Add New Product</h2>
@@ -7,6 +6,9 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Product Name</mat-label>
           <input matInput placeholder="Exp:- Bridal's Lehnga, Groom's Sherwani" formControlName="name" required>
+          <mat-error *ngIf="productForm.get('name')?.hasError('required')">Product Name is required</mat-error>
+          <mat-error *ngIf="productForm.get('name')?.hasError('maxLength')">Product Name cannot exceed 10 characters</mat-error>
+          <mat-error *ngIf="productForm.get('name')?.hasError('numeric')">Product Name cannot be numeric</mat-error>
         </mat-form-field>
       </div>
 
@@ -14,11 +16,13 @@
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Rent</mat-label>
           <input matInput type="number" placeholder="Enter rent amount" formControlName="rent" required>
+          <mat-error *ngIf="productForm.get('rent')?.hasError('required')">Rent is required</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Quantity</mat-label>
           <input matInput type="number" placeholder="Enter quantity" formControlName="quantity" required>
+          <mat-error *ngIf="productForm.get('quantity')?.hasError('required')">Quantity is required</mat-error>
         </mat-form-field>
       </div>
 
@@ -26,18 +30,28 @@
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Valid Until</mat-label>
           <input matInput type="date" placeholder="Enter valid until date" formControlName="valid_until" required>
+          <mat-error *ngIf="productForm.get('valid_until')?.hasError('required')">Valid Until date is required</mat-error>
         </mat-form-field>
+      </div>
 
-        <!-- <mat-form-field appearance="outline" class="half-width">
-          <mat-label>Low Quantity Threshold</mat-label>
-          <input matInput type="number" placeholder="Enter low quantity threshold" formControlName="low_quantity" required>
-        </mat-form-field> -->
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Choose User Type</mat-label>
+          <mat-select formControlName="userRole" required>
+            <mat-option value="Bride">Bride</mat-option>
+            <mat-option value="Groom">Groom</mat-option>
+          </mat-select>
+          <mat-error *ngIf="productForm.get('userRole')?.hasError('required')">User Type is required</mat-error>
+        </mat-form-field>
       </div>
 
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Category</mat-label>
-          <input matInput placeholder="Ex:- Lehnga,Saree,Sherwani,suite.." formControlName="category" required>
+          <mat-select formControlName="category" required>
+            <mat-option *ngFor="let category of categories" [value]="category">{{ category }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="productForm.get('category')?.hasError('required')">Category is required</mat-error>
         </mat-form-field>
       </div>
 
@@ -45,16 +59,9 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Description</mat-label>
           <textarea matInput placeholder="Enter product description" formControlName="description" required></textarea>
-        </mat-form-field>
-      </div>
-
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Choose User Type</mat-label>
-            <mat-select formControlName="userRole" required>
-            <mat-option value="Bride">Bride</mat-option>
-            <mat-option value="Groom">Groom</mat-option>
-          </mat-select>
+          <mat-error *ngIf="productForm.get('description')?.hasError('required')">Description is required</mat-error>
+          <mat-error *ngIf="productForm.get('description')?.hasError('maxLength')">Description cannot exceed 30 characters</mat-error>
+          <mat-error *ngIf="productForm.get('description')?.hasError('inappropriate')">Description contains inappropriate words</mat-error>
         </mat-form-field>
       </div>
 
@@ -66,6 +73,7 @@
         <div *ngIf="selectedImages.length" class="image-preview">
           <img *ngFor="let image of selectedImages" [src]="image" alt="Selected Image">
         </div>
+        <mat-error *ngIf="selectedImages.length < 3">At least 3 images are required</mat-error>
       </div>
 
       <button mat-raised-button color="primary" type="submit" [disabled]="!productForm.valid || selectedImages.length < 3">Add Product</button>
