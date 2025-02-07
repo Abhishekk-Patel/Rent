@@ -1,5 +1,5 @@
 <div class="modal">
-  <div class="modal-content" *ngIf="!showRentOptions">
+  <div class="modal-content" *ngIf="!showRentOptions && !showLogin && !showSignUp">
     <div class="card rent" (click)="navigateToRent()">
       <img src="./assets/RentLogo.jpg" alt="Rent">
       <p>Rent</p>
@@ -8,6 +8,11 @@
     <div class="card sell" (click)="navigateToSell()">
       <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI1m0tsDlTqxr3knGTCXiC5D0IrSHh8xqA4w&s" alt="Sell">
       <p>Sell</p>
+    </div>
+    <div class="divider"></div>
+    <div class="card login" (click)="toggleLogin()">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEJQojzcGqO6y17GCiXa5T-Zv0V3FXkzUQNdfzWAn1-lTSzBCQV_1mWgxgsRi0k2lQICs&usqp=CAU" alt="Login">
+      <p>Login/Sign Up</p>
     </div>
   </div>
   <div class="modal-content" *ngIf="showRentOptions">
@@ -21,6 +26,33 @@
       <p>Bride</p>
     </div>
     <div class="back-arrow" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </div>
+  </div>
+  <div class="modal-content" *ngIf="showLogin">
+    <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
+      <h2>Login</h2>
+      <input type="text" formControlName="username" placeholder="Username" class="login-input">
+      <input type="password" formControlName="password" placeholder="Password" class="login-input">
+      <button type="submit" class="login-btn" [disabled]="loginForm.invalid">Login</button>
+      <p>Don't have an account? <a (click)="toggleSignUp()">Sign Up</a></p>
+    </form>
+    <div class="back-arrow" (click)="toggleLogin()">
+      <mat-icon>arrow_back</mat-icon>
+    </div>
+  </div>
+  <div class="modal-content" *ngIf="showSignUp">
+    <form [formGroup]="signUpForm" (ngSubmit)="signUp()" class="signup-form">
+      <h2>Sign Up</h2>
+      <input type="text" formControlName="username" placeholder="Username" class="signup-input">
+      <input type="email" formControlName="email" placeholder="Email" class="signup-input">
+      <input type="text" formControlName="mobileNumber" placeholder="Mobile Number" class="signup-input">
+      <input type="password" formControlName="password" placeholder="Password" class="signup-input">
+      <input type="password" formControlName="confirmPassword" placeholder="Confirm Password" class="signup-input">
+      <button type="submit" class="signup-btn" [disabled]="signUpForm.invalid">Sign Up</button>
+      <p>Already have an account? <a (click)="toggleLogin()">Login</a></p>
+    </form>
+    <div class="back-arrow" (click)="toggleSignUp()">
       <mat-icon>arrow_back</mat-icon>
     </div>
   </div>
