@@ -20,9 +20,9 @@
 .modal-content {
   display: flex;
   background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white background for glassy effect */
-  padding: 65px;
+  padding: 40px;
   border-radius: 12px;
-  width: 30%;
+  width: 40%;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Box shadow with black color */
   backdrop-filter: blur(20px); /* Blur effect for the glassy background */
   -webkit-backdrop-filter: blur(20px); /* For Safari support */
@@ -101,15 +101,34 @@
 
 .login-input, .signup-input {
   width: 100%;
-  padding: 10px;
   margin: 10px 0;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
+}
+
+.half-width {
+  width: 48%;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: white;
+  border-color: white !important;
+}
+
+::ng-deep .mat-form-field-label {
+  color: white !important;
+}
+
+::ng-deep .mat-input-element::placeholder {
+  color: white !important;
+}
+
+::ng-deep .mat-form-field-outline-start, 
+::ng-deep .mat-form-field-outline-end {
+  border-color: white !important;
 }
 
 .password-container {
-  position: relative;
+  display: flex;
+  justify-content: space-between;
   width: 100%;
 }
 
@@ -158,5 +177,29 @@
   font-size: 16px;
   margin-top: -12px;
   margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .login-input, .signup-input {
+    margin: 5px 0;
+  }
+
+  .login-btn, .signup-btn {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .password-container {
+    flex-direction: column;
+  }
+
+  .half-width {
+    width: 100%;
+  }
 }
 /* ...existing code... */

@@ -2,68 +2,77 @@
   <div class="modal-content" *ngIf="showLogin">
     <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
       <h2>Login</h2>
-      <input type="text" formControlName="username" placeholder="Username" class="login-input">
-      <div
-        *ngIf="loginFormControl['username'].invalid && (loginFormControl['username'].dirty || loginFormControl['username'].touched)"
-        class="error">
-        <small *ngIf="loginFormControl['username'].errors?.['required']">Username is required.</small>
-      </div>
-      <div class="password-container">
-        <input [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Password" class="login-input">
-        <mat-icon class="eye-icon" (click)="togglePasswordVisibility()">{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-      </div>
-      <div
-        *ngIf="loginFormControl['password'].invalid && (loginFormControl['password'].dirty || loginFormControl['password'].touched)"
-        class="error">
-        <small *ngIf="loginFormControl['password'].errors?.['required']">Password is required.</small>
-      </div>
-      <button type="submit" class="login-btn" [disabled]="loginForm.invalid">Login</button>
+      <mat-form-field class="login-input" appearance="outline">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" placeholder="Username">
+        <mat-error *ngIf="loginFormControl['username'].invalid && (loginFormControl['username'].dirty || loginFormControl['username'].touched)">
+          <small *ngIf="loginFormControl['username'].errors?.['required']">Username is required.</small>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="login-input" appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Password">
+        <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginFormControl['password'].invalid && (loginFormControl['password'].dirty || loginFormControl['password'].touched)">
+          <small *ngIf="loginFormControl['password'].errors?.['required']">Password is required.</small>
+        </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" class="login-btn" [disabled]="loginForm.invalid">Login</button>
       <p>Don't have an account? <a (click)="toggleSignUp()">Sign Up</a></p>
     </form>
   </div>
   <div class="modal-content" *ngIf="showSignUp">
     <form [formGroup]="signUpForm" (ngSubmit)="signUp()" class="signup-form">
       <h2>Sign Up</h2>
-      <input type="text" formControlName="username" placeholder="Username" class="signup-input">
-      <div
-        *ngIf="signUpFormControl['username'].invalid && (signUpFormControl['username'].dirty || signUpFormControl['username'].touched)"
-        class="error">
-        <small *ngIf="signUpFormControl['username'].errors?.['required']">Username is required.</small>
-      </div>
-      <input type="email" formControlName="email" placeholder="Email" class="signup-input">
-      <div
-        *ngIf="signUpFormControl['email'].invalid && (signUpFormControl['email'].dirty || signUpFormControl['email'].touched)"
-        class="error">
-        <small *ngIf="signUpFormControl['email'].errors?.['required']">Email is required.</small>
-        <small *ngIf="signUpFormControl['email'].errors?.['email']">Invalid email address.</small>
-      </div>
-      <input type="text" formControlName="mobileNumber" placeholder="Mobile Number" class="signup-input">
-      <div
-        *ngIf="signUpFormControl['mobileNumber'].invalid && (signUpFormControl['mobileNumber'].dirty || signUpFormControl['mobileNumber'].touched)"
-        class="error">
-        <small *ngIf="signUpFormControl['mobileNumber'].errors?.['required']">Mobile number is required.</small>
-        <small *ngIf="signUpFormControl['mobileNumber'].errors?.['pattern']">Invalid mobile number.</small>
-      </div>
+      <mat-form-field class="signup-input" appearance="outline">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" placeholder="Username">
+        <mat-error *ngIf="signUpFormControl['username'].invalid && (signUpFormControl['username'].dirty || signUpFormControl['username'].touched)">
+          <small *ngIf="signUpFormControl['username'].errors?.['required']">Username is required.</small>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="signup-input" appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" placeholder="Email">
+        <mat-error *ngIf="signUpFormControl['email'].invalid && (signUpFormControl['email'].dirty || signUpFormControl['email'].touched)">
+          <small *ngIf="signUpFormControl['email'].errors?.['required']">Email is required.</small>
+          <small *ngIf="signUpFormControl['email'].errors?.['email']">Invalid email address.</small>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="signup-input" appearance="outline">
+        <mat-label>Mobile Number</mat-label>
+        <input matInput formControlName="mobileNumber" placeholder="Mobile Number">
+        <mat-error *ngIf="signUpFormControl['mobileNumber'].invalid && (signUpFormControl['mobileNumber'].dirty || signUpFormControl['mobileNumber'].touched)">
+          <small *ngIf="signUpFormControl['mobileNumber'].errors?.['required']">Mobile number is required.</small>
+          <small *ngIf="signUpFormControl['mobileNumber'].errors?.['pattern']">Invalid mobile number.</small>
+        </mat-error>
+      </mat-form-field>
       <div class="password-container">
-        <input [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Password" class="signup-input">
-        <mat-icon class="eye-icon" (click)="togglePasswordVisibility()">{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        <mat-form-field class="signup-input half-width" appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Password">
+          <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="signUpFormControl['password'].invalid && (signUpFormControl['password'].dirty || signUpFormControl['password'].touched)">
+            <small *ngIf="signUpFormControl['password'].errors?.['required']">Password is required.</small>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="signup-input half-width" appearance="outline">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword" placeholder="Confirm Password">
+          <button mat-icon-button matSuffix (click)="toggleConfirmPasswordVisibility()" type="button">
+            <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          <mat-error *ngIf="signUpFormControl['confirmPassword'].invalid && (signUpFormControl['confirmPassword'].dirty || signUpFormControl['confirmPassword'].touched)">
+            <small *ngIf="signUpFormControl['confirmPassword'].errors?.['required']">Confirm password is required.</small>
+            <small *ngIf="signUpFormControl['confirmPassword'].errors?.['mustMatch']">Passwords must match.</small>
+          </mat-error>
+        </mat-form-field>
       </div>
-      <div
-        *ngIf="signUpFormControl['password'].invalid && (signUpFormControl['password'].dirty || signUpFormControl['password'].touched)"
-        class="error">
-        <small *ngIf="signUpFormControl['password'].errors?.['required']">Password is required.</small>
-      </div>
-      <div class="password-container">
-        <input [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword" placeholder="Confirm Password" class="signup-input">
-        <mat-icon class="eye-icon" (click)="toggleConfirmPasswordVisibility()">{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-      </div>
-      <div
-        *ngIf="signUpFormControl['confirmPassword'].invalid && (signUpFormControl['confirmPassword'].dirty || signUpFormControl['confirmPassword'].touched)"
-        class="error">
-        <small *ngIf="signUpFormControl['confirmPassword'].errors?.['required']">Confirm password is required.</small>
-        <small *ngIf="signUpFormControl['confirmPassword'].errors?.['mustMatch']">Passwords must match.</small>
-      </div>
-      <button type="submit" class="signup-btn" [disabled]="signUpForm.invalid">Sign Up</button>
+      <button mat-raised-button color="primary" type="submit" class="signup-btn" [disabled]="signUpForm.invalid">Sign Up</button>
       <p>Already have an account? <a (click)="toggleLogin()">Login</a></p>
     </form>
   </div>
