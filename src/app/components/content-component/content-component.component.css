@@ -1,8 +1,9 @@
 .search-section {
   margin-bottom: 16px;
   padding: 16px;
-  border-radius: 8px;
+  border-radius: 0 0 40px 40px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, brown, black);
 }
 
 .search-section .search-bar .mat-mdc-form-field {
@@ -13,6 +14,35 @@
   text-align: left;
 }
 
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  outline: none;
+}
+
+.search-btn {
+  background: #FFD700;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.search-btn:hover {
+  background: #FFC107;
+  transform: scale(1.05);
+}
+
 .search-section h2 {
   margin: 0 0 16px;
   font-size: 20px;
@@ -20,6 +50,7 @@
 }
 
 .filters {
+  margin-top: 10px;
 }
 
 .filters span {

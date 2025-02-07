@@ -1,5 +1,4 @@
 
-
 .footer {
   /* background-image: url('https://mobirise.com/extensions/weddingamp/wedding/assets/images/background2.jpg');
 background-repeat: no-repeat;
@@ -11,7 +10,7 @@ background-position: center; */
   padding: 20px;
   background: linear-gradient(135deg, brown, black);
   color: #fff;
-  border-top: 5px solid #fff;
+  /* border-top: 5px solid #fff; */
   font-family: 'Arial', sans-serif;
 }
 

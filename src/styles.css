@@ -1,5 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
+*, div::before, div::after { box-sizing: border-box; }
+
+
+
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; 
 /* background-image: url('https://img.freepik.com/free-vector/smooth-golden-wave-background_23-2148810350.jpg?t=st=1738482009~exp=1738485609~hmac=e2409dba7802e447d01e1f731b4d9e55a955dfd81a1e75d81b437beb3bda762d&w=740');
