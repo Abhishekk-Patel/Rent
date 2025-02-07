@@ -1,6 +1,6 @@
 <div class="product-container-top">
   <div class="add-product-container">
-    <h2>Add New Product</h2>
+    <h2>Add Your Rental Item</h2>
     <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
@@ -9,6 +9,29 @@
           <mat-error *ngIf="productForm.get('name')?.hasError('required')">Product Name is required</mat-error>
           <mat-error *ngIf="productForm.get('name')?.hasError('maxLength')">Product Name cannot exceed 10 characters</mat-error>
           <mat-error *ngIf="productForm.get('name')?.hasError('numeric')">Product Name cannot be numeric</mat-error>
+          <mat-error *ngIf="productForm.get('name')?.hasError('inappropriate')">Name contains inappropriate words</mat-error>
+        
+        </mat-form-field>
+      </div>
+  
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Choose User Type</mat-label>
+          <mat-select formControlName="userRole" required>
+            <mat-option value="Bride">Bride</mat-option>
+            <mat-option value="Groom">Groom</mat-option>
+          </mat-select>
+          <mat-error *ngIf="productForm.get('userRole')?.hasError('required')">User Type is required</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row" [ngClass]="{'hidden': !productForm.get('userRole')?.value}">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Category</mat-label>
+          <mat-select formControlName="category" required>
+            <mat-option *ngFor="let category of categories" [value]="category">{{ category }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="productForm.get('category')?.hasError('required')">Category is required</mat-error>
         </mat-form-field>
       </div>
 
@@ -34,27 +57,7 @@
         </mat-form-field>
       </div>
 
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Choose User Type</mat-label>
-          <mat-select formControlName="userRole" required>
-            <mat-option value="Bride">Bride</mat-option>
-            <mat-option value="Groom">Groom</mat-option>
-          </mat-select>
-          <mat-error *ngIf="productForm.get('userRole')?.hasError('required')">User Type is required</mat-error>
-        </mat-form-field>
-      </div>
-
-      <div class="form-row">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Category</mat-label>
-          <mat-select formControlName="category" required>
-            <mat-option *ngFor="let category of categories" [value]="category">{{ category }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="productForm.get('category')?.hasError('required')">Category is required</mat-error>
-        </mat-form-field>
-      </div>
-
+     
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Description</mat-label>

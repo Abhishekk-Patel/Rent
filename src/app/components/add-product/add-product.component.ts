@@ -58,6 +58,7 @@ export class AddProductComponent implements OnInit {
           Validators.required,
           Validators.maxLength(10),
           this.nonNumericValidator,
+          this.inappropriateWordsValidator
         ],
       ],
       rent: ['', Validators.required],
