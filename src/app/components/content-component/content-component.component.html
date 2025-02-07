@@ -91,4 +91,7 @@
     (sort)="sortRewards($event)" (filterByPrice)="applyPriceFilter($event)" (filterByLocation)="applyLocationFilter($event)"></app-sort-panel>
 
   <app-alert-msgs *ngIf="!filteredRewards.length" [message]="alertMsg"></app-alert-msgs>
+  <button class="scroll-to-top-btn" [class.show]="showScrollToTop" (click)="scrollToTop()">
+    <mat-icon>arrow_upward</mat-icon>
+  </button>
 </section>

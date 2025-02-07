@@ -478,3 +478,28 @@
     margin-top: 10px;
   }
 }
+
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: brown;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s, transform 0.3s;
+  opacity: 0;
+  transform: translateY(100px);
+}
+
+.scroll-to-top-btn.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-to-top-btn:hover {
+  background-color: #333;
+}

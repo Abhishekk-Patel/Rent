@@ -4,6 +4,7 @@ import {
   ViewChild,
   AfterViewInit,
   OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { debounceTime, fromEvent } from 'rxjs';
@@ -15,7 +16,7 @@ import { Category_LIST, REWARD_LIST } from 'src/mock-data';
   templateUrl: './content-component.component.html',
   styleUrls: ['./content-component.component.css'],
 })
-export class ContentComponentComponent implements OnInit, AfterViewInit {
+export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestroy {
   alertMsg: string = 'Opps! No match found';
   public totalPages: any;
   rewards = REWARD_LIST;
@@ -26,6 +27,7 @@ export class ContentComponentComponent implements OnInit, AfterViewInit {
   @ViewChild('searchInput', { static: true }) searchInput!: ElementRef;
   isLoading: boolean = false;
   userRole: string = 'Bride';
+  showScrollToTop: boolean = false;
 
   constructor(
     public mycartService: MyCartServiceService,
@@ -59,6 +61,8 @@ export class ContentComponentComponent implements OnInit, AfterViewInit {
     this.filterRewardsByCategory('All');
     this.rewards.forEach((reward) => (reward.currentImageIndex = 0));
     this.isLoading = false;
+
+    window.addEventListener('scroll', this.onScroll.bind(this));
   }
 
   ngAfterViewInit() {
@@ -69,6 +73,18 @@ export class ContentComponentComponent implements OnInit, AfterViewInit {
         this.searchValue = searchValue;
         this.filterRewardsByCategory(searchValue || 'All');
       });
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('scroll', this.onScroll.bind(this));
+  }
+
+  onScroll() {
+    this.showScrollToTop = window.scrollY > 300;
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   getExpandedCategory() {
