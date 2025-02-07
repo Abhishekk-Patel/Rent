@@ -8,7 +8,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('src\assets\HomeBg.jpg') no-repeat center center/cover;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('src/assets/HomeBg.jpg') no-repeat center center/cover;
   animation: fadeIn 0.5s ease-in-out;
 }
 
@@ -21,13 +21,14 @@
   display: flex;
   background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white background for glassy effect */
   padding: 65px;
-  border-radius: 10px;
+  border-radius: 12px;
   width: 30%;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow with black color */
-  backdrop-filter: blur(10px); /* Blur effect for the glassy background */
-  -webkit-backdrop-filter: blur(10px); /* For Safari support */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Box shadow with black color */
+  backdrop-filter: blur(20px); /* Blur effect for the glassy background */
+  -webkit-backdrop-filter: blur(20px); /* For Safari support */
   animation: slideIn 0.5s ease-in-out;
   position: relative;
+  border: 2px solid brown;
 }
 
 @keyframes slideIn {
@@ -48,7 +49,7 @@
 
 .back-arrow:hover {
   transform: scale(1.2);
-  color: #ffcc00; /* Change color on hover */
+  color: brown; /* Change color on hover */
 }
 
 .back-arrow img {
@@ -99,7 +100,7 @@
 }
 
 .login-input, .signup-input {
-  width: 80%;
+  width: 100%;
   padding: 10px;
   margin: 10px 0;
   border: none;
@@ -107,9 +108,23 @@
   font-size: 16px;
 }
 
+.password-container {
+  position: relative;
+  width: 100%;
+}
+
+.eye-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: brown;
+}
+
 .login-btn, .signup-btn {
-  background-color: #ffcc00;
-  color: black;
+  background-color: brown;
+  color: white;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -129,12 +144,19 @@
 }
 
 .login-form a, .signup-form a {
-  color: #ffcc00;
+  color: #e6b800;
   cursor: pointer;
   text-decoration: underline;
 }
 
 .login-form a:hover, .signup-form a:hover {
   color: #e6b800;
+}
+
+.error {
+  color: red;
+  font-size: 16px;
+  margin-top: -12px;
+  margin-bottom: 10px;
 }
 /* ...existing code... */
