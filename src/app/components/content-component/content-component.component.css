@@ -27,6 +27,7 @@
   border-radius: 20px;
   font-size: 16px;
   outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .search-btn {
@@ -36,6 +37,7 @@
   border-radius: 20px;
   cursor: pointer;
   transition: background 0.3s, transform 0.2s;
+  color: white;
 }
 
 .search-btn:hover {
@@ -243,16 +245,17 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 10px;
 }
 
 .nav-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0.5);
   border: none;
   color: white;
-  padding: 10px;
+  padding: 5px;
   cursor: pointer;
   border-radius: 50%;
   z-index: 1;
@@ -268,19 +271,19 @@
 }
 
 .nav-btn:hover {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 .add-to-fav-btn {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0.5);
   border-radius: 50%;
   padding: 5px;
   cursor: pointer;
   text-decoration: none;
-  color: inherit;
+  color: white;
   transition: background-color 0.3s ease;
 }
 
@@ -303,8 +306,70 @@
   padding: 10px;
   background: white;
   box-shadow: 0px 2px 20px rgba(0, 0, 0, 0.1);
-  text-align: justify;
+  text-align: center;
   position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.reward-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.reward-details {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.reward-details h2 {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.reward-details .rent {
+  font-size: 16px;
+  color: #ff7e5f;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.reward-details .city {
+  font-size: 14px;
+  color: #999;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.city {
+  position: absolute;
+  top: 11px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.high-demand {
+  color: orange;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.valid-date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .out-of-stock-blur img,
@@ -322,22 +387,6 @@
   font-weight: bold;
   position: static;
   z-index: 1;
-}
-
-.reward-card img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-bottom-left-radius: 13px;
-  border-bottom-right-radius: 13px;
-}
-
-.out-of-stock {
-  color: red;
-}
-
-.high-demand {
-  color: orange;
 }
 
 .pagination {
@@ -371,6 +420,11 @@
   cursor: pointer;
   border-radius: 5px;
   font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.reward-card-footer .order-now-btn:hover {
+  background-color: black;
 }
 
 .reward-card-footer .add-to-cart-btn {

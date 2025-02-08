@@ -57,20 +57,22 @@
         <div *ngFor="let reward of filteredRewards" class="reward-card">
           <div class="reward-card-content" [ngClass]="{'out-of-stock-blur': reward.quantity === 0}">
             <div class="image-container">
-              <button class="nav-btn left" (click)="prevImage(reward)"><mat-icon>chevron_left</mat-icon></button>
+              <button class="nav-btn left small-btn" (click)="prevImage(reward)"><mat-icon>chevron_left</mat-icon></button>
               <img [src]="reward.display_img_urls[reward.currentImageIndex] || 'assets/placeholder.png'" alt="{{ reward.name }}">
-              <button class="nav-btn right" (click)="nextImage(reward)"><mat-icon>chevron_right</mat-icon></button>
+              <button class="nav-btn right small-btn" (click)="nextImage(reward)"><mat-icon>chevron_right</mat-icon></button>
               <a class="add-to-fav-btn"><mat-icon>favorite_border</mat-icon></a>
+              <p class="city small-city"><mat-icon>location_on</mat-icon> {{reward.city}}</p>
             </div>
-            <h2>{{ reward.name }}</h2>
-            <p>{{ reward.Rent }} Rent</p>
-            <p>{{reward.city}}</p>
-            <p *ngIf="reward.quantity && reward.quantity <= reward.low_quantity" class="high-demand">
-              ON High Demand (Only {{ reward.quantity }} left)
-            </p>
-            <p *ngIf="isValidUntilWithin7Days(reward.valid_until)" class="valid-date">
-              <span> Valid Until:</span> {{ reward.valid_until | date:'shortDate' }}
-            </p>
+            <div class="reward-details">
+              <h2>{{ reward.name }}</h2>
+              <p class="rent">Rent: {{ reward.Rent | currency:'INR'}}/day </p>
+              <p *ngIf="reward.quantity && reward.quantity <= reward.low_quantity" class="high-demand">
+                <mat-icon>warning</mat-icon> ON High Demand (Only {{ reward.quantity }} left)
+              </p>
+              <p *ngIf="isValidUntilWithin7Days(reward.valid_until)" class="valid-date">
+                <mat-icon>event</mat-icon> <span> Valid Until:</span> {{ reward.valid_until | date:'shortDate' }}
+              </p>
+            </div>
           </div>
           <p *ngIf="reward.quantity === 0" class="out-of-stock">Out of Stock</p>
           <div class="reward-card-footer">
