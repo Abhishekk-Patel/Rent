@@ -59,7 +59,7 @@ export class AddProductComponent implements OnInit {
     }
     const today = new Date().toISOString().split('T')[0];
     this.productForm = this.fb.group({
-      name: [
+      ProductName: [
         '',
         [
           Validators.required,
@@ -68,12 +68,12 @@ export class AddProductComponent implements OnInit {
           this.inappropriateWordsValidator
         ],
       ],
-      rent: ['', Validators.required],
+      ProductRent: ['', Validators.required],
       quantity: [1, Validators.required],
       valid_until: [today, Validators.required],
       category: ['', Validators.required],
      
-      description: [
+      ProductDescription: [
         '',
         [
           Validators.required,

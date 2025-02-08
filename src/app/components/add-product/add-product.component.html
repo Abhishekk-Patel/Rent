@@ -6,11 +6,11 @@
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Product Name</mat-label>
-          <input matInput placeholder="Exp:- Bridal's Lehnga, Groom's Sherwani" formControlName="name" required>
-          <mat-error *ngIf="productForm.get('name')?.hasError('required')">Product Name is required</mat-error>
-          <mat-error *ngIf="productForm.get('name')?.hasError('maxLength')">Product Name cannot exceed 10 characters</mat-error>
-          <mat-error *ngIf="productForm.get('name')?.hasError('numeric')">Product Name cannot be numeric</mat-error>
-          <mat-error *ngIf="productForm.get('name')?.hasError('inappropriate')">Name contains inappropriate words</mat-error>
+          <input matInput placeholder="Exp:- Bridal's Lehnga, Groom's Sherwani" formControlName="ProductName" required>
+          <mat-error *ngIf="productForm.get('ProductName')?.hasError('required')">Product Name is required</mat-error>
+          <mat-error *ngIf="productForm.get('ProductName')?.hasError('maxLength')">Product Name cannot exceed 10 characters</mat-error>
+          <mat-error *ngIf="productForm.get('ProductName')?.hasError('numeric')">Product Name cannot be numeric</mat-error>
+          <mat-error *ngIf="productForm.get('ProductName')?.hasError('inappropriate')">Name contains inappropriate words</mat-error>
         
         </mat-form-field>
       </div>
@@ -39,8 +39,8 @@
       <div class="form-row">
         <mat-form-field appearance="outline" class="half-width">
           <mat-label>Rent</mat-label>
-          <input matInput type="number" placeholder="Enter rent amount" formControlName="rent" required>
-          <mat-error *ngIf="productForm.get('rent')?.hasError('required')">Rent is required</mat-error>
+          <input matInput type="number" placeholder="Enter rent amount" formControlName="ProductRent" required>
+          <mat-error *ngIf="productForm.get('ProductRent')?.hasError('required')">Rent is required</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="half-width">
@@ -62,10 +62,10 @@
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Description</mat-label>
-          <textarea matInput placeholder="Enter product description" formControlName="description" required></textarea>
-          <mat-error *ngIf="productForm.get('description')?.hasError('required')">Description is required</mat-error>
-          <mat-error *ngIf="productForm.get('description')?.hasError('maxLength')">Description cannot exceed 30 characters</mat-error>
-          <mat-error *ngIf="productForm.get('description')?.hasError('inappropriate')">Description contains inappropriate words</mat-error>
+          <textarea matInput placeholder="Enter product description" formControlName="ProductDescription" required></textarea>
+          <mat-error *ngIf="productForm.get('ProductDescription')?.hasError('required')">Description is required</mat-error>
+          <mat-error *ngIf="productForm.get('ProductDescription')?.hasError('maxLength')">Description cannot exceed 30 characters</mat-error>
+          <mat-error *ngIf="productForm.get('ProductDescription')?.hasError('inappropriate')">Description contains inappropriate words</mat-error>
         </mat-form-field>
       </div>
 
