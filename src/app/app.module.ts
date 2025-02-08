@@ -35,6 +35,7 @@ import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { AddProductComponent } from './components/add-product/add-product.component';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MyAccountComponent } from './components/my-account/my-account.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     ProductDetailsPopupComponent,
     HomeComponent,
     AddProductComponent,
+    MyAccountComponent,
   ],
   imports: [
     BrowserModule,
