@@ -64,6 +64,7 @@
             </div>
             <h2>{{ reward.name }}</h2>
             <p>{{ reward.Rent }} Rent</p>
+            <p>{{reward.city}}</p>
             <p *ngIf="reward.quantity && reward.quantity <= reward.low_quantity" class="high-demand">
               ON High Demand (Only {{ reward.quantity }} left)
             </p>
@@ -73,20 +74,14 @@
           </div>
           <p *ngIf="reward.quantity === 0" class="out-of-stock">Out of Stock</p>
           <div class="reward-card-footer">
-            <button class="order-now-btn" (click)="productDetails(reward.pk)">Know More</button>
-            <a class="add-to-cart-btn" (click)="addToCart(reward.pk)"><mat-icon>add_shopping_cart</mat-icon></a>
+            <button class="order-now-btn" [disabled]="reward.quantity === 0" (click)="productDetails(reward.pk)">Know More</button>
+            <button class="add-to-cart-btn" [disabled]="reward.quantity === 0" (click)="addToCart(reward.pk)"><mat-icon>add_shopping_cart</mat-icon></button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <mat-paginator *ngIf="filteredRewards.length>5" [length]="filteredRewards.length"
-    [pageSize]="5"
-    [pageSizeOptions]="[5, 10, 25, 100]"
-    (page)="onPageChange($event)"
-    aria-label="Select page">
-  </mat-paginator>
   <app-sort-panel (mouseleave)="closePanel()" *ngIf="isSortPanelOpen" (close)="closeSortPanel()"
     (sort)="sortRewards($event)" (filterByPrice)="applyPriceFilter($event)" (filterByLocation)="applyLocationFilter($event)"></app-sort-panel>
 

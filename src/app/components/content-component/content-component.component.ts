@@ -7,7 +7,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { debounceTime, fromEvent } from 'rxjs';
+import { debounceTime, fromEvent, Subscription } from 'rxjs';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { Category_LIST, REWARD_LIST } from 'src/mock-data';
 
@@ -28,6 +28,10 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   isLoading: boolean = false;
   userRole: string = 'Bride';
   showScrollToTop: boolean = false;
+  private scrollSubscription!: Subscription;
+  private pageSize: number = 10;
+  private currentPage: number = 1;
+  private loadingTimeout: any;
 
   constructor(
     public mycartService: MyCartServiceService,
@@ -63,6 +67,7 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     this.isLoading = false;
 
     window.addEventListener('scroll', this.onScroll.bind(this));
+    this.loadMoreRewards();
   }
 
   ngAfterViewInit() {
@@ -73,10 +78,25 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
         this.searchValue = searchValue;
         this.filterRewardsByCategory(searchValue || 'All');
       });
+
+    this.scrollSubscription = fromEvent(window, 'scroll')
+      .pipe(debounceTime(300))
+      .subscribe(() => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+          this.showLoadingSpinner();
+          this.loadMoreRewards();
+        }
+      });
   }
 
   ngOnDestroy() {
     window.removeEventListener('scroll', this.onScroll.bind(this));
+    if (this.scrollSubscription) {
+      this.scrollSubscription.unsubscribe();
+    }
+    if (this.loadingTimeout) {
+      clearTimeout(this.loadingTimeout);
+    }
   }
 
   onScroll() {
@@ -98,15 +118,36 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   search(): void {
-    const searchValue = this.searchInput.nativeElement.value.trim();
+    const searchValue = this.searchInput.nativeElement.value.trim().toLowerCase();
     this.searchValue = searchValue;
-    this.filterRewardsByCategory(searchValue || 'All');
+    const matchedRewards = this.rewards.filter((reward) => {
+      return (
+        reward.category.toLocaleLowerCase().includes(searchValue) ||
+        reward.name.toLocaleLowerCase().includes(searchValue) ||
+        reward.city.toLocaleLowerCase().includes(searchValue)
+      );
+    }).filter((reward) => {
+      return reward.userRole === this.userRole || reward.userRole === 'Both';
+    });
+
+    if (matchedRewards.length > 0) {
+      this.filteredRewards = matchedRewards.slice(0, this.pageSize);
+      this.totalPages = Math.ceil(matchedRewards.length / this.pageSize);
+    } else {
+      this.filteredRewards = [];
+      this.alertMsg = 'Opps! No match found';
+    }
+    this.currentPage = 1;
   }
 
   clear() {
     this.searchValue = '';
     this.searchInput.nativeElement.value = '';
-    this.filterRewardsByCategory('All');
+    this.filteredRewards = this.rewards.filter((reward) => {
+      return reward.userRole === this.userRole || reward.userRole === 'Both';
+    }).slice(0, this.pageSize);
+    this.currentPage = 1;
+    this.totalPages = Math.ceil(this.filteredRewards.length / this.pageSize);
   }
 
   onPanelChange() {
@@ -118,17 +159,30 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
 
   filterRewardsByCategory(categoryName: string) {
     if (categoryName === 'All') {
-      this.filteredRewards = this.rewards;
+      this.filteredRewards = this.rewards.filter((reward) => {
+        return reward.userRole === this.userRole || reward.userRole === 'Both';
+      }).slice(0, this.pageSize);
     } else {
       const lowerCategoryName = categoryName.toLocaleLowerCase();
-      this.filteredRewards = this.rewards.filter((reward) => {
+      const matchedRewards = this.rewards.filter((reward) => {
         return (
           reward.category.toLocaleLowerCase().includes(lowerCategoryName) ||
           reward.name.toLocaleLowerCase().includes(lowerCategoryName) ||
           reward.city.toLocaleLowerCase().includes(lowerCategoryName)
         );
+      }).filter((reward) => {
+        return reward.userRole === this.userRole || reward.userRole === 'Both';
       });
+
+      if (matchedRewards.length > 0) {
+        this.filteredRewards = matchedRewards.slice(0, this.pageSize);
+        this.totalPages = Math.ceil(matchedRewards.length / this.pageSize);
+      } else {
+        this.filteredRewards = [];
+        this.alertMsg = 'Opps! No match found';
+      }
     }
+    this.currentPage = 1;
   }
 
   openSortPanel() {
@@ -163,32 +217,27 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     this.mycartService.addToCart(pk);
   }
 
-  calculateTotalPages() {
-    const pageSize = 10;
-    this.totalPages = Array.from(
-      { length: Math.ceil(this.rewards.length / pageSize) },
-      (_, i) => i + 1
-    );
+  showLoadingSpinner() {
+    this.isLoading = true;
+    // this.loadingTimeout = setTimeout(() => {
+    //   this.isLoading = false;
+    // }, 2000); // Show spinner for 2 seconds
   }
 
-  onPageChange($event: any) {
-    const pageIndex = $event.pageIndex;
-    const pageSize = $event.pageSize;
-    const startIndex = pageIndex * pageSize;
-    const endIndex = startIndex + pageSize;
-
-    if (this.searchValue) {
-      const searchValue = this.searchValue.toLocaleLowerCase();
-      const filteredRewards = this.rewards.filter((reward) => {
-        return (
-          reward.category.toLocaleLowerCase().includes(searchValue) ||
-          reward.name.toLocaleLowerCase().includes(searchValue)
-        );
-      });
-      this.filteredRewards = filteredRewards.slice(startIndex, endIndex);
-    } else {
-      this.filteredRewards = this.rewards.slice(startIndex, endIndex);
-    }
+  loadMoreRewards() {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = this.currentPage * this.pageSize;
+    const newRewards = this.rewards.filter((reward) => {
+      return (
+        (reward.userRole === this.userRole || reward.userRole === 'Both') &&
+        (reward.category.toLocaleLowerCase().includes(this.searchValue) ||
+        reward.name.toLocaleLowerCase().includes(this.searchValue) ||
+        reward.city.toLocaleLowerCase().includes(this.searchValue))
+      );
+    }).slice(startIndex, endIndex);
+    this.filteredRewards = [...new Set([...this.filteredRewards, ...newRewards])];
+    this.currentPage++;
+    this.isLoading = false;
   }
 
   productDetails(primaryKey: number) {
@@ -215,6 +264,10 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   onUserRoleChange(event: any) {
     this.userRole = event.value;
     this.updateRewardsAndCategories();
+    this.currentPage = 1;
+    this.filteredRewards = [];
+    this.showLoadingSpinner();
+    this.loadMoreRewards();
   }
 
   updateRewardsAndCategories() {
@@ -234,6 +287,10 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
       );
     }
     this.filterRewardsByCategory('All');
+    this.currentPage = 1;
+    this.filteredRewards = [];
+    this.showLoadingSpinner();
+    this.loadMoreRewards();
   }
 
   applyPriceFilter(priceRange: { min: number, max: number }) {

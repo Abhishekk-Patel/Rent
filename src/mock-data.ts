@@ -162,8 +162,8 @@ export const REWARD_LIST = [
       'https://example.com/image3.jpg'
     ],
     currentImageIndex: 0,
-    quantity: 14,
-    valid_until: '2024-12-31T00:00:00',
+    quantity: 4,
+    valid_until: '2025-02-11T00:00:00',
     low_quantity: 10,
     category: 'Wedding Feast',
     description: 'Delicious wedding feasts delivered to your venue.',
@@ -183,7 +183,7 @@ export const REWARD_LIST = [
       'https://example.com/image3.jpg'
     ],
     currentImageIndex: 0,
-    quantity: 7,
+    quantity: 1,
     valid_until: '2025-03-30T00:00:00',
     low_quantity: 3,
     category: "Groom's Tech",
@@ -221,7 +221,7 @@ export const REWARD_LIST = [
       'https://example.com/image3.jpg'
     ],
     currentImageIndex: 0,
-    quantity: 14,
+    quantity: 0,
     valid_until: '2025-01-15T00:00:00',
     low_quantity: 10,
     category: "Bride's Fashion",
