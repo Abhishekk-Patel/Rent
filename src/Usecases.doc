@@ -1,0 +1,143 @@
+
+# Use Cases for Rent Project
+
+## 1. User Authentication
+
+### 1.1 Login
+- **Actor**: User
+- **Description**: Allows a user to log in to the application.
+- **Preconditions**: User must have a valid account.
+- **Postconditions**: User is logged in and redirected to the home page.
+- **Steps**:
+  1. User enters username and password.
+  2. User clicks on the login button.
+  3. System validates the credentials.
+  4. If valid, user is logged in and redirected to the home page.
+  5. If invalid, an error message is displayed.
+
+### 1.2 Sign Up
+- **Actor**: User
+- **Description**: Allows a new user to create an account.
+- **Preconditions**: User must provide valid information.
+- **Postconditions**: User account is created and user is logged in.
+- **Steps**:
+  1. User enters username, email, mobile number, password, and confirms password.
+  2. User clicks on the sign-up button.
+  3. System validates the information.
+  4. If valid, user account is created and user is logged in.
+  5. If invalid, an error message is displayed.
+
+## 2. Product Management
+
+### 2.1 Add Product
+- **Actor**: User
+- **Description**: Allows a user to add a new product for rent.
+- **Preconditions**: User must be logged in.
+- **Postconditions**: Product is added to the system.
+- **Steps**:
+  1. User navigates to the add product page.
+  2. User fills in product details including name, rent, quantity, valid until date, category, description, and user role.
+  3. User uploads at least 3 images of the product.
+  4. User clicks on the submit button.
+  5. System validates the information.
+  6. If valid, product is added to the system.
+  7. If invalid, an error message is displayed.
+
+### 2.2 View Product Details
+- **Actor**: User
+- **Description**: Allows a user to view details of a product.
+- **Preconditions**: Product must exist in the system.
+- **Postconditions**: Product details are displayed.
+- **Steps**:
+  1. User clicks on a product.
+  2. System displays product details including images, description, rent, and availability.
+
+## 3. Cart Management
+
+### 3.1 Add to Cart
+- **Actor**: User
+- **Description**: Allows a user to add a product to their cart.
+- **Preconditions**: User must be logged in and product must exist.
+- **Postconditions**: Product is added to the user's cart.
+- **Steps**:
+  1. User clicks on the add to cart button for a product.
+  2. System adds the product to the user's cart.
+  3. System displays a success message.
+
+### 3.2 Remove from Cart
+- **Actor**: User
+- **Description**: Allows a user to remove a product from their cart.
+- **Preconditions**: User must be logged in and product must be in the cart.
+- **Postconditions**: Product is removed from the user's cart.
+- **Steps**:
+  1. User navigates to the cart page.
+  2. User clicks on the remove button for a product.
+  3. System removes the product from the user's cart.
+  4. System displays a success message.
+
+### 3.3 View Cart
+- **Actor**: User
+- **Description**: Allows a user to view the products in their cart.
+- **Preconditions**: User must be logged in.
+- **Postconditions**: Cart details are displayed.
+- **Steps**:
+  1. User navigates to the cart page.
+  2. System displays the products in the user's cart.
+
+## 4. Order Management
+
+### 4.1 Place Order
+- **Actor**: User
+- **Description**: Allows a user to place an order for the products in their cart.
+- **Preconditions**: User must be logged in and cart must not be empty.
+- **Postconditions**: Order is placed and user is notified.
+- **Steps**:
+  1. User navigates to the cart page.
+  2. User fills in delivery details including name, address, email, mobile number, and rental period.
+  3. User selects a payment mode.
+  4. User clicks on the place order button.
+  5. System validates the information.
+  6. If valid, order is placed and user is notified.
+  7. If invalid, an error message is displayed.
+
+## 5. User Account Management
+
+### 5.1 View Account Details
+- **Actor**: User
+- **Description**: Allows a user to view their account details.
+- **Preconditions**: User must be logged in.
+- **Postconditions**: Account details are displayed.
+- **Steps**:
+  1. User navigates to the account page.
+  2. System displays the user's account details.
+
+### 5.2 View Order History
+- **Actor**: User
+- **Description**: Allows a user to view their order history.
+- **Preconditions**: User must be logged in.
+- **Postconditions**: Order history is displayed.
+- **Steps**:
+  1. User navigates to the order history page.
+  2. System displays the user's order history.
+
+## 6. Search and Filter
+
+### 6.1 Search Products
+- **Actor**: User
+- **Description**: Allows a user to search for products.
+- **Preconditions**: None.
+- **Postconditions**: Search results are displayed.
+- **Steps**:
+  1. User enters a search term in the search bar.
+  2. User presses enter or clicks on the search button.
+  3. System displays the search results.
+
+### 6.2 Filter Products
+- **Actor**: User
+- **Description**: Allows a user to filter products by various criteria.
+- **Preconditions**: None.
+- **Postconditions**: Filtered results are displayed.
+- **Steps**:
+  1. User selects filter criteria such as price range, location, or category.
+  2. User clicks on the apply button.
+  3. System displays the filtered results.
