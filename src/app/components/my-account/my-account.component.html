@@ -1,1 +1,30 @@
-<p>my-account works!</p>
+<div class="account-container">
+  <div class="user-details">
+    <h2>User Details</h2>
+    <div class="detail">
+      <label>Username:</label>
+      <span>{{ user.username }}</span>
+    </div>
+    <div class="detail">
+      <label>Email:</label>
+      <span>{{ user.email }}</span>
+    </div>
+    <div class="detail">
+      <label>Mobile Number:</label>
+      <span>{{ user.mobileNumber }}</span>
+    </div>
+  </div>
+  <div class="user-history">
+    <h2>History</h2>
+    <div class="history-item" *ngFor="let item of userHistory">
+      <div class="item-details">
+        <img [src]="item.image" alt="{{ item.name }}">
+        <div class="item-info">
+          <h3>{{ item.name }}</h3>
+          <p>{{ item.description }}</p>
+          <p><strong>Price:</strong> {{ item.price }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

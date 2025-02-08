@@ -8,6 +8,7 @@ import {
 import { Router } from '@angular/router';
 import { Filter } from 'bad-words';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
+import { UserService } from 'src/app/service/user.service';
 
 @Component({
   selector: 'app-add-product',
@@ -17,6 +18,7 @@ import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 export class AddProductComponent implements OnInit {
   productForm: FormGroup;
   selectedImages: string[] = [];
+  userHistory: any[] = [];
   categories: string[] = [];
 
   brideCategories = [
@@ -48,7 +50,8 @@ export class AddProductComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    public readonly myCartService: MyCartServiceService
+    public readonly myCartService: MyCartServiceService,
+    private userService: UserService
   ) {
     const today = new Date().toISOString().split('T')[0];
     this.productForm = this.fb.group({
@@ -137,6 +140,11 @@ export class AddProductComponent implements OnInit {
         display_img_urls: this.selectedImages,
       };
       this.myCartService.openProductDetails(productData);
+      this.userService.addUserHistory(productData);
     }
+  }
+
+  getUserHistory() {
+    return this.userHistory;
   }
 }
