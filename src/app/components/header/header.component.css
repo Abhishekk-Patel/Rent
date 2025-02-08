@@ -9,6 +9,8 @@
     .company-logo {
       border-radius: 1px solid white;
       height: 40px;
+      cursor: pointer;
+      border-radius: 5px;
     }
   }
   .spacer {

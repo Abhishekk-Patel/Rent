@@ -53,6 +53,10 @@ export class AddProductComponent implements OnInit {
     public readonly myCartService: MyCartServiceService,
     private userService: UserService
   ) {
+    const userDetails = localStorage.getItem('userDetails');
+    if (!userDetails) {
+      this.router.navigate(['']);
+    }
     const today = new Date().toISOString().split('T')[0];
     this.productForm = this.fb.group({
       name: [

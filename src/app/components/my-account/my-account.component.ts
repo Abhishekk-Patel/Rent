@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { UserService } from 'src/app/service/user.service';
 
 @Component({
@@ -10,7 +11,12 @@ export class MyAccountComponent implements OnInit {
   user: any;
   userHistory: any[] = [];
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, public router: Router) {
+    if(!this.userService.getUserDetails()){
+      this.router.navigate(['']);
+
+    }
+   }
 
   ngOnInit(): void {
     this.user = this.userService.getUserDetails();

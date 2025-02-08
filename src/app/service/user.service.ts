@@ -8,7 +8,9 @@ export class UserService {
   private user: any = null;
   private userHistory: any[] = [];
 
-  constructor() { }
+  constructor() {
+    this.loadUserDetails();
+  }
 
   login(loginForm: FormGroup): boolean {
     if (loginForm.valid) {
@@ -19,6 +21,7 @@ export class UserService {
         email: 'user@example.com', // Replace with actual email
         mobileNumber: '1234567890' // Replace with actual mobile number
       };
+      this.saveUserDetails();
       return true;
     }
     return false;
@@ -33,6 +36,7 @@ export class UserService {
         email: signUpForm.value.email,
         mobileNumber: signUpForm.value.mobileNumber
       };
+      this.saveUserDetails();
       return true;
     }
     return false;
@@ -48,5 +52,28 @@ export class UserService {
 
   addUserHistory(item: any) {
     this.userHistory.push(item);
+    this.saveUserHistory();
+  }
+
+  private saveUserDetails() {
+    localStorage.setItem('userDetails', JSON.stringify(this.user));
+  }
+
+  private loadUserDetails() {
+    const user = localStorage.getItem('userDetails');
+    if (user) {
+      this.user = JSON.parse(user);
+    }
+  }
+
+  private saveUserHistory() {
+    localStorage.setItem('userHistory', JSON.stringify(this.userHistory));
+  }
+
+  private loadUserHistory() {
+    const history = localStorage.getItem('userHistory');
+    if (history) {
+      this.userHistory = JSON.parse(history);
+    }
   }
 }

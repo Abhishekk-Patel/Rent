@@ -1,3 +1,15 @@
+.myaccount-container-top {
+  background-image: url("../../../assets/download6.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh; /* Ensure it covers the full viewport height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 0; /* Remove bottom padding */
+}
+
 .account-container {
   display: flex;
   flex-direction: column;
@@ -7,6 +19,7 @@
   border-radius: 10px;
   max-width: 800px;
   margin: 0 auto;
+  width: 50%;
 }
 
 .user-details, .user-history {
