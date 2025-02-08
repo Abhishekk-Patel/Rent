@@ -1,85 +1,97 @@
 <div class="modal" *ngIf="!isLoggedIn">
-  <div class="modal-content" *ngIf="showLogin">
-    <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
-      <h2>Login</h2>
-      <mat-form-field class="login-input" appearance="outline">
-        <mat-label>Username</mat-label>
-        <input matInput formControlName="username" placeholder="Username">
-        <mat-error *ngIf="loginFormControl['username'].invalid && (loginFormControl['username'].dirty || loginFormControl['username'].touched)">
-          <small *ngIf="loginFormControl['username'].errors?.['required']">Username is required.</small>
-        </mat-error>
-      </mat-form-field>
-      <mat-form-field class="login-input" appearance="outline">
-        <mat-label>Password</mat-label>
-        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Password">
-        <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button">
-          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-        </button>
-        <mat-error *ngIf="loginFormControl['password'].invalid && (loginFormControl['password'].dirty || loginFormControl['password'].touched)">
-          <small *ngIf="loginFormControl['password'].errors?.['required']">Password is required.</small>
-        </mat-error>
-      </mat-form-field>
-      <button mat-raised-button color="primary" type="submit" class="login-btn" [disabled]="loginForm.invalid">Login</button>
-      <p>Don't have an account? <a (click)="toggleSignUp()">Sign Up</a></p>
-    </form>
-  </div>
-  <div class="modal-content" *ngIf="showSignUp">
-    <form [formGroup]="signUpForm" (ngSubmit)="signUp()" class="signup-form">
-      <h2>Sign Up</h2>
-      <mat-form-field class="signup-input" appearance="outline">
-        <mat-label>Username</mat-label>
-        <input matInput formControlName="username" placeholder="Username">
-        <mat-error *ngIf="signUpFormControl['username'].invalid && (signUpFormControl['username'].dirty || signUpFormControl['username'].touched)">
-          <small *ngIf="signUpFormControl['username'].errors?.['required']">Username is required.</small>
-        </mat-error>
-      </mat-form-field>
-      <mat-form-field class="signup-input" appearance="outline">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email" placeholder="Email">
-        <mat-error *ngIf="signUpFormControl['email'].invalid && (signUpFormControl['email'].dirty || signUpFormControl['email'].touched)">
-          <small *ngIf="signUpFormControl['email'].errors?.['required']">Email is required.</small>
-          <small *ngIf="signUpFormControl['email'].errors?.['email']">Invalid email address.</small>
-        </mat-error>
-      </mat-form-field>
-      <mat-form-field class="signup-input" appearance="outline">
-        <mat-label>Mobile Number</mat-label>
-        <input matInput formControlName="mobileNumber" placeholder="Mobile Number">
-        <mat-error *ngIf="signUpFormControl['mobileNumber'].invalid && (signUpFormControl['mobileNumber'].dirty || signUpFormControl['mobileNumber'].touched)">
-          <small *ngIf="signUpFormControl['mobileNumber'].errors?.['required']">Mobile number is required.</small>
-          <small *ngIf="signUpFormControl['mobileNumber'].errors?.['pattern']">Invalid mobile number.</small>
-        </mat-error>
-      </mat-form-field>
-      <div class="password-container">
-        <mat-form-field class="signup-input half-width" appearance="outline">
-          <mat-label>Password</mat-label>
-          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Password">
-          <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button">
-            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
-          <mat-error *ngIf="signUpFormControl['password'].invalid && (signUpFormControl['password'].dirty || signUpFormControl['password'].touched)">
-            <small *ngIf="signUpFormControl['password'].errors?.['required']">Password is required.</small>
-          </mat-error>
-        </mat-form-field>
-        <mat-form-field class="signup-input half-width" appearance="outline">
-          <mat-label>Confirm Password</mat-label>
-          <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword" placeholder="Confirm Password">
-          <button mat-icon-button matSuffix (click)="toggleConfirmPasswordVisibility()" type="button">
-            <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
-          </button>
-          <mat-error *ngIf="signUpFormControl['confirmPassword'].invalid && (signUpFormControl['confirmPassword'].dirty || signUpFormControl['confirmPassword'].touched)">
-            <small *ngIf="signUpFormControl['confirmPassword'].errors?.['required']">Confirm password is required.</small>
-            <small *ngIf="signUpFormControl['confirmPassword'].errors?.['mustMatch']">Passwords must match.</small>
-          </mat-error>
-        </mat-form-field>
+  <div class="modal-content">
+    <div class="about-section">
+      <h2>About Us</h2>
+      <p>
+        Welcome to our rental platform! Our aims to provide a seamless and efficient way for users to rent and sell bridal and groom products. Whether you are looking for the perfect bridal lehenga, groom's sherwani, or any other wedding-related items, our platform has got you covered. We offer a wide range of categories and products to cater to all your wedding needs. Our user-friendly interface ensures that you can easily browse, search, and filter products to find exactly what you are looking for. Join us today and make your wedding preparations hassle-free and memorable!
+      </p>
+    </div>
+    <div class="divider-vertical"></div>
+    <div class="form-section">
+      <div *ngIf="showLogin">
+        <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
+          <h2>Login</h2>
+          <mat-form-field class="login-input" appearance="outline">
+            <mat-label>Email</mat-label> <!-- Updated to use email -->
+            <input matInput formControlName="email" placeholder="Email"> <!-- Updated to use email -->
+            <mat-error *ngIf="loginFormControl['email'].invalid && (loginFormControl['email'].dirty || loginFormControl['email'].touched)">
+              <small *ngIf="loginFormControl['email'].errors?.['required']">Email is required.</small>
+              <small *ngIf="loginFormControl['email'].errors?.['email']">Invalid email address.</small>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="login-input" appearance="outline">
+            <mat-label>Password</mat-label>
+            <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Password">
+            <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button">
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="loginFormControl['password'].invalid && (loginFormControl['password'].dirty || loginFormControl['password'].touched)">
+              <small *ngIf="loginFormControl['password'].errors?.['required']">Password is required.</small>
+            </mat-error>
+          </mat-form-field>
+          <button mat-raised-button color="primary" type="submit" class="login-btn" [disabled]="loginForm.invalid">Login</button>
+          <p>Don't have an account? <a (click)="toggleSignUp()">Sign Up</a></p>
+        </form>
       </div>
-      <button mat-raised-button color="primary" type="submit" class="signup-btn" [disabled]="signUpForm.invalid">Sign Up</button>
-      <p>Already have an account? <a (click)="toggleLogin()">Login</a></p>
-    </form>
+      <div *ngIf="showSignUp">
+        <form [formGroup]="signUpForm" (ngSubmit)="signUp()" class="signup-form">
+          <h2>Sign Up</h2>
+          <mat-form-field class="signup-input" appearance="outline">
+            <mat-label>Username</mat-label>
+            <input matInput formControlName="username" placeholder="Username">
+            <mat-error *ngIf="signUpFormControl['username'].invalid && (signUpFormControl['username'].dirty || signUpFormControl['username'].touched)">
+              <small *ngIf="signUpFormControl['username'].errors?.['required']">Username is required.</small>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="signup-input" appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" placeholder="Email">
+            <mat-error *ngIf="signUpFormControl['email'].invalid && (signUpFormControl['email'].dirty || signUpFormControl['email'].touched)">
+              <small *ngIf="signUpFormControl['email'].errors?.['required']">Email is required.</small>
+              <small *ngIf="signUpFormControl['email'].errors?.['email']">Invalid email address.</small>
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="signup-input" appearance="outline">
+            <mat-label>Mobile Number</mat-label>
+            <input matInput formControlName="mobileNumber" placeholder="Mobile Number">
+            <mat-error *ngIf="signUpFormControl['mobileNumber'].invalid && (signUpFormControl['mobileNumber'].dirty || signUpFormControl['mobileNumber'].touched)">
+              <small *ngIf="signUpFormControl['mobileNumber'].errors?.['required']">Mobile number is required.</small>
+              <small *ngIf="signUpFormControl['mobileNumber'].errors?.['pattern']">Invalid mobile number.</small>
+            </mat-error>
+          </mat-form-field>
+          <div class="password-container">
+            <mat-form-field class="signup-input half-width" appearance="outline">
+              <mat-label>Password</mat-label>
+              <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Password">
+              <button mat-icon-button matSuffix (click)="togglePasswordVisibility()" type="button">
+                <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error *ngIf="signUpFormControl['password'].invalid && (signUpFormControl['password'].dirty || signUpFormControl['password'].touched)">
+                <small *ngIf="signUpFormControl['password'].errors?.['required']">Password is required.</small>
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field class="signup-input half-width" appearance="outline">
+              <mat-label>Confirm Password</mat-label>
+              <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword" placeholder="Confirm Password">
+              <button mat-icon-button matSuffix (click)="toggleConfirmPasswordVisibility()" type="button">
+                <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error *ngIf="signUpFormControl['confirmPassword'].invalid && (signUpFormControl['confirmPassword'].dirty || signUpFormControl['confirmPassword'].touched)">
+                <small *ngIf="signUpFormControl['confirmPassword'].errors?.['required']">Confirm password is required.</small>
+                <small *ngIf="signUpFormControl['confirmPassword'].errors?.['mustMatch']">Passwords must match.</small>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <button mat-raised-button color="primary" type="submit" class="signup-btn" [disabled]="signUpForm.invalid">Sign Up</button>
+          <p>Already have an account? <a (click)="toggleLogin()">Login</a></p>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="modal" *ngIf="isLoggedIn">
-  <div class="modal-content" *ngIf="!showRentOptions">
+  <div class="modal-content modal-content-rent-sell" *ngIf="!showRentOptions">
     <div class="card rent" (click)="navigateToRent()">
       <img src="./assets/RentLogo.jpg" alt="Rent">
       <p>Rent</p>
@@ -91,7 +103,7 @@
       <p>Sell</p>
     </div>
   </div>
-  <div class="modal-content" *ngIf="showRentOptions">
+  <div class="modal-content modal-content-bride-groom" *ngIf="showRentOptions">
     <div class="card groom" (click)="navigateTo('Groom')">
       <img src="./assets/groom.png" alt="Groom">
       <p>Groom</p>

@@ -22,13 +22,21 @@
   background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white background for glassy effect */
   padding: 40px;
   border-radius: 12px;
-  width: 40%;
+  width: 70%; /* Adjusted width to 70% for login/signup section */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Box shadow with black color */
   backdrop-filter: blur(20px); /* Blur effect for the glassy background */
   -webkit-backdrop-filter: blur(20px); /* For Safari support */
   animation: slideIn 0.5s ease-in-out;
   position: relative;
   border: 2px solid brown;
+}
+
+.modal-content-rent-sell {
+  width: 40%; /* Adjusted width to 40% for rent/sell section */
+}
+
+.modal-content-bride-groom {
+  width: 40%; /* Adjusted width to 50% for bride/groom section */
 }
 
 @keyframes slideIn {
@@ -82,6 +90,12 @@
 }
 
 .divider {
+  width: 2px;
+  background-color: white; /* Change divider color to white for better contrast */
+  margin: 0 20px;
+}
+
+.divider-vertical {
   width: 2px;
   background-color: white; /* Change divider color to white for better contrast */
   margin: 0 20px;
@@ -177,6 +191,28 @@
   font-size: 16px;
   margin-top: -12px;
   margin-bottom: 10px;
+}
+
+.about-section {
+  flex: 1;
+  padding-right: 20px;
+  color: white;
+}
+
+.about-section h2 {
+  margin-bottom: 20px;
+}
+
+.about-section p {
+  font-size: 1.1em;
+  line-height: 1.6;
+}
+
+.form-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {

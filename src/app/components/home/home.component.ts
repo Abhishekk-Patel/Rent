@@ -28,7 +28,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.loginForm = this.fb.group({
-      username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]], // Updated to use email
       password: ['', Validators.required]
     });
 
@@ -81,18 +81,23 @@ export class HomeComponent implements OnInit {
   }
 
   login() {
-    if (this.userService.login(this.loginForm)) {
-      this.isLoggedIn = true;
-      this.showLogin = false;
-    }
+    this.userService.login(this.loginForm).subscribe(success => {
+      if (success) {
+        this.isLoggedIn = true;
+        this.showLogin = false;
+      }
+    });
   }
 
   signUp() {
-    if (this.userService.signUp(this.signUpForm)) {
-      this.isLoggedIn = true;
-      this.showSignUp = false;
-      this.showRentOptions = true;
-    }
+    this.userService.signUp(this.signUpForm).subscribe(success => {
+      if (success) {
+        console.log(success, 'success');
+        this.isLoggedIn = true;
+        this.showSignUp = false;
+        this.showRentOptions = true;
+      }
+    });
   }
 
   togglePasswordVisibility() {
