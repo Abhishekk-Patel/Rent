@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
+import { UserService } from 'src/app/service/user.service';
 
 @Component({
   selector: 'app-home',
@@ -21,7 +22,8 @@ export class HomeComponent implements OnInit {
   constructor(
     public router: Router,
     public myCartSercvice: MyCartServiceService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
@@ -79,19 +81,14 @@ export class HomeComponent implements OnInit {
   }
 
   login() {
-    if (this.loginForm.valid) {
-      // Implement login logic here
-      console.log(this.loginForm.value);
+    if (this.userService.login(this.loginForm)) {
       this.isLoggedIn = true;
       this.showLogin = false;
     }
   }
 
   signUp() {
-    console.log(this.signUpForm.value,'test');
-    if (this.signUpForm.valid) {
-      // Implement sign-up logic here
-      console.log(this.signUpForm.value);
+    if (this.userService.signUp(this.signUpForm)) {
       this.isLoggedIn = true;
       this.showSignUp = false;
       this.showRentOptions = true;
