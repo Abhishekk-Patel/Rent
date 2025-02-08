@@ -310,17 +310,22 @@
   position: relative;
   border-radius: 10px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .reward-card-content {
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex-grow: 1;
 }
 
 .reward-details {
   text-align: center;
   margin-top: 10px;
+  flex-grow: 1;
 }
 
 .reward-details h2 {
@@ -347,8 +352,8 @@
 
 .city {
   position: absolute;
-  top: 11px;
-  left: 10px;
+  bottom: 5px;
+  right: 5px;
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
   padding: 3px 8px;
