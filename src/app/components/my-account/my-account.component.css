@@ -69,6 +69,17 @@
   margin-bottom: 5px;
 }
 
+.no-records {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  margin-top: 20px;
+  font-size: 18px;
+}
+
 @media (max-width: 600px) {
   .account-container {
     padding: 10px;
