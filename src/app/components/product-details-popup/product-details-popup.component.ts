@@ -3,16 +3,17 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { REWARD_LIST } from 'src/mock-data';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-product-details-popup',
   templateUrl: './product-details-popup.component.html',
   styleUrls: ['./product-details-popup.component.css'],
 })
-export class ProductDetailsPopupComponent implements OnDestroy{ 
+export class ProductDetailsPopupComponent implements OnDestroy { 
   productDetails = REWARD_LIST;
   isAddNewProduct: boolean = false;
-  subscription: any;
+  subscription: Subscription = new Subscription();
 
   constructor(
     public mycartService: MyCartServiceService,
@@ -20,8 +21,6 @@ export class ProductDetailsPopupComponent implements OnDestroy{
     public dialogRef: MatDialogRef<ProductDetailsPopupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    if (typeof this.data.primaryKey === 'object') {
-    }
     this.mycartService.isAddNewProduct$.subscribe((res) => {
       this.isAddNewProduct = res;
     });
@@ -32,8 +31,8 @@ export class ProductDetailsPopupComponent implements OnDestroy{
       return this.productDetails.find(
         (product) => product.pk === this.data.primaryKey
       );
-    } else if (typeof this.data.primaryKey === 'object') {
-      return this.data['primaryKey'];
+    } else if (this.data.primaryKey && typeof this.data.primaryKey === 'object') {
+      return this.data.primaryKey;
     } else {
       return null;
     }
@@ -76,15 +75,14 @@ export class ProductDetailsPopupComponent implements OnDestroy{
     const product = this.getProductDetails();
     if (product) {
       product.currentImageIndex =
-        (product.currentImageIndex - 1 + product.display_img_urls.length) %
+        (product.currentImageIndex - 1 + product.display_img_urls.length) % 
         product.display_img_urls.length;
     }
   }
-  
+
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-  
   }
 }

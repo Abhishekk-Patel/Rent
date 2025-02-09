@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MyCartComponent } from '../components/my-cart/my-cart.component';
 import { ProductDetailsPopupComponent } from '../components/product-details-popup/product-details-popup.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { HttpClient } from '@angular/common/http';
 import { signal } from '@angular/core';
 
 @Injectable({
@@ -20,8 +21,10 @@ export class MyCartServiceService {
 
   constructor(
     private readonly router: Router,
-    private readonly dialog: MatDialog,
-    private readonly snackBar: MatSnackBar
+    private readonly snackBar: MatSnackBar,
+    private readonly httpClient: HttpClient,
+    private readonly dialog: MatDialog
+   
   ) {}
 
   setIsAddNewProduct(value: boolean): void {
@@ -67,6 +70,21 @@ export class MyCartServiceService {
     });
   }
 
+  addProductDetailsApi(formData: FormData) {
+    console.log("Submitting product details", formData);
+    // Example: Make an HTTP request to your backend API
+    this.httpClient.post('http://localhost:3000/upload/upload', formData).subscribe(response => {
+      console.log("Product details submitted successfully", response);
+      // Handle success here, maybe close the dialog or show a success message
+      this.dialog.open(ProductDetailsPopupComponent, {
+        data: {response},
+      });
+    }, error => {
+      console.error("Error submitting product details", error);
+      // Handle error here
+    });
+  }
+  
   itemExistsInCart(pk: number): boolean {
     return this.cartItems.value.some((cartItem) => cartItem === pk);
   }
