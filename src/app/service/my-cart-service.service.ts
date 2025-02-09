@@ -73,7 +73,7 @@ export class MyCartServiceService {
   addProductDetailsApi(formData: FormData) {
     console.log("Submitting product details", formData);
     // Example: Make an HTTP request to your backend API
-    this.httpClient.post('http://localhost:3000/upload/upload', formData).subscribe(response => {
+    this.httpClient.post('http://localhost:3000/upload', formData).subscribe(response => {
       console.log("Product details submitted successfully", response);
       // Handle success here, maybe close the dialog or show a success message
       this.dialog.open(ProductDetailsPopupComponent, {

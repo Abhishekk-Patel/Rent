@@ -187,7 +187,6 @@ export class AddProductComponent implements OnInit {
       });
 
       // Assuming the method handles the API call
-     // this.myCartService.openProductDetails(productData);
       this.myCartService.addProductDetailsApi(formData);
 
       // Adding user history (if needed)
