@@ -65,14 +65,14 @@ export class AddProductComponent implements OnInit {
           Validators.required,
           Validators.maxLength(10),
           this.nonNumericValidator,
-          this.inappropriateWordsValidator
+          this.inappropriateWordsValidator,
         ],
       ],
       ProductRent: ['', Validators.required],
       quantity: [1, Validators.required],
       valid_until: [today, Validators.required],
       category: ['', Validators.required],
-     
+
       ProductDescription: [
         '',
         [
@@ -110,6 +110,7 @@ export class AddProductComponent implements OnInit {
     this.productForm.get('userRole')?.valueChanges.subscribe((userRole) => {
       this.updateCategories(userRole);
     });
+    console.log(this.userService.getUserDetails().email, 'userDetails');
   }
 
   updateCategories(userRole: string): void {
@@ -139,12 +140,58 @@ export class AddProductComponent implements OnInit {
 
   onSubmit() {
     if (this.productForm.valid && this.selectedImages.length >= 3) {
+      const userDetails = this.userService.getUserDetails();
+      console.log(userDetails, 'userDetails');
+      console.log(userDetails.email, 'userEmail'); // Added line to log user email
       const productData = {
         ...this.productForm.value,
         display_img_urls: this.selectedImages,
+        email: userDetails.email, // Add email to product data
       };
-      this.myCartService.openProductDetails(productData);
-      this.userService.addUserHistory(productData);
+
+      // Log product data for debugging purposes
+      console.log(productData, 'productData');
+
+      // Create a FormData object to send all the data, including images
+      let formData = new FormData();
+      // Frontend formData append - make sure these field names match the ones expected by the BE
+      formData.append('productName', productData.ProductName);
+      formData.append('productDescription', productData.ProductDescription);
+      formData.append('productRent', productData.ProductRent.toString());
+      formData.append('category', productData.category);
+      formData.append('quantity', productData.quantity.toString());
+      formData.append('userRole', productData.userRole);
+      formData.append('validUntil', productData.valid_until);
+      formData.append('email', productData.email); // Append email to formData
+
+      // Convert each base64 image string to a Blob and append it to formData
+      productData.display_img_urls.forEach(
+        (imgBase64: string, index: number) => {
+          const byteCharacters = atob(imgBase64.split(',')[1]); // Decoding base64
+          const byteArrays = [];
+
+          for (let offset = 0; offset < byteCharacters.length; offset++) {
+            byteArrays.push(byteCharacters.charCodeAt(offset));
+          }
+
+          const blob = new Blob([new Uint8Array(byteArrays)], {
+            type: 'image/jpeg',
+          }); // Assuming image/jpeg, adjust if needed
+          formData.append(`image${index}`, blob, `image${index}.jpg`); // Append blob as a file
+        }
+      );
+
+      // Logging the form data (you can remove this once you're done testing)
+      formData.forEach((value: any, key: string) => {
+        console.log(key, 'key', value, 'value');
+      });
+
+      // Assuming the method handles the API call
+     // this.myCartService.openProductDetails(productData);
+      this.myCartService.addProductDetailsApi(formData);
+
+      // Adding user history (if needed)
+      this.userService.addUserHistory(formData);
     }
   }
 
