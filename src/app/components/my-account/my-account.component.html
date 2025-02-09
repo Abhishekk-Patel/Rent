@@ -17,16 +17,20 @@
   </div>
   <div class="user-history">
     <h2>History</h2>
+    <div *ngIf="userHistory.length === 0" class="no-records">
+      No record found
+    </div>
     <div class="history-item" *ngFor="let item of userHistory">
       <div class="item-details">
-        <img [src]="item.image" alt="{{ item.name }}">
+        <img [src]="item.images[0].url" alt="{{ item.ProductName }}">
         <div class="item-info">
-          <h3>{{ item.name }}</h3>
-          <p>{{ item.description }}</p>
-          <p><strong>Price:</strong> {{ item.rent }}</p>
+          <h3>{{ item.productName }}</h3>
+          <p>{{ item.productDescription }}</p>
+          <p><strong>Price:</strong> {{ item.productRent }}</p>
         </div>
       </div>
     </div>
+    
   </div>
 </div>
 </div>
