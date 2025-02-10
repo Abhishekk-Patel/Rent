@@ -55,7 +55,7 @@
       </div>
       <div class="reward-list">
         <div *ngFor="let reward of filteredRewards" class="reward-card">
-          <div class="reward-card-content" [ngClass]="{'out-of-stock-blur': reward.quantity === 0}">
+          <div class="reward-card-content" [ngClass]="{'out-of-stock-blur': reward.valid_until < isDateToday}">
             <div class="image-container">
               <button class="nav-btn left small-btn" (click)="prevImage(reward)"><mat-icon>chevron_left</mat-icon></button>
               <img [src]="reward.display_img_urls[reward.currentImageIndex] || 'assets/placeholder.png'" alt="{{ reward.name }}">
@@ -74,7 +74,7 @@
               </p>
             </div>
           </div>
-          <p *ngIf="reward.quantity === 0" class="out-of-stock">Out of Stock</p>
+          <p *ngIf="reward.valid_until < isDateToday " class="out-of-stock">Out of Stock</p>
           <div class="reward-card-footer">
             <button class="order-now-btn" [disabled]="reward.quantity === 0" (click)="productDetails(reward.pk)">Know More</button>
             <button class="add-to-cart-btn" [disabled]="reward.quantity === 0" (click)="addToCart(reward.pk)"><mat-icon>add_shopping_cart</mat-icon></button>

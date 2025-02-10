@@ -8,8 +8,9 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { debounceTime, fromEvent, Subscription } from 'rxjs';
+import { DataService } from 'src/app/service/data.service';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
-import { Category_LIST, REWARD_LIST } from 'src/mock-data';
+import { Category_LIST } from 'src/mock-data';
 
 @Component({
   selector: 'app-content-component',
@@ -19,9 +20,9 @@ import { Category_LIST, REWARD_LIST } from 'src/mock-data';
 export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestroy {
   alertMsg: string = 'Opps! No match found';
   public totalPages: any;
-  rewards = REWARD_LIST;
   categories = Category_LIST;
-  filteredRewards = REWARD_LIST;
+  rewards: any[] = [];
+  filteredRewards: any[] = [];
   isSortPanelOpen = false;
   searchValue = '';
   @ViewChild('searchInput', { static: true }) searchInput!: ElementRef;
@@ -32,43 +33,46 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   private pageSize: number = 10;
   private currentPage: number = 1;
   private loadingTimeout: any;
+  isDateToday: string = new Date().toISOString().split('T')[0];
 
   constructor(
     public mycartService: MyCartServiceService,
-    public router: Router
-  ) {}
+    public router: Router,
+    public dataService: DataService
+  ) {
+    this.dataService.getAllProductData();
+  }
 
   ngOnInit() {
     this.isLoading = true;
-    const loggedUser = this.mycartService.getUser();
     this.mycartService.setIsAddNewProduct(false);
 
-    if (loggedUser === 'Bride') {
-      this.rewards = REWARD_LIST.filter(
-        (reward) => reward.userRole === 'Bride' || reward.userRole === 'Both'
-      );
-      this.categories = this.categories.filter(
-        (cat) => cat.useRole === 'Bride' || cat.useRole === 'Both'
-      );
-    } else if (loggedUser === 'Groom') {
-      this.categories = this.categories.filter(
-        (cat) => cat.useRole === 'Groom' || cat.useRole === 'Both'
-      );
-      this.rewards = REWARD_LIST.filter(
-        (reward) => reward.userRole === 'Groom' || reward.userRole === 'Both'
-      );
-    } else {
-      this.router.navigate(['']);
-    }
-
-    this.updateRewardsAndCategories();
-    this.filterRewardsByCategory('All');
-    this.rewards.forEach((reward) => (reward.currentImageIndex = 0));
-    this.isLoading = false;
+    this.dataService.products$.subscribe((response: any) => {
+      this.rewards = response.map((item: any) => ({
+        pk: item._id,
+        name: item.productName,
+        Rent: item.productRent,
+        description: item.productDescription || 'No description provided',
+        category: item.category || 'General',
+        quantity: item.quantity || 0,
+        userRole: item.userRole || 'Both',
+        valid_until: item.validUntil,
+        display_img_urls: item.images.map((img: any) => img.url),
+        currentImageIndex: 0,
+        city: item.city || 'Unknown',
+        low_quantity: item.lowQuantity || 5,
+        buyers: item.buyers || 0,
+      }));
+      this.filteredRewards = [...this.rewards]; // Set filteredRewards to the fetched data
+      this.updateRewardsAndCategories();
+      this.filterRewardsByCategory('All');
+      this.isLoading = false;
+    });
 
     window.addEventListener('scroll', this.onScroll.bind(this));
     this.loadMoreRewards();
   }
+  
 
   ngAfterViewInit() {
     fromEvent(this.searchInput.nativeElement, 'input')
@@ -272,14 +276,14 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
 
   updateRewardsAndCategories() {
     if (this.userRole === 'Bride') {
-      this.rewards = REWARD_LIST.filter(
+      this.filteredRewards = this.rewards.filter(
         (reward) => reward.userRole === 'Bride' || reward.userRole === 'Both'
       );
       this.categories = Category_LIST.filter(
         (cat) => cat.useRole === 'Bride' || cat.useRole === 'Both'
       );
     } else if (this.userRole === 'Groom') {
-      this.rewards = REWARD_LIST.filter(
+      this.filteredRewards = this.rewards.filter(
         (reward) => reward.userRole === 'Groom' || reward.userRole === 'Both'
       );
       this.categories = Category_LIST.filter(
@@ -288,7 +292,6 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     }
     this.filterRewardsByCategory('All');
     this.currentPage = 1;
-    this.filteredRewards = [];
     this.showLoadingSpinner();
     this.loadMoreRewards();
   }
