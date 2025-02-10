@@ -51,4 +51,37 @@ export class MyAccountComponent implements OnInit {
       }
     );
   }
+
+  sortUserHistory() {
+    this.userHistory = [...this.userHistory].sort((a, b) => {
+      return (
+        new Date(b.productListedDate).getTime() -
+        new Date(a.productListedDate).getTime()
+      );
+    });
+    console.log(this.userHistory, 'sorted user history'); // Optional: Log sorted user history
+  }
+
+  editHistoryItem(item: any) {
+    // Navigate to the edit page with the item details
+    // this.router.navigate(['/edit-product', item.pk]);
+  }
+
+  deleteHistoryItem(item: any) {
+    console.log('Deleting item:', item._id
+    );
+    // Remove the item from the user history
+    this.userHistory = this.userHistory.filter(
+      (historyItem) => historyItem._id !== item._id
+    );
+   // Optionally, call a service to delete the item from the backend
+    this.dataService.deleteProductById(item._id).subscribe(
+      () => {
+        console.log('Item deleted successfully');
+      },
+      (error:Error) => {
+        console.error('Error deleting item:', error);
+      }
+    );
+  }
 }

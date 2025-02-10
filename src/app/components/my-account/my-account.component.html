@@ -1,36 +1,41 @@
 <div class="myaccount-container-top">
-<div class="account-container">
-  <div class="user-details">
-    <h2>User Details</h2>
-    <div class="detail">
-      <label>Username:</label>
-      <span>{{ user.username }}</span>
+  <div class="account-container">
+    <div class="user-details">
+      <h2>User Details</h2>
+      <div class="detail">
+        <label>Username:</label>
+        <span>{{ user.username }}</span>
+      </div>
+      <div class="detail">
+        <label>Email:</label>
+        <span>{{ user.email }}</span>
+      </div>
+      <div class="detail">
+        <label>Mobile Number:</label>
+        <span>{{ user.mobileNumber }}</span>
+      </div>
     </div>
-    <div class="detail">
-      <label>Email:</label>
-      <span>{{ user.email }}</span>
-    </div>
-    <div class="detail">
-      <label>Mobile Number:</label>
-      <span>{{ user.mobileNumber }}</span>
-    </div>
-  </div>
-  <div class="user-history">
-    <h2>History</h2>
-    <div *ngIf="userHistory.length === 0" class="no-records">
-      No record found
-    </div>
-    <div class="history-item" *ngFor="let item of userHistory">
-      <div class="item-details">
-        <img [src]="item.images[0].url" alt="{{ item.ProductName }}">
-        <div class="item-info">
-          <h3>{{ item.productName }}</h3>
-          <p>{{ item.productDescription }}</p>
-          <p><strong>Price:</strong> {{ item.productRent }}</p>
+    <div class="user-history">
+      <h2>History</h2>
+      <div *ngIf="userHistory.length === 0" class="no-records">
+        No record found
+      </div>
+      <button (click)="sortUserHistory()" class="sort">Sort by Date</button>
+      <div class="history-item" *ngFor="let item of userHistory">
+        <div class="item-details">
+          <img [src]="item.images[0].url" alt="{{ item.ProductName }}">
+          <div class="item-info">
+            <h3><strong>Product Name:</strong> {{ item.productName }}</h3>
+            <p><strong>Product Description:</strong>{{ item.productDescription }}</p>
+            <p><strong>Price:</strong> {{ item.productRent }}</p>
+            <p><strong>Product Listed Date:</strong> {{ item.productListedDate ? (item.productListedDate | date:'short') : 'NA' }}</p>
+            <div class="action-buttons">
+              <button (click)="editHistoryItem(item)" class="edit-btn">Edit</button>
+              <button (click)="deleteHistoryItem(item)" class="delete-btn">Delete</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    
   </div>
-</div>
 </div>
