@@ -51,7 +51,7 @@
       </div>
       <div class="rewards-header">
         <p class="reward-count">Available Products({{ filteredRewards.length }}) </p>
-        <button class="sort-btn" *ngIf="filteredRewards.length" (click)="openSortPanel()">Sort</button>
+        <button class="sort-btn" *ngIf="filteredRewards.length !=1" (click)="openSortPanel()">Sort</button>
       </div>
       <div class="reward-list">
         <div *ngFor="let reward of filteredRewards" class="reward-card">

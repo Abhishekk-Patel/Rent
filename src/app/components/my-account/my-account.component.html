@@ -18,9 +18,9 @@
     <div class="user-history">
       <h2>History</h2>
       <div *ngIf="userHistory.length === 0" class="no-records">
-        No record found
+        No record found 
       </div>
-      <button (click)="sortUserHistory()" class="sort">Sort by Date</button>
+      <button *ngIf="userHistory.length!=0" (click)="sortUserHistory()" class="sort">Sort by Date</button>
       <div class="history-item" *ngFor="let item of userHistory">
         <div class="item-details">
           <img [src]="item.images[0].url" alt="{{ item.ProductName }}">

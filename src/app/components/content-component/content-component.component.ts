@@ -218,7 +218,10 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   addToCart(pk: number) {
-    this.mycartService.addToCart(pk);
+    const reward = this.rewards.find(reward => reward.pk === pk);
+    if (reward) {
+      this.mycartService.addToCart(reward);
+    }
   }
 
   showLoadingSpinner() {

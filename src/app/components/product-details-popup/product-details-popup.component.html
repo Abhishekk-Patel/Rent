@@ -1,7 +1,9 @@
 <!-- product-details-popup.component.html -->
+
+
 <div class="product-details-popup">
     <div class="popup-header">
-      <h2>{{getProductDetails()?.name || this.data.response.product.productName}}</h2>
+      <h2>{{ getProductDetails()?.name }}</h2>
       <button class="close-btn" (click)="closeProductDetailDialog()">&times;</button>
     </div>
     
@@ -11,8 +13,7 @@
           <mat-icon>chevron_left</mat-icon>
         </button>
         
-        <img [src]="getProductDetails()?.display_img_urls?.[getProductDetails()?.currentImageIndex ?? 0] || 
-                    (this.data.response.product.images?.[getProductDetails()?.currentImageIndex ?? 0]?.url) || 
+         <img [src]="getProductDetails()?.display_img_urls?.[getProductDetails()?.currentImageIndex ?? 0] || 
                     'assets/placeholder.png'" 
              alt="{{ getProductDetails()?.name }}" class="product-image">
              
@@ -24,20 +25,19 @@
       <div class="product-details-columns">
         <div class="product-details-column">
           <p class="product-description">
-            {{getProductDetails()?.description || this.data.response.product.productDescription}}
+            {{ getProductDetails()?.description }} 
           </p>
-          <p class="product-category">{{getProductDetails()?.category}}</p>
+       <p class="product-category">{{ getProductDetails()?.category }}</p>
         </div>
         <div class="product-details-column">
           <p class="product-price">
-            Price: ${{getProductDetails()?.Rent || this.data.response.product.productRent}}
+     Price: ${{ getProductDetails()?.Rent }}
           </p>
           <p class="product-valid-until">
-            Valid Until: {{getProductDetails()?.valid_until | date}} || 
-            {{this.data.response.product.validUntil | date}}
+      Valid Until: {{ getProductDetails()?.valid_until | date }} 
           </p>
           <p class="product-quantity">
-            Quantity: {{getProductDetails()?.quantity || this.data.response.product.quantity}}
+        Quantity: {{ getProductDetails()?.quantity }}
           </p>
         </div>
       </div>
@@ -49,4 +49,3 @@
       </button>
     </div>
   </div>
-  

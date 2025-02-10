@@ -33,7 +33,7 @@ export class MyCartServiceService {
 
   addToCart(item: any): void {
     const currentItems = this.cartItems.value;
-    const itemExists = currentItems.some((cartItem) => cartItem == item);
+    const itemExists = currentItems.some((cartItem) => cartItem.pk === item.pk);
 
     if (!itemExists) {
       this.cartItems.next([...currentItems, item]);
@@ -50,11 +50,12 @@ export class MyCartServiceService {
 
   removeFromCart(item: any): void {
     const currentItems = this.cartItems.value;
-    const updatedItems = currentItems.filter((cartItem) => cartItem !== item.pk);
+    const updatedItems = currentItems.filter((cartItem) => cartItem.pk !== item.pk);
 
     if (updatedItems.length !== currentItems.length) {
       this.cartItems.next(updatedItems);
       this.myCartValue.update((value) => value - 1);
+      this.showMessage('Item removed from cart');
     } else {
       this.showMessage('Item not found in cart');
     }
