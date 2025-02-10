@@ -10,8 +10,8 @@
           <mat-error *ngIf="productForm.get('ProductName')?.hasError('required')">Product Name is required</mat-error>
           <mat-error *ngIf="productForm.get('ProductName')?.hasError('maxLength')">Product Name cannot exceed 10 characters</mat-error>
           <mat-error *ngIf="productForm.get('ProductName')?.hasError('numeric')">Product Name cannot be numeric</mat-error>
-          <mat-error *ngIf="productForm.get('ProductName')?.hasError('inappropriate')">Name contains inappropriate words</mat-error>
-        
+          <!-- <mat-error *ngIf="productForm.get('ProductName')?.hasError('inappropriate')">Name contains inappropriate words</mat-error>
+         -->
         </mat-form-field>
       </div>
   
@@ -33,6 +33,18 @@
             <mat-option *ngFor="let category of categories" [value]="category">{{ category }}</mat-option>
           </mat-select>
           <mat-error *ngIf="productForm.get('category')?.hasError('required')">Category is required</mat-error>
+        </mat-form-field>
+      </div>
+    
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>City</mat-label>
+          <input matInput placeholder="Exp:- Mumbai, New Delhi" formControlName="city" required>
+          <mat-error *ngIf="productForm.get('city')?.hasError('required')">City is required</mat-error>
+          <mat-error *ngIf="productForm.get('city')?.hasError('maxLength')">City cannot exceed 10 characters</mat-error>
+          <mat-error *ngIf="productForm.get('city')?.hasError('numeric')">City cannot be numeric</mat-error>
+          <mat-error *ngIf="productForm.get('city')?.hasError('inappropriate')">City contains inappropriate words</mat-error>
+        
         </mat-form-field>
       </div>
 

@@ -63,15 +63,15 @@ export class AddProductComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.maxLength(10),
+          Validators.maxLength(30),
           this.nonNumericValidator,
-          this.inappropriateWordsValidator,
         ],
       ],
       ProductRent: ['', Validators.required],
       quantity: [1, Validators.required],
       valid_until: [today, Validators.required],
       category: ['', Validators.required],
+      city: ['', Validators.required],
 
       ProductDescription: [
         '',
@@ -83,6 +83,8 @@ export class AddProductComponent implements OnInit {
         ],
       ],
       userRole: ['', Validators.required],
+      productListedDate: [today, Validators.required],
+
     });
   }
 
@@ -163,7 +165,8 @@ export class AddProductComponent implements OnInit {
       formData.append('userRole', productData.userRole);
       formData.append('validUntil', productData.valid_until);
       formData.append('email', productData.email); // Append email to formData
-
+     formData.append('city', productData.city);
+     formData.append('productListedDate', productData.productListedDate);
       // Convert each base64 image string to a Blob and append it to formData
       productData.display_img_urls.forEach(
         (imgBase64: string, index: number) => {
