@@ -1,0 +1,59 @@
+.partner-brands-slider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 300px; /* Adjust height as needed */
+  background-color: #f5f5f5;
+  margin-bottom: 20px;
+  /* border-radius: 40px 40px 40px 40px; */
+  /* margin-top: -16px; */
+
+}
+
+.partner-brands-slider .brand {
+  display: none;
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.partner-brands-slider .brand.active {
+  display: flex;
+}
+
+.partner-brands-slider .brand img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the container */
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  z-index: 1;
+  transition: background-color 0.3s ease;
+}
+
+.nav-btn.left {
+  left: 10px;
+}
+
+.nav-btn.right {
+  right: 10px;
+}
+
+.nav-btn:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}

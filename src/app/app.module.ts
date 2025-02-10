@@ -36,7 +36,8 @@ import { AddProductComponent } from './components/add-product/add-product.compon
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MyAccountComponent } from './components/my-account/my-account.component';
-import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
+import { HttpClientModule } from '@angular/common/http';
+import { PartnerBrandSliderComponent } from './components/partner-brand-slider/partner-brand-slider.component'; // Import HttpClientModule
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { HttpClientModule } from '@angular/common/http'; // Import HttpClientMod
     HomeComponent,
     AddProductComponent,
     MyAccountComponent,
+    PartnerBrandSliderComponent,
   ],
   imports: [
     BrowserModule,

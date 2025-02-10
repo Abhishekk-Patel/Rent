@@ -1,28 +1,51 @@
 <!-- product-details-popup.component.html -->
+
+
 <div class="product-details-popup">
     <div class="popup-header">
-        <h2>{{getProductDetails()?.name}}</h2>
-        <button class="close-btn" (click)="closeProductDetailDialog()">&times;</button>
+      <h2>{{ getProductDetails()?.name }}</h2>
+      <button class="close-btn" (click)="closeProductDetailDialog()">&times;</button>
     </div>
+    
     <div class="popup-content">
-        <div class="image-container">
-            <button class="nav-btn left" (click)="prevImage()"><mat-icon>chevron_left</mat-icon></button>
-            <img [src]="getProductDetails()?.display_img_urls?.[getProductDetails()?.currentImageIndex ?? 0] || 'assets/placeholder.png'" alt="{{ getProductDetails()?.name }}" class="product-image">
-            <button class="nav-btn right" (click)="nextImage()"><mat-icon>chevron_right</mat-icon></button>
+      <div class="image-container">
+        <button class="nav-btn left" (click)="prevImage()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        
+         <img [src]="getProductDetails()?.display_img_urls?.[getProductDetails()?.currentImageIndex ?? 0] || 
+                    'assets/placeholder.png'" 
+             alt="{{ getProductDetails()?.name }}" class="product-image">
+             
+        <button class="nav-btn right" (click)="nextImage()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+      
+      <div class="product-details-columns">
+        <div class="product-details-column">
+          <p class="product-description">
+            {{ getProductDetails()?.description }} 
+          </p>
+       <p class="product-category">{{ getProductDetails()?.category }}</p>
         </div>
-        <div class="product-details-columns">
-            <div class="product-details-column">
-                <p class="product-description">{{getProductDetails()?.description}}</p>
-                <p class="product-category">{{getProductDetails()?.category}}</p>
-            </div>
-            <div class="product-details-column">
-                <p class="product-price">Price: ${{getProductDetails()?.Rent}}</p>
-                <p class="product-valid-until">Valid Until: {{getProductDetails()?.valid_until | date}}</p>
-                <p class="product-quantity">Quantity: {{getProductDetails()?.quantity}}</p>
-            </div>
+        <div class="product-details-column">
+          <p class="product-price">
+     Price: ${{ getProductDetails()?.Rent }}
+          </p>
+          <p class="product-valid-until">
+      Valid Until: {{ getProductDetails()?.valid_until | date }} 
+          </p>
+          <p class="product-quantity">
+        Quantity: {{ getProductDetails()?.quantity }}
+          </p>
         </div>
+      </div>
     </div>
+    
     <div class="popup-footer">
-        <button class="add-to-cart-btn" (click)="addToCart()">{{isAddNewProduct ? 'Confirm' : 'Add to Cart'}}</button>
+      <button class="add-to-cart-btn" (click)="addToCart()">
+        {{isAddNewProduct ? 'Done' : 'Add to Cart'}}
+      </button>
     </div>
-</div>
+  </div>

@@ -75,8 +75,8 @@ export class MyCartComponent implements OnInit {
 
   fetchCartItems(): void {
     this.cartItems = this.myCartService.getCartItems().map(cartItem => {
-      const productDetail = this.productDetails.find(product => product.pk === cartItem);
-      console.log("productDetail",productDetail);
+      const productDetail = this.productDetails.find(product => product.pk === cartItem.pk);
+      console.log("productDetail", productDetail);
       return { ...cartItem, ...productDetail };
     });
   }
