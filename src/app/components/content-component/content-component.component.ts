@@ -223,6 +223,9 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
       this.mycartService.addToCart(reward);
     }
   }
+  addToFavorite(reward:any){
+    console.log(reward,"test")
+  }
 
   showLoadingSpinner() {
     this.isLoading = true;

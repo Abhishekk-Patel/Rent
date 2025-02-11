@@ -48,7 +48,7 @@
     </div>
 
     <div class="rewards">
-      <div *ngIf="isLoading" class="spinner-container">
+      <div *ngIf="isLoading || !filteredRewards.length" class="spinner-container">
         <mat-spinner></mat-spinner>
       </div>
       <div class="rewards-header">
@@ -62,7 +62,7 @@
               <button class="nav-btn left small-btn" (click)="prevImage(reward)"><mat-icon>chevron_left</mat-icon></button>
               <img [src]="reward.display_img_urls[reward.currentImageIndex] || 'assets/placeholder.png'" alt="{{ reward.name }}">
               <button class="nav-btn right small-btn" (click)="nextImage(reward)"><mat-icon>chevron_right</mat-icon></button>
-              <a class="add-to-fav-btn"><mat-icon>favorite_border</mat-icon></a>
+              <a class="add-to-fav-btn" (click)="addToFavorite(reward)"><mat-icon>favorite_border</mat-icon></a>
               <p class="city small-city"><mat-icon>location_on</mat-icon> {{reward.city}}</p>
             </div>
             <div class="reward-details">
