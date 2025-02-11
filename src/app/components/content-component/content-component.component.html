@@ -48,9 +48,6 @@
     </div>
 
     <div class="rewards">
-      <div *ngIf="isLoading || !filteredRewards.length" class="spinner-container">
-        <mat-spinner></mat-spinner>
-      </div>
       <div class="rewards-header">
         <p class="reward-count">Available Products({{ filteredRewards.length }}) </p>
         <button class="sort-btn" *ngIf="filteredRewards.length !=1" (click)="openSortPanel()">Sort</button>
@@ -83,13 +80,16 @@
           </div>
         </div>
       </div>
+      <div *ngIf="isLoading" class="skeleton-container">
+        <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]"></div>
+      </div>
     </div>
   </div>
 
   <app-sort-panel (mouseleave)="closePanel()" *ngIf="isSortPanelOpen" (close)="closeSortPanel()"
     (sort)="sortRewards($event)" (filterByPrice)="applyPriceFilter($event)" (filterByLocation)="applyLocationFilter($event)"></app-sort-panel>
 
-  <app-alert-msgs *ngIf="!filteredRewards.length" [message]="alertMsg"></app-alert-msgs>
+  <app-alert-msgs *ngIf="!isLoading" [message]="alertMsg"></app-alert-msgs>
   <button class="scroll-to-top-btn" [class.show]="showScrollToTop" (click)="scrollToTop()">
     <mat-icon>arrow_upward</mat-icon>
   </button>
