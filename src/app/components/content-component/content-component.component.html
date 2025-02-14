@@ -1,6 +1,7 @@
 <div class="search-section stylish-search-section">
   <div class="search-bar">
-    <input type="text" #searchInput (keypress)="handleKeyPress($event)" placeholder="Search by Location, Category, etc." [(ngModel)]="searchValue" class="search-input">
+    <input type="text" #searchInput (keypress)="handleKeyPress($event)" placeholder="Search by Location, Category, etc."
+      [(ngModel)]="searchValue" class="search-input">
     <button class="search-btn" (click)="search()">
       <mat-icon>search</mat-icon>
     </button>
@@ -27,7 +28,7 @@
         </mat-button-toggle-group>
       </div>
       <mat-accordion>
-        <mat-expansion-panel class="category-item" *ngFor="let category of categories; let i = index" 
+        <mat-expansion-panel class="category-item" *ngFor="let category of categories; let i = index"
           [(expanded)]="category.isExpanded" (opened)="onPanelChange()" (closed)="onPanelChange()">
           <mat-expansion-panel-header>
             <mat-panel-description>
@@ -46,7 +47,6 @@
         </mat-expansion-panel>
       </mat-accordion>
     </div>
-
     <div class="rewards">
       <div class="rewards-header">
         <p class="reward-count">Available Products({{ filteredRewards.length }}) </p>
@@ -56,9 +56,12 @@
         <div *ngFor="let reward of filteredRewards" class="reward-card">
           <div class="reward-card-content" [ngClass]="{'out-of-stock-blur': reward.valid_until < isDateToday}">
             <div class="image-container">
-              <button class="nav-btn left small-btn" (click)="prevImage(reward)"><mat-icon>chevron_left</mat-icon></button>
-              <img [src]="reward.display_img_urls[reward.currentImageIndex] || 'assets/placeholder.png'" alt="{{ reward.name }}">
-              <button class="nav-btn right small-btn" (click)="nextImage(reward)"><mat-icon>chevron_right</mat-icon></button>
+              <button class="nav-btn left small-btn"
+                (click)="prevImage(reward)"><mat-icon>chevron_left</mat-icon></button>
+              <img [src]="reward.display_img_urls[reward.currentImageIndex] || 'assets/placeholder.png'"
+                alt="{{ reward.name }}">
+              <button class="nav-btn right small-btn"
+                (click)="nextImage(reward)"><mat-icon>chevron_right</mat-icon></button>
               <a class="add-to-fav-btn" (click)="addToFavorite(reward)"><mat-icon>favorite_border</mat-icon></a>
               <p class="city small-city"><mat-icon>location_on</mat-icon> {{reward.city}}</p>
             </div>
@@ -75,8 +78,11 @@
           </div>
           <p *ngIf="reward.valid_until < isDateToday " class="out-of-stock">Out of Stock</p>
           <div class="reward-card-footer">
-            <button class="order-now-btn" [disabled]="reward.quantity === 0" (click)="productDetails(reward.pk)">Know More</button>
-            <button class="add-to-cart-btn" [disabled]="reward.quantity === 0" (click)="addToCart(reward.pk)"><mat-icon>add_shopping_cart</mat-icon></button>
+            {{this.isProductOwner}}
+            <button class="order-now-btn" [disabled]="reward.quantity === 0 || this.isProductOwner" (click)="productDetails(reward.pk)">Know
+              More</button>
+            <button class="add-to-cart-btn" [disabled]="reward.quantity === 0 || this.isProductOwner"
+              (click)="addToCart(reward.pk)"><mat-icon>add_shopping_cart</mat-icon></button>
           </div>
         </div>
       </div>
@@ -87,7 +93,8 @@
   </div>
 
   <app-sort-panel (mouseleave)="closePanel()" *ngIf="isSortPanelOpen" (close)="closeSortPanel()"
-    (sort)="sortRewards($event)" (filterByPrice)="applyPriceFilter($event)" (filterByLocation)="applyLocationFilter($event)"></app-sort-panel>
+    (sort)="sortRewards($event)" (filterByPrice)="applyPriceFilter($event)"
+    (filterByLocation)="applyLocationFilter($event)"></app-sort-panel>
 
   <app-alert-msgs *ngIf="!isLoading" [message]="alertMsg"></app-alert-msgs>
   <button class="scroll-to-top-btn" [class.show]="showScrollToTop" (click)="scrollToTop()">

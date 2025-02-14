@@ -17,7 +17,6 @@ export class HeaderComponent implements OnInit {
     this.openLanguageDialog();
     this.cartService.isAddNewProduct$.subscribe(res => {
       this.isAddNewProduct = res;
-      console.log(res, "res");
     });
   }
 

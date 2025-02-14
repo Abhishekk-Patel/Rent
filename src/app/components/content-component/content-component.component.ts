@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 import { debounceTime, fromEvent, Subscription } from 'rxjs';
 import { DataService } from 'src/app/service/data.service';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
+import { OrderService } from 'src/app/service/order.service';
+import { UserService } from 'src/app/service/user.service';
 import { Category_LIST } from 'src/mock-data';
 
 @Component({
@@ -17,7 +19,9 @@ import { Category_LIST } from 'src/mock-data';
   templateUrl: './content-component.component.html',
   styleUrls: ['./content-component.component.css'],
 })
-export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ContentComponentComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   alertMsg: string = 'Opps! No match found';
   public totalPages: any;
   categories = Category_LIST;
@@ -34,11 +38,14 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   private currentPage: number = 1;
   private loadingTimeout: any;
   isDateToday: string = new Date().toISOString().split('T')[0];
+  isProductOwner: boolean = false;
 
   constructor(
     public mycartService: MyCartServiceService,
     public router: Router,
-    public dataService: DataService
+    public dataService: DataService,
+    public orderService: OrderService,
+    private userService: UserService
   ) {
     this.dataService.getAllProductData();
   }
@@ -48,6 +55,7 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     this.mycartService.setIsAddNewProduct(false);
 
     this.dataService.products$.subscribe((response: any) => {
+      this.checkIfProductOwner(response, this.userService);
       this.rewards = response.map((item: any) => ({
         pk: item._id,
         name: item.productName,
@@ -62,6 +70,7 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
         city: item.city || 'Unknown',
         low_quantity: item.lowQuantity || 5,
         buyers: item.buyers || 0,
+        ProductOwnerEmail: item.email,
       }));
       this.filteredRewards = [...this.rewards]; // Set filteredRewards to the fetched data
       this.updateRewardsAndCategories();
@@ -69,10 +78,15 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
       this.isLoading = false;
     });
 
+
     window.addEventListener('scroll', this.onScroll.bind(this));
     this.loadMoreRewards();
+
+    this.orderService.receiveOrder().subscribe((data: any) => {
+      console.log(data, 'receive order content page'); // Store the message in Msg variable
+    });
+   
   }
-  
 
   ngAfterViewInit() {
     fromEvent(this.searchInput.nativeElement, 'input')
@@ -91,6 +105,10 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
           this.loadMoreRewards();
         }
       });
+    
+
+
+      this.checkIfProductOwner(this.filteredRewards, this.userService);
   }
 
   ngOnDestroy() {
@@ -102,6 +120,24 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
       clearTimeout(this.loadingTimeout);
     }
   }
+
+ checkIfProductOwner(products:any, userService:any) {
+    products.forEach((res:any) => {
+        let productOwner = res.ProductOwnerEmail;
+        const userDetails = userService.getUserDetails();
+
+        console.log(productOwner, userDetails, 'product owner and user details');;
+
+
+        // Check if product owner matches user
+        if (productOwner == userDetails) {
+          alert('You are the product owner');
+            this.isProductOwner = true;  // Return true if a match is found
+        }
+    });
+     this.isProductOwner = false;  // Return false if no match is found after looping through all rewards
+}
+
 
   onScroll() {
     this.showScrollToTop = window.scrollY > 300;
@@ -122,17 +158,21 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   search(): void {
-    const searchValue = this.searchInput.nativeElement.value.trim().toLowerCase();
+    const searchValue = this.searchInput.nativeElement.value
+      .trim()
+      .toLowerCase();
     this.searchValue = searchValue;
-    const matchedRewards = this.rewards.filter((reward) => {
-      return (
-        reward.category.toLocaleLowerCase().includes(searchValue) ||
-        reward.name.toLocaleLowerCase().includes(searchValue) ||
-        reward.city.toLocaleLowerCase().includes(searchValue)
-      );
-    }).filter((reward) => {
-      return reward.userRole === this.userRole || reward.userRole === 'Both';
-    });
+    const matchedRewards = this.rewards
+      .filter((reward) => {
+        return (
+          reward.category.toLocaleLowerCase().includes(searchValue) ||
+          reward.name.toLocaleLowerCase().includes(searchValue) ||
+          reward.city.toLocaleLowerCase().includes(searchValue)
+        );
+      })
+      .filter((reward) => {
+        return reward.userRole === this.userRole || reward.userRole === 'Both';
+      });
 
     if (matchedRewards.length > 0) {
       this.filteredRewards = matchedRewards.slice(0, this.pageSize);
@@ -147,9 +187,11 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   clear() {
     this.searchValue = '';
     this.searchInput.nativeElement.value = '';
-    this.filteredRewards = this.rewards.filter((reward) => {
-      return reward.userRole === this.userRole || reward.userRole === 'Both';
-    }).slice(0, this.pageSize);
+    this.filteredRewards = this.rewards
+      .filter((reward) => {
+        return reward.userRole === this.userRole || reward.userRole === 'Both';
+      })
+      .slice(0, this.pageSize);
     this.currentPage = 1;
     this.totalPages = Math.ceil(this.filteredRewards.length / this.pageSize);
   }
@@ -163,20 +205,28 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
 
   filterRewardsByCategory(categoryName: string) {
     if (categoryName === 'All') {
-      this.filteredRewards = this.rewards.filter((reward) => {
-        return reward.userRole === this.userRole || reward.userRole === 'Both';
-      }).slice(0, this.pageSize);
+      this.filteredRewards = this.rewards
+        .filter((reward) => {
+          return (
+            reward.userRole === this.userRole || reward.userRole === 'Both'
+          );
+        })
+        .slice(0, this.pageSize);
     } else {
       const lowerCategoryName = categoryName.toLocaleLowerCase();
-      const matchedRewards = this.rewards.filter((reward) => {
-        return (
-          reward.category.toLocaleLowerCase().includes(lowerCategoryName) ||
-          reward.name.toLocaleLowerCase().includes(lowerCategoryName) ||
-          reward.city.toLocaleLowerCase().includes(lowerCategoryName)
-        );
-      }).filter((reward) => {
-        return reward.userRole === this.userRole || reward.userRole === 'Both';
-      });
+      const matchedRewards = this.rewards
+        .filter((reward) => {
+          return (
+            reward.category.toLocaleLowerCase().includes(lowerCategoryName) ||
+            reward.name.toLocaleLowerCase().includes(lowerCategoryName) ||
+            reward.city.toLocaleLowerCase().includes(lowerCategoryName)
+          );
+        })
+        .filter((reward) => {
+          return (
+            reward.userRole === this.userRole || reward.userRole === 'Both'
+          );
+        });
 
       if (matchedRewards.length > 0) {
         this.filteredRewards = matchedRewards.slice(0, this.pageSize);
@@ -218,36 +268,38 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   addToCart(pk: number) {
-    const reward = this.rewards.find(reward => reward.pk === pk);
+    const reward = this.rewards.find((reward) => reward.pk === pk);
     if (reward) {
       this.mycartService.addToCart(reward);
     }
   }
-  addToFavorite(reward:any){
-    console.log(reward,"test")
+  addToFavorite(reward: any) {
+    console.log(reward, 'test');
   }
 
   showLoadingSpinner() {
     this.isLoading = true;
-    // this.loadingTimeout = setTimeout(() => {
-    //   this.isLoading = false;
-    // }, 2000); // Show spinner for 2 seconds
   }
 
   loadMoreRewards() {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = this.currentPage * this.pageSize;
-    const newRewards = this.rewards.filter((reward) => {
-      return (
-        (reward.userRole === this.userRole || reward.userRole === 'Both') &&
-        (reward.category.toLocaleLowerCase().includes(this.searchValue) ||
-        reward.name.toLocaleLowerCase().includes(this.searchValue) ||
-        reward.city.toLocaleLowerCase().includes(this.searchValue))
-      );
-    }).slice(startIndex, endIndex);
-    this.filteredRewards = [...new Set([...this.filteredRewards, ...newRewards])];
+    const newRewards = this.rewards
+      .filter((reward) => {
+        return (
+          (reward.userRole === this.userRole || reward.userRole === 'Both') &&
+          (reward.category.toLocaleLowerCase().includes(this.searchValue) ||
+            reward.name.toLocaleLowerCase().includes(this.searchValue) ||
+            reward.city.toLocaleLowerCase().includes(this.searchValue))
+        );
+      })
+      .slice(startIndex, endIndex);
+    this.filteredRewards = [
+      ...new Set([...this.filteredRewards, ...newRewards]),
+    ];
     this.currentPage++;
     this.isLoading = false;
+   // this.checkIfProductOwner(this.filteredRewards, this.userService);
   }
 
   productDetails(primaryKey: number) {
@@ -302,15 +354,17 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     this.loadMoreRewards();
   }
 
-  applyPriceFilter(priceRange: { min: number, max: number }) {
-    this.filteredRewards = this.rewards.filter(reward => {
+  applyPriceFilter(priceRange: { min: number; max: number }) {
+    this.filteredRewards = this.rewards.filter((reward) => {
       return reward.Rent >= priceRange.min && reward.Rent <= priceRange.max;
     });
   }
 
   applyLocationFilter(location: string) {
-    this.filteredRewards = this.rewards.filter(reward => {
-      return reward.city.toLocaleLowerCase().includes(location.toLocaleLowerCase());
+    this.filteredRewards = this.rewards.filter((reward) => {
+      return reward.city
+        .toLocaleLowerCase()
+        .includes(location.toLocaleLowerCase());
     });
   }
 }

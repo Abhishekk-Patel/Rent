@@ -1,28 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { DataService } from 'src/app/service/data.service';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
-import { REWARD_LIST } from 'src/mock-data';
+import { OrderService } from 'src/app/service/order.service';
 
 @Component({
   selector: 'app-my-cart',
   templateUrl: './my-cart.component.html',
-  styleUrls: ['./my-cart.component.css']
+  styleUrls: ['./my-cart.component.css'],
 })
 export class MyCartComponent implements OnInit {
   cartItems: any[] = [];
   productFormGroup: FormGroup;
   deliveryFormGroup: FormGroup;
   paymentFormGroup: FormGroup;
- public productDetails = REWARD_LIST;
-
+  public productDetails: any[] = [];
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly dialogRef: MatDialogRef<MyCartComponent>,
-    private readonly myCartService: MyCartServiceService
+    private readonly myCartService: MyCartServiceService,
+    private readonly dataService: DataService,
+    private readonly orderService: OrderService
   ) {
-    
     this.productFormGroup = this.fb.group({});
     const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
 
@@ -32,17 +33,17 @@ export class MyCartComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       mobile: ['', Validators.required],
       rentalPeriod: this.fb.group({
-      start: [today, Validators.required],
-      end: [today, Validators.required]
-      })
+        start: [today, Validators.required],
+        end: [today, Validators.required],
+      }),
     });
     this.paymentFormGroup = this.fb.group({
-      paymentMode: ['', Validators.required]
+      paymentMode: ['', Validators.required],
     });
   }
 
   ngOnInit(): void {
-    this.myCartService.cartItems$.subscribe(items => {
+    this.myCartService.cartItems$.subscribe((items) => {
       this.cartItems = items;
     });
     this.fetchCartItems(); // Ensure cart items are fetched on init
@@ -58,25 +59,24 @@ export class MyCartComponent implements OnInit {
   }
 
   placeOrder(): void {
-  //  console.log(this.deliveryFormGroup.value);
-   // console.log(this.paymentFormGroup.value);
     if (this.deliveryFormGroup.valid) {
-      // Handle order placement logic here
-     
+      const orderData = [[...this.cartItems], [this.deliveryFormGroup.value]];
+      this.orderService.sendOrder(orderData);
       this.myCartService.showMessage('Order placed successfully');
       this.dialogRef.close();
-    }
-    else{
-     
+    } else {
       this.myCartService.showMessage('Error! Please fill all the details');
-
     }
   }
 
   fetchCartItems(): void {
-    this.cartItems = this.myCartService.getCartItems().map(cartItem => {
-      const productDetail = this.productDetails.find(product => product.pk === cartItem.pk);
-      console.log("productDetail", productDetail);
+    this.dataService.products$.subscribe((res) =>
+      this.productDetails.push(res)
+    );
+    this.cartItems = this.myCartService.getCartItems().map((cartItem) => {
+      const productDetail = this.productDetails.find((product) => {
+        product._id === cartItem.pk;
+      });
       return { ...cartItem, ...productDetail };
     });
   }
