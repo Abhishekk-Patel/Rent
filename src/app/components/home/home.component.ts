@@ -92,7 +92,7 @@ export class HomeComponent implements OnInit {
   signUp() {
     this.userService.signUp(this.signUpForm).subscribe(success => {
       if (success) {
-        console.log(success, 'success');
+      
         this.isLoggedIn = true;
         this.showSignUp = false;
         this.showRentOptions = true;

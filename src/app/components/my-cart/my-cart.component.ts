@@ -36,6 +36,8 @@ export class MyCartComponent implements OnInit {
         start: [today, Validators.required],
         end: [today, Validators.required],
       }),
+      orderDate:[today,Validators.required],
+
     });
     this.paymentFormGroup = this.fb.group({
       paymentMode: ['', Validators.required],
@@ -61,6 +63,7 @@ export class MyCartComponent implements OnInit {
   placeOrder(): void {
     if (this.deliveryFormGroup.valid) {
       const orderData = [[...this.cartItems], [this.deliveryFormGroup.value]];
+      console.log(  orderData, 'orderData');
       this.orderService.sendOrder(orderData);
       this.myCartService.showMessage('Order placed successfully');
       this.dialogRef.close();

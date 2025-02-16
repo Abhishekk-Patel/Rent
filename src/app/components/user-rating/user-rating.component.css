@@ -1,0 +1,14 @@
+.rating-container {
+    display: flex;
+    gap: 5px;
+    cursor: pointer;
+  }
+  mat-icon {
+    font-size: 30px;
+    color: gray;
+    transition: color 0.2s;
+  }
+  .filled {
+    color: gold;
+  }
+  

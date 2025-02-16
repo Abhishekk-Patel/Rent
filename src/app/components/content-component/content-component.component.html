@@ -1,7 +1,9 @@
+
 <div class="search-section stylish-search-section">
   <div class="search-bar">
-    <input type="text" #searchInput (keypress)="handleKeyPress($event)" placeholder="Search by Location, Category, etc."
+    <input type="text" #searchInput (input)="search()"  (keypress)="handleKeyPress($event)" placeholder="Search by Location, Category, etc."
       [(ngModel)]="searchValue" class="search-input">
+      
     <button class="search-btn" (click)="search()">
       <mat-icon>search</mat-icon>
     </button>
@@ -66,8 +68,11 @@
               <p class="city small-city"><mat-icon>location_on</mat-icon> {{reward.city}}</p>
             </div>
             <div class="reward-details">
+              <app-user-rating [(rating)]="productRating"></app-user-rating>
+
               <h2>{{ reward.name }}</h2>
               <p class="rent">Rent: {{ reward.Rent | currency:'INR'}}/day </p>
+              <p class="size">Size: {{ reward.size }}</p> <!-- Display product size -->
               <p *ngIf="reward.quantity && reward.quantity <= reward.low_quantity" class="high-demand">
                 <mat-icon>warning</mat-icon> ON High Demand (Only {{ reward.quantity }} left)
               </p>
@@ -78,10 +83,8 @@
           </div>
           <p *ngIf="reward.valid_until < isDateToday " class="out-of-stock">Out of Stock</p>
           <div class="reward-card-footer">
-            {{this.isProductOwner}}
-            <button class="order-now-btn" [disabled]="reward.quantity === 0 || this.isProductOwner" (click)="productDetails(reward.pk)">Know
-              More</button>
-            <button class="add-to-cart-btn" [disabled]="reward.quantity === 0 || this.isProductOwner"
+            <button class="order-now-btn" [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email" (click)="productDetails(reward.pk)">Know More</button>
+            <button class="add-to-cart-btn" [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
               (click)="addToCart(reward.pk)"><mat-icon>add_shopping_cart</mat-icon></button>
           </div>
         </div>

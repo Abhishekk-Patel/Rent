@@ -1,25 +1,27 @@
 .partner-brands-slider {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
   position: relative;
   width: 100%;
-  height: 300px; /* Adjust height as needed */
+  height: 400px; /* Adjust height for larger screens */
   background-color: #f5f5f5;
-  margin-bottom: 20px;
-  /* border-radius: 40px 40px 40px 40px; */
-  /* margin-top: -16px; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 
+.main-slider {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .partner-brands-slider .brand {
   display: none;
-  flex-shrink: 0;
-  width: 100%;
-  height: 100%;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
 .partner-brands-slider .brand.active {
@@ -29,58 +31,85 @@
 .partner-brands-slider .brand img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensure the image covers the container */
+  object-fit: cover;
+  border-radius: 15px;
 }
 
-/* .nav-btn {
+/* Center the dots container */
+.nav-dots {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  z-index: 2;
+}
+
+/* Style for each dot */
+.nav-dot {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  z-index: 1;
-  transition: background-color 0.3s ease;
-}
-
-.nav-btn.left {
-  left: 10px;
-}
-
-.nav-btn.right {
-  right: 10px;
-}
-
-.nav-btn:hover {
-  background-color: rgba(0, 0, 0, 0.7);
-} */
-
-
-.nav-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
   background-color: rgba(0, 0, 0, 0.5);
-  border: none;
-  color: white;
-  padding: 5px;
   cursor: pointer;
-  border-radius: 50%;
-  z-index: 1;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s, transform 0.3s ease;
 }
 
-.nav-btn.left {
-  left: 0;
+.nav-dot.active {
+  background-color: #fff;
+  transform: scale(1.5);
 }
 
-.nav-btn.right {
-  right: 0;
+.nav-dot:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
-.nav-btn:hover {
-  background-color: rgba(0, 0, 0, 0.7);
+/* Mobile responsiveness */
+@media (max-width: 1024px) {
+  .partner-brands-slider .brand img {
+    height: 300px; /* Adjust image height for tablets */
+  }
+
+  .nav-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .nav-dots {
+    gap: 12px;
+  }
+}
+
+/* Tablet and smaller devices */
+@media (max-width: 768px) {
+  .partner-brands-slider .brand img {
+    height: 250px; /* Adjust image height for smaller screens */
+  }
+
+  .nav-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .nav-dots {
+    gap: 10px;
+  }
+}
+
+/* Mobile (smallest screens) */
+@media (max-width: 480px) {
+  .partner-brands-slider .brand img {
+    height: 200px; /* Further adjust for smaller devices */
+  }
+
+  .nav-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .nav-dots {
+    gap: 8px;
+  }
 }

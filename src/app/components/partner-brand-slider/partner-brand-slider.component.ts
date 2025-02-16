@@ -3,29 +3,38 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-partner-brand-slider',
   templateUrl: './partner-brand-slider.component.html',
-  styleUrls: ['./partner-brand-slider.component.css']
+  styleUrls: ['./partner-brand-slider.component.css'],
 })
 export class PartnerBrandSliderComponent {
-
   brands = [
-    { name: 'Brand 1', imageUrl: 'https://zariin.com/cdn/shop/files/Bridal_jewelry_banner_mobile.jpg?v=1680588337&width=3840' },
-    { name: 'Brand 2', imageUrl: 'https://image-marketing.s3.ap-south-1.amazonaws.com/wp-content/uploads/2023/10/06122735/0.jpg' },
-    { name: 'Brand 3', imageUrl: 'https://scontent.fknu1-4.fna.fbcdn.net/v/t39.30808-6/279437443_5139380052774131_5574484461183380972_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=FOeYa-4F3ocQ7kNvgGRY0MQ&_nc_oc=AdhTVXXJWFgwtMWFKAoGnge-KirH7At3tTEXSpCuAkv2ELTKPfntB4ZUqG8-xqD8MDcusArCz7XPrBinOqiBDIPf&_nc_zt=23&_nc_ht=scontent.fknu1-4.fna&_nc_gid=AAVoa5fiMwi8-ZHzPDhks13&oh=00_AYDwN5n4_uUhZRZpz_AdcR18FiMXvBs8ShpTZdbG1NdHnw&oe=67AFE9E3' },
-    // Add more brands as needed
+    { name: 'Brand 3', imageUrl: './assets/22.webp' },
+    { name: 'Brand 2', imageUrl: './assets/16.png' },
+    { name: 'Brand 1', imageUrl: './assets/20.webp' },
+    
+    { name: 'Brand 4', imageUrl: './assets/23.webp' },
+    { name: 'Brand 5', imageUrl: './assets/24.webp' },
+    { name: 'Brand 6', imageUrl: './assets/25.webp' },
+    { name: 'Brand 7', imageUrl: './assets/26.webp' },
+    { name: 'Brand 8', imageUrl: './assets/27.webp' },
+    { name: 'Brand 9', imageUrl: './assets/28.webp' },
   ];
 
   currentIndex = 0;
+
+  goToSlide(index: number) {
+    this.currentIndex = index;
+  }
+
+  ngOnInit() {
+    setInterval(() => this.nextSlide(), 5000); // Auto-slide every 5 seconds
+  }
 
   nextSlide() {
     this.currentIndex = (this.currentIndex + 1) % this.brands.length;
   }
 
   prevSlide() {
-    this.currentIndex = (this.currentIndex - 1 + this.brands.length) % this.brands.length;
+    this.currentIndex =
+      (this.currentIndex - 1 + this.brands.length) % this.brands.length;
   }
-
-  ngOnInit() {
-    setInterval(() => this.nextSlide(), 5000); // Auto-slide every 3 seconds
-  }
-
 }

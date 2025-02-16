@@ -17,7 +17,7 @@
     <button mat-icon-button aria-label="Language" matTooltip="{{countryCode}}" (click)="openLanguageDialog()"> 
       <mat-icon>language</mat-icon>
     </button> 
-    <button mat-icon-button aria-label="Notifications" *ngIf="!isAddNewProduct" matTooltip="New product listed" [matBadge]="!isAddNewProduct ? 1 : 0" matBadgePosition="above after" matBadgeColor="accent">
+    <button mat-icon-button aria-label="Notifications" *ngIf="orderReceived && this.isOwner" matTooltip="{{orderReceived}}" [matBadge]="!isAddNewProduct ? 1 : 0" matBadgePosition="above after" matBadgeColor="accent">
       <mat-icon>notifications</mat-icon>
     </button>
    

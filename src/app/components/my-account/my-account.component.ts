@@ -1,21 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/service/data.service';
 import { UserService } from 'src/app/service/user.service';
+import { OrderService } from 'src/app/service/order.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-my-account',
   templateUrl: './my-account.component.html',
   styleUrls: ['./my-account.component.css'],
 })
-export class MyAccountComponent implements OnInit {
+export class MyAccountComponent implements OnInit, OnDestroy {
   user: any;
   userHistory: any[] = [];
+  receivedOrders: any[] = [];
+  yourOrders: any[] = [];
+  orderSubscription: Subscription | null = null;
 
   constructor(
     private userService: UserService,
     public router: Router,
-    public dataService: DataService
+    public dataService: DataService,
+    private orderService: OrderService
   ) {
     // Ensure user is logged in, otherwise redirect to home
     if (!this.userService.getUserDetails()) {
@@ -26,16 +32,26 @@ export class MyAccountComponent implements OnInit {
   ngOnInit(): void {
     // Get user details when the component initializes
     this.user = this.userService.getUserDetails();
-    console.log(this.user, 'user');
 
     // Check if the user is available and fetch user history
     if (this.user && this.user.email) {
       this.getUserHistoryByEmail(this.user.email);
     }
+
+    this.loadReceivedOrders();
+    this.loadYourOrders();
+  }
+
+  ngOnDestroy(): void {
+    // Cleanup the subscription and disconnect socket on destroy
+    if (this.orderSubscription) {
+      this.orderSubscription.unsubscribe();
+    }
+    // this.orderService.disconnect();
   }
 
   // Get user history by email
-  getUserHistoryByEmail(email: string) {
+  getUserHistoryByEmail(email: string): void {
     this.dataService.getDataByEmail(email).subscribe(
       (response) => {
         if (response && Array.isArray(response)) {
@@ -43,7 +59,6 @@ export class MyAccountComponent implements OnInit {
         } else {
           this.userHistory = []; // If no history is returned, reset the array
         }
-        console.log(this.userHistory, 'user history response'); // Optional: Log user history
       },
       (error) => {
         console.error('Error fetching user history:', error);
@@ -52,36 +67,88 @@ export class MyAccountComponent implements OnInit {
     );
   }
 
-  sortUserHistory() {
-    this.userHistory = [...this.userHistory].sort((a, b) => {
-      return (
-        new Date(b.productListedDate).getTime() -
-        new Date(a.productListedDate).getTime()
-      );
-    });
-    console.log(this.userHistory, 'sorted user history'); // Optional: Log sorted user history
+  loadReceivedOrders(): void {
+    this.orderService.connectToSocket(this.user.email);
+
+    // Store the subscription so it can be unsubscribed later
+    this.orderSubscription = this.orderService
+      .receiveOrder()
+      .subscribe((order) => {
+        this.receivedOrders = order;
+        console.log('Order received in component:', this.receivedOrders);
+      });
+
+    this.orderService.fetchOrders(this.user.email).subscribe(
+      (orders) => {
+        if (orders && orders.length > 0) {
+          this.receivedOrders = orders;
+          console.log('Orders fetched from backend:', this.receivedOrders);
+        }
+      },
+      (error) => {
+        console.error('Error fetching received orders:', error);
+      }
+    );
   }
 
-  editHistoryItem(item: any) {
+  loadYourOrders(): void {
+    this.orderService.getYourOrders(this.user.email).subscribe(
+      (orders: any[]) => {
+        this.yourOrders = orders;
+      },
+      (error) => {
+        console.error('Error fetching your orders:', error);
+      }
+    );
+  }
+
+  sortByDate(tab: string): void {
+    if (tab === 'history') {
+      this.userHistory = [...this.userHistory].sort((a, b) => {
+        return (
+          new Date(b.productListedDate).getTime() -
+          new Date(a.productListedDate).getTime()
+        );
+      });
+    } else if (tab === 'received') {
+      this.receivedOrders = [...this.receivedOrders].sort((a, b) => {
+        return (
+          new Date(b.productListedDate).getTime() -
+          new Date(a.productListedDate).getTime()
+        );
+      });
+    } else if (tab === 'your') {
+      this.yourOrders = [...this.yourOrders].sort((a, b) => {
+        return (
+          new Date(b.productListedDate).getTime() -
+          new Date(a.productListedDate).getTime()
+        );
+      });
+    }
+  }
+
+  editHistoryItem(item: any): void {
     // Navigate to the edit page with the item details
     // this.router.navigate(['/edit-product', item.pk]);
   }
 
-  deleteHistoryItem(item: any) {
-    console.log('Deleting item:', item._id
-    );
+  deleteHistoryItem(item: any): void {
+    console.log('Deleting item:', item._id);
     // Remove the item from the user history
     this.userHistory = this.userHistory.filter(
       (historyItem) => historyItem._id !== item._id
     );
-   // Optionally, call a service to delete the item from the backend
+    // Optionally, call a service to delete the item from the backend
     this.dataService.deleteProductById(item._id).subscribe(
       () => {
         console.log('Item deleted successfully');
       },
-      (error:Error) => {
+      (error: Error) => {
         console.error('Error deleting item:', error);
       }
     );
   }
+}
+function Signal(arg0: number) {
+  throw new Error('Function not implemented.');
 }

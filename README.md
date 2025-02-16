@@ -31,9 +31,9 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
    ng build --configuration production --base-href /Rent/
    ```
 
-2. Deploy the contents of the `dist/frontend-assessment-rewardz` folder to your hosting service:
+2. Deploy the contents of the `dist/Rent` folder to your hosting service:
    ```sh
-   npx angular-cli-ghpages --dir=dist/frontend-assessment-rewardz
+   npx angular-cli-ghpages --dir=dist/Rent
    ```
 
 3. Access the hosted application at:

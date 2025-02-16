@@ -38,6 +38,9 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MyAccountComponent } from './components/my-account/my-account.component';
 import { HttpClientModule } from '@angular/common/http';
 import { PartnerBrandSliderComponent } from './components/partner-brand-slider/partner-brand-slider.component'; // Import HttpClientModule
+import { MatTabsModule } from '@angular/material/tabs';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { UserRatingComponent } from './components/user-rating/user-rating.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +56,9 @@ import { PartnerBrandSliderComponent } from './components/partner-brand-slider/p
     AddProductComponent,
     MyAccountComponent,
     PartnerBrandSliderComponent,
+    UserRatingComponent,
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -83,7 +88,8 @@ import { PartnerBrandSliderComponent } from './components/partner-brand-slider/p
     MatSelectModule,
     MatOptionModule,
     MatButtonToggleModule,
-    HttpClientModule // Add HttpClientModule to imports
+    HttpClientModule,
+    MatTabsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

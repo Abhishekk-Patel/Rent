@@ -4,38 +4,107 @@
       <h2>User Details</h2>
       <div class="detail">
         <label>Username:</label>
-        <span>{{ user.username }}</span>
+        <span>{{ user?.username }}</span>
       </div>
       <div class="detail">
         <label>Email:</label>
-        <span>{{ user.email }}</span>
+        <span>{{ user?.email }}</span>
       </div>
       <div class="detail">
         <label>Mobile Number:</label>
-        <span>{{ user.mobileNumber }}</span>
+        <span>{{ user?.mobileNumber }}</span>
       </div>
     </div>
-    <div class="user-history">
-      <h2>History</h2>
-      <div *ngIf="userHistory.length === 0" class="no-records">
-        No record found 
-      </div>
-      <button *ngIf="userHistory.length!=0" (click)="sortUserHistory()" class="sort">Sort by Date</button>
-      <div class="history-item" *ngFor="let item of userHistory">
-        <div class="item-details">
-          <img [src]="item.images[0].url" alt="{{ item.ProductName }}">
-          <div class="item-info">
-            <h3><strong>Product Name:</strong> {{ item.productName }}</h3>
-            <p><strong>Product Description:</strong>{{ item.productDescription }}</p>
-            <p><strong>Price:</strong> {{ item.productRent }}</p>
-            <p><strong>Product Listed Date:</strong> {{ item.productListedDate ? (item.productListedDate | date:'short') : 'NA' }}</p>
-            <div class="action-buttons">
-              <button (click)="editHistoryItem(item)" class="edit-btn">Edit</button>
-              <button (click)="deleteHistoryItem(item)" class="delete-btn">Delete</button>
+    <mat-tab-group>
+      <mat-tab label="History" class="history-tab">
+        <div class="user-history">
+          <div class="tab-header">
+            <h2>History</h2>
+            <button *ngIf="userHistory.length > 0" (click)="sortByDate('history')" class="sort">Sort by Date</button>
+          </div>
+          <div *ngIf="userHistory.length === 0" class="no-records">
+            No record found
+          </div>
+          <div class="history-item" *ngFor="let item of userHistory">
+            <div class="item-details">
+              <img [src]="item.images[0]?.url" alt="{{ item.productName }}" class="product-image">
+              <div class="item-info">
+                <h3><strong>Product Name:</strong> {{ item.productName }}</h3>
+                <p><strong>Product Description:</strong>{{ item.productDescription }}</p>
+                <p><strong>Price:</strong> {{ item.productRent }}</p>
+                <p><strong>Product Listed Date:</strong> {{ item.productListedDate ? (item.productListedDate |
+                  date:'short') : 'NA' }}</p>
+                <div class="action-buttons">
+                  <button (click)="editHistoryItem(item)" class="edit-btn">Edit</button>
+                  <button (click)="deleteHistoryItem(item)" class="delete-btn">Delete</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </mat-tab>
+      <mat-tab    [label]="'Received Orders (' + receivedOrders.length + ')'">
+        <div class="received-orders">
+          <div class="tab-header">
+            <h2>Received Orders</h2>
+            <button *ngIf="receivedOrders.length > 0" (click)="sortByDate('received')" class="sort">Sort by
+              Date</button>
+          </div>
+          <div *ngIf="receivedOrders.length === 0" class="no-records">
+            No orders received
+          </div>
+          <div class="order-item" *ngFor="let order of receivedOrders">
+            <div class="item-details" *ngFor="let product of order.product">
+              <img [src]="product.display_img_urls[0]" alt="{{ product.name }}" class="product-image">
+              <div class="item-info">
+                <h3><strong>Product Name:</strong> {{ product.name }}</h3>
+                <p><strong>Product Description:</strong> {{ product.description }}</p>
+                <p><strong>Category:</strong> {{ product.category }}</p>
+              </div>
+            </div>
+            <div class="customer-details">
+              <h3>Customer Details</h3>
+              <p><strong>Name:</strong> John Doe</p>
+              <p><strong>Email:</strong> john.doeexample.com</p>
+              <p><strong>Address:</strong> 123 Main St, City, Country</p>
+              <p><strong>Phone:</strong> +1234567890</p>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab [label]="'Your Orders (' + yourOrders.length + ')'">
+
+        <div class="your-orders">
+          <div class="tab-header">
+            <h2>Your Orders</h2>
+            <button *ngIf="yourOrders.length > 0" (click)="sortByDate('your')" class="sort">Sort by Date</button>
+          </div>
+          <div *ngIf="yourOrders.length === 0" class="no-records">
+            No orders placed
+          </div>
+          <div class="order-item" *ngFor="let order of yourOrders">
+            <div *ngFor="let product of order.product">
+              <div class="item-details">
+                <img [src]="product.display_img_urls[0]" alt="{{ product.name }}" class="product-image">
+                <div class="item-info">
+                  <h3><strong>Product Name:</strong> {{ product.name }}</h3>
+                  <p><strong>Product Description:</strong> {{ product.description }}</p>
+                  <p><strong>Category:</strong> {{ product.category }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="customer-details" *ngFor="let customer of order.customer">
+
+              <h3>Customer Details</h3>
+              <p><strong>Name:</strong> {{customer.name}}</p>
+              <p><strong>Email:</strong> {{customer.email}}</p>
+              <p><strong>Address:</strong> {{customer.address}}</p>
+              <p><strong>Phone:</strong> {{customer.mobile}}</p>
+
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
   </div>
 </div>

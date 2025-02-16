@@ -34,50 +34,56 @@ export class ContentComponentComponent
   userRole: string = 'Bride';
   showScrollToTop: boolean = false;
   private scrollSubscription!: Subscription;
+  private orderSubscription!: Subscription;
   private pageSize: number = 10;
   private currentPage: number = 1;
   private loadingTimeout: any;
   isDateToday: string = new Date().toISOString().split('T')[0];
-  isProductOwner: boolean = false;
+  productRating: any = 3;
 
   constructor(
     public mycartService: MyCartServiceService,
     public router: Router,
     public dataService: DataService,
     public orderService: OrderService,
-    private userService: UserService
+    public userService: UserService
   ) {
     this.dataService.getAllProductData();
   }
 
   ngOnInit() {
-    this.isLoading = true;
     this.mycartService.setIsAddNewProduct(false);
+    this.isLoading = true;
 
-    this.dataService.products$.subscribe((response: any) => {
-      this.checkIfProductOwner(response, this.userService);
-      this.rewards = response.map((item: any) => ({
-        pk: item._id,
-        name: item.productName,
-        Rent: item.productRent,
-        description: item.productDescription || 'No description provided',
-        category: item.category || 'General',
-        quantity: item.quantity || 0,
-        userRole: item.userRole || 'Both',
-        valid_until: item.validUntil,
-        display_img_urls: item.images.map((img: any) => img.url),
-        currentImageIndex: 0,
-        city: item.city || 'Unknown',
-        low_quantity: item.lowQuantity || 5,
-        buyers: item.buyers || 0,
-        ProductOwnerEmail: item.email,
-      }));
-      this.filteredRewards = [...this.rewards]; // Set filteredRewards to the fetched data
-      this.updateRewardsAndCategories();
-      this.filterRewardsByCategory('All');
-      this.isLoading = false;
-    });
-
+    this.dataService.products$.subscribe(
+      (response: any) => {
+        this.rewards = response.map((item: any) => ({
+          pk: item._id,
+          name: item.productName,
+          Rent: item.productRent,
+          description: item.productDescription || 'No description provided',
+          category: item.category || 'General',
+          quantity: item.quantity || 0,
+          userRole: item.userRole || 'Both',
+          valid_until: item.validUntil,
+          display_img_urls: item.images.map((img: any) => img.url),
+          currentImageIndex: 0,
+          city: item.city || 'Unknown',
+          low_quantity: item.lowQuantity || 5,
+          buyers: item.buyers || 0,
+          ProductOwnerEmail: item.email,
+        }));
+        this.filteredRewards = [...this.rewards]; // Set filteredRewards to the fetched data
+        this.updateRewardsAndCategories();
+        this.filterRewardsByCategory('All');
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error fetching products:', error);
+        this.alertMsg = 'Failed to load products. Please try again later.';
+        this.isLoading = false;
+      }
+    );
 
     window.addEventListener('scroll', this.onScroll.bind(this));
     this.loadMoreRewards();
@@ -85,7 +91,6 @@ export class ContentComponentComponent
     this.orderService.receiveOrder().subscribe((data: any) => {
       console.log(data, 'receive order content page'); // Store the message in Msg variable
     });
-   
   }
 
   ngAfterViewInit() {
@@ -105,10 +110,6 @@ export class ContentComponentComponent
           this.loadMoreRewards();
         }
       });
-    
-
-
-      this.checkIfProductOwner(this.filteredRewards, this.userService);
   }
 
   ngOnDestroy() {
@@ -119,25 +120,12 @@ export class ContentComponentComponent
     if (this.loadingTimeout) {
       clearTimeout(this.loadingTimeout);
     }
+    // Unsubscribe from the 'orderReceived' event and disconnect the socket
+    if (this.orderSubscription) {
+      this.orderSubscription.unsubscribe();
+    }
+    this.orderService.disconnect();
   }
-
- checkIfProductOwner(products:any, userService:any) {
-    products.forEach((res:any) => {
-        let productOwner = res.ProductOwnerEmail;
-        const userDetails = userService.getUserDetails();
-
-        console.log(productOwner, userDetails, 'product owner and user details');;
-
-
-        // Check if product owner matches user
-        if (productOwner == userDetails) {
-          alert('You are the product owner');
-            this.isProductOwner = true;  // Return true if a match is found
-        }
-    });
-     this.isProductOwner = false;  // Return false if no match is found after looping through all rewards
-}
-
 
   onScroll() {
     this.showScrollToTop = window.scrollY > 300;
@@ -158,84 +146,29 @@ export class ContentComponentComponent
   }
 
   search(): void {
-    const searchValue = this.searchInput.nativeElement.value
-      .trim()
-      .toLowerCase();
+    const searchValue = this.searchInput.nativeElement.value.trim().toLowerCase();
     this.searchValue = searchValue;
-    const matchedRewards = this.rewards
-      .filter((reward) => {
-        return (
-          reward.category.toLocaleLowerCase().includes(searchValue) ||
-          reward.name.toLocaleLowerCase().includes(searchValue) ||
-          reward.city.toLocaleLowerCase().includes(searchValue)
-        );
-      })
-      .filter((reward) => {
-        return reward.userRole === this.userRole || reward.userRole === 'Both';
-      });
-
-    if (matchedRewards.length > 0) {
-      this.filteredRewards = matchedRewards.slice(0, this.pageSize);
-      this.totalPages = Math.ceil(matchedRewards.length / this.pageSize);
-    } else {
-      this.filteredRewards = [];
-      this.alertMsg = 'Opps! No match found';
-    }
-    this.currentPage = 1;
+    this.filterRewards();
   }
 
   clear() {
     this.searchValue = '';
     this.searchInput.nativeElement.value = '';
-    this.filteredRewards = this.rewards
-      .filter((reward) => {
-        return reward.userRole === this.userRole || reward.userRole === 'Both';
-      })
-      .slice(0, this.pageSize);
-    this.currentPage = 1;
-    this.totalPages = Math.ceil(this.filteredRewards.length / this.pageSize);
+    this.filterRewards();
   }
 
   onPanelChange() {
     const expandedCategory = this.getExpandedCategory();
-    this.filterRewardsByCategory(
-      expandedCategory ? expandedCategory.name : 'All'
-    );
+    this.filterRewardsByCategory(expandedCategory ? expandedCategory.name : 'All');
   }
 
   filterRewardsByCategory(categoryName: string) {
-    if (categoryName === 'All') {
-      this.filteredRewards = this.rewards
-        .filter((reward) => {
-          return (
-            reward.userRole === this.userRole || reward.userRole === 'Both'
-          );
-        })
-        .slice(0, this.pageSize);
-    } else {
-      const lowerCategoryName = categoryName.toLocaleLowerCase();
-      const matchedRewards = this.rewards
-        .filter((reward) => {
-          return (
-            reward.category.toLocaleLowerCase().includes(lowerCategoryName) ||
-            reward.name.toLocaleLowerCase().includes(lowerCategoryName) ||
-            reward.city.toLocaleLowerCase().includes(lowerCategoryName)
-          );
-        })
-        .filter((reward) => {
-          return (
-            reward.userRole === this.userRole || reward.userRole === 'Both'
-          );
-        });
-
-      if (matchedRewards.length > 0) {
-        this.filteredRewards = matchedRewards.slice(0, this.pageSize);
-        this.totalPages = Math.ceil(matchedRewards.length / this.pageSize);
-      } else {
-        this.filteredRewards = [];
-        this.alertMsg = 'Opps! No match found';
-      }
-    }
+    this.filteredRewards = this.rewards.filter((reward) => {
+      const matchesCategory = categoryName === 'All' || reward.category.toLocaleLowerCase().includes(categoryName.toLocaleLowerCase());
+      const matchesSearch = reward.name.toLocaleLowerCase().includes(this.searchValue) || reward.city.toLocaleLowerCase().includes(this.searchValue);
+      const matchesUserRole = reward.userRole === this.userRole || reward.userRole === 'Both';
+      return matchesCategory && matchesSearch && matchesUserRole;
+    }).slice(0, this.pageSize);
     this.currentPage = 1;
   }
 
@@ -249,9 +182,7 @@ export class ContentComponentComponent
 
   sortRewards(order: string) {
     this.filteredRewards.sort((a, b) => {
-      return order === 'asc'
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name);
+      return order === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
     });
   }
 
@@ -284,22 +215,14 @@ export class ContentComponentComponent
   loadMoreRewards() {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = this.currentPage * this.pageSize;
-    const newRewards = this.rewards
-      .filter((reward) => {
-        return (
-          (reward.userRole === this.userRole || reward.userRole === 'Both') &&
-          (reward.category.toLocaleLowerCase().includes(this.searchValue) ||
-            reward.name.toLocaleLowerCase().includes(this.searchValue) ||
-            reward.city.toLocaleLowerCase().includes(this.searchValue))
-        );
-      })
-      .slice(startIndex, endIndex);
-    this.filteredRewards = [
-      ...new Set([...this.filteredRewards, ...newRewards]),
-    ];
+    const newRewards = this.rewards.filter((reward) => {
+      const matchesSearch = reward.name.toLocaleLowerCase().includes(this.searchValue) || reward.city.toLocaleLowerCase().includes(this.searchValue);
+      const matchesUserRole = reward.userRole === this.userRole || reward.userRole === 'Both';
+      return matchesSearch && matchesUserRole;
+    }).slice(startIndex, endIndex);
+    this.filteredRewards = [...new Set([...this.filteredRewards, ...newRewards])];
     this.currentPage++;
     this.isLoading = false;
-   // this.checkIfProductOwner(this.filteredRewards, this.userService);
   }
 
   productDetails(primaryKey: number) {
@@ -307,17 +230,14 @@ export class ContentComponentComponent
   }
 
   nextImage(reward: any) {
-    reward.currentImageIndex =
-      (reward.currentImageIndex + 1) % reward.display_img_urls.length;
+    reward.currentImageIndex = (reward.currentImageIndex + 1) % reward.display_img_urls.length;
     if (!reward.display_img_urls[reward.currentImageIndex]) {
       reward.currentImageIndex = 0;
     }
   }
 
   prevImage(reward: any) {
-    reward.currentImageIndex =
-      (reward.currentImageIndex - 1 + reward.display_img_urls.length) %
-      reward.display_img_urls.length;
+    reward.currentImageIndex = (reward.currentImageIndex - 1 + reward.display_img_urls.length) % reward.display_img_urls.length;
     if (!reward.display_img_urls[reward.currentImageIndex]) {
       reward.currentImageIndex = reward.display_img_urls.length - 1;
     }
@@ -333,21 +253,12 @@ export class ContentComponentComponent
   }
 
   updateRewardsAndCategories() {
-    if (this.userRole === 'Bride') {
-      this.filteredRewards = this.rewards.filter(
-        (reward) => reward.userRole === 'Bride' || reward.userRole === 'Both'
-      );
-      this.categories = Category_LIST.filter(
-        (cat) => cat.useRole === 'Bride' || cat.useRole === 'Both'
-      );
-    } else if (this.userRole === 'Groom') {
-      this.filteredRewards = this.rewards.filter(
-        (reward) => reward.userRole === 'Groom' || reward.userRole === 'Both'
-      );
-      this.categories = Category_LIST.filter(
-        (cat) => cat.useRole === 'Groom' || cat.useRole === 'Both'
-      );
-    }
+    this.filteredRewards = this.rewards.filter((reward) => {
+      return reward.userRole === this.userRole || reward.userRole === 'Both';
+    }).slice(0, this.pageSize);
+    this.categories = Category_LIST.filter((cat) => {
+      return cat.useRole === this.userRole || cat.useRole === 'Both';
+    });
     this.filterRewardsByCategory('All');
     this.currentPage = 1;
     this.showLoadingSpinner();
@@ -362,9 +273,16 @@ export class ContentComponentComponent
 
   applyLocationFilter(location: string) {
     this.filteredRewards = this.rewards.filter((reward) => {
-      return reward.city
-        .toLocaleLowerCase()
-        .includes(location.toLocaleLowerCase());
+      return reward.city.toLocaleLowerCase().includes(location.toLocaleLowerCase());
     });
+  }
+
+  private filterRewards() {
+    this.filteredRewards = this.rewards.filter((reward) => {
+      const matchesSearch = reward.name.toLocaleLowerCase().includes(this.searchValue) || reward.city.toLocaleLowerCase().includes(this.searchValue);
+      const matchesUserRole = reward.userRole === this.userRole || reward.userRole === 'Both';
+      return matchesSearch && matchesUserRole;
+    }).slice(0, this.pageSize);
+    this.currentPage = 1;
   }
 }
