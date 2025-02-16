@@ -39,7 +39,7 @@ export class ContentComponentComponent
   private currentPage: number = 1;
   private loadingTimeout: any;
   isDateToday: string = new Date().toISOString().split('T')[0];
-  productRating: any = 3;
+  productRating: any = 0;
 
   constructor(
     public mycartService: MyCartServiceService,
