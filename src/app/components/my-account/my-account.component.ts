@@ -32,6 +32,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Get user details when the component initializes
     this.user = this.userService.getUserDetails();
+    console.log('User details:', this.user);
 
     // Check if the user is available and fetch user history
     if (this.user && this.user.email) {
@@ -81,8 +82,11 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     this.orderService.fetchOrders(this.user.email).subscribe(
       (orders) => {
         if (orders && orders.length > 0) {
-          this.receivedOrders = orders;
-          console.log('Orders fetched from backend:', this.receivedOrders);
+          const ownerEmails = this.getOwnerEmails(orders);
+
+          if (this.user.email === ownerEmails) {
+            this.receivedOrders = orders;
+          }
         }
       },
       (error) => {
@@ -148,7 +152,10 @@ export class MyAccountComponent implements OnInit, OnDestroy {
       }
     );
   }
-}
-function Signal(arg0: number) {
-  throw new Error('Function not implemented.');
+
+  getOwnerEmails = (data: any) => {
+    return data.flatMap((entry: any) =>
+      entry.product.map((product: any) => product.productOwnerEmail)
+    );
+  };
 }

@@ -57,7 +57,9 @@ export class ContentComponentComponent
 
     this.dataService.products$.subscribe(
       (response: any) => {
+        console.log('item', response);
         this.rewards = response.map((item: any) => ({
+          
           pk: item._id,
           name: item.productName,
           Rent: item.productRent,
@@ -71,7 +73,7 @@ export class ContentComponentComponent
           city: item.city || 'Unknown',
           low_quantity: item.lowQuantity || 5,
           buyers: item.buyers || 0,
-          ProductOwnerEmail: item.email,
+          ProductOwnerEmail: item.productOwnerEmail,
         }));
         this.filteredRewards = [...this.rewards]; // Set filteredRewards to the fetched data
         this.updateRewardsAndCategories();
@@ -201,6 +203,7 @@ export class ContentComponentComponent
   addToCart(pk: number) {
     const reward = this.rewards.find((reward) => reward.pk === pk);
     if (reward) {
+      console.log(reward, 'reward');
       this.mycartService.addToCart(reward);
     }
   }

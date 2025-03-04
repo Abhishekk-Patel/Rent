@@ -229,21 +229,23 @@
 }
 
 .reward-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 15px;
-  margin-top: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
 }
 
 .image-container {
   position: relative;
   width: 100%;
   height: 150px;
+  overflow: hidden;
 }
 
 .image-container img {
   width: 100%;
-  height: 100%;
+  height: auto;
+  display: block;
   object-fit: cover;
   border-radius: 10px;
 }
@@ -263,11 +265,11 @@
 }
 
 .nav-btn.left {
-  left: 0;
+  left: 8px;
 }
 
 .nav-btn.right {
-  right: 0;
+  right: 8px;
 }
 
 .nav-btn:hover {
@@ -276,11 +278,11 @@
 
 .add-to-fav-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 8px;
+  right: 8px;
   background-color: rgba(0, 0, 0, 0.5);
   border-radius: 50%;
-  padding: 5px;
+  padding: 8px;
   cursor: pointer;
   text-decoration: none;
   color: white;
@@ -313,6 +315,13 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: transform 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+}
+
+.reward-card:hover {
+  transform: translateY(-5px);
 }
 
 .reward-card-content {
@@ -323,15 +332,46 @@
 }
 
 .reward-details {
-  text-align: center;
+  text-align: left;
   margin-top: 10px;
-  flex-grow: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .reward-details h2 {
   font-size: 18px;
   font-weight: bold;
   color: #333;
+  margin: 0;
+}
+
+.reward-details .rent,
+.reward-details .size,
+.reward-details .high-demand,
+.reward-details .valid-date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: #555;
+}
+
+.reward-details .rent mat-icon,
+.reward-details .size mat-icon,
+.reward-details .high-demand mat-icon,
+.reward-details .valid-date mat-icon {
+  font-size: 18px;
+  color: #ff7e5f;
+}
+
+.high-demand {
+  color: orange;
+}
+
+.valid-date {
+  color: #999;
 }
 
 .reward-details .rent {
@@ -352,12 +392,12 @@
 
 .city {
   position: absolute;
-  bottom: 5px;
-  right: 5px;
+  bottom: 8px;
+  left: 8px;
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
-  padding: 3px 8px;
-  border-radius: 5px;
+  padding: 4px 8px;
+  border-radius: 4px;
   font-size: 12px;
   display: flex;
   align-items: center;
@@ -414,7 +454,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
+  padding: 16px;
+  background: #f9f9f9;
 }
 
 .reward-card-footer .order-now-btn {
@@ -447,6 +488,20 @@
 
 .reward-card-footer .add-to-cart-btn:hover {
   opacity: 0.8;
+}
+
+.order-now-btn, .add-to-cart-btn {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.order-now-btn:hover, .add-to-cart-btn:hover {
+  background: #0056b3;
 }
 
 @media (max-width: 768px) {
@@ -483,6 +538,12 @@
   .rewards {
     width: 100%;
     padding: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .reward-card {
+    max-width: 100%;
   }
 }
 

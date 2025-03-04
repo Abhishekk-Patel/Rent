@@ -32,6 +32,7 @@ export class MyCartServiceService {
   }
 
   addToCart(item: any): void {
+    console.log('Item:', item);
     const currentItems = this.cartItems.value;
     const itemExists = currentItems.some((cartItem) => cartItem.pk === item.pk);
 

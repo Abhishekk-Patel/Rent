@@ -1,5 +1,5 @@
 <div class="rating-container">
-    <div class="rating-display">Avg Rating: {{ avgRating.toFixed(1) }} / 5 ({{ totalUsers }} users)</div>
+    <div class="rating-display"> {{ avgRating.toFixed(1) }} / 5 ({{ totalUsers }} users)</div>
     <div class="stars">
       <mat-icon *ngFor="let star of stars; let i = index" 
                 (click)="setRating(i + 1)"

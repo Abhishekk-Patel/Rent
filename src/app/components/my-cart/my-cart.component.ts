@@ -47,6 +47,7 @@ export class MyCartComponent implements OnInit {
   ngOnInit(): void {
     this.myCartService.cartItems$.subscribe((items) => {
       this.cartItems = items;
+      console.log(this.cartItems, 'this.cartItems');
     });
     this.fetchCartItems(); // Ensure cart items are fetched on init
   }
