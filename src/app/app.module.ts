@@ -41,6 +41,7 @@ import { PartnerBrandSliderComponent } from './components/partner-brand-slider/p
 import { MatTabsModule } from '@angular/material/tabs';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { UserRatingComponent } from './components/user-rating/user-rating.component';
+import { AuthGuard } from './guards/auth.guard'; // Import the AuthGuard
 
 @NgModule({
   declarations: [
@@ -91,7 +92,7 @@ import { UserRatingComponent } from './components/user-rating/user-rating.compon
     HttpClientModule,
     MatTabsModule,
   ],
-  providers: [],
+  providers: [AuthGuard], // Register the AuthGuard
   bootstrap: [AppComponent],
 })
 export class AppModule {}
