@@ -1,8 +1,13 @@
 .header-toolbar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(135deg, brown, black);
+      justify-content: space-between;
+      align-items: center;
+      background: #FFFFFF;
+      padding: 20px;
+      background-color: #FFFFFF;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+     
   .logo-section {
     display: flex;
     align-items: center;
@@ -21,7 +26,7 @@
     gap: 10px;
     align-items: center;
     :is(button) {
-      color: white;
+      color: #830E0E;
       margin-left: 10px;
       .mat-badge-content {
         top: 1px;

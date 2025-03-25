@@ -1,22 +1,22 @@
 .rating-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    cursor: pointer;
-  }
-  .stars {
-    display: flex;
-  }
-  mat-icon {
-    color: gray;
-    transition: color 0.2s;
-  }
-  .filled {
-    color: gold;
-  }
-  .rating-display {
-    font-size: 16px;
-    font-weight: bold;
-    color: black;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+.stars {
+  display: flex;
+}
+mat-icon {
+  color: gray;
+  transition: color 0.2s;
+}
+.filled {
+  color: gold;
+}
+.rating-display {
+  font-size: 16px;
+  font-weight: bold;
+  color: black;
+}

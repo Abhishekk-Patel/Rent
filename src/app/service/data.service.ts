@@ -7,7 +7,9 @@ import { catchError, tap } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class DataService {
-  private apiUrl = 'http://localhost:3000'; // Replace with your actual API URL
+  //private apiUrl = 'http://localhost:3000'; // local url
+  private apiUrl = 'https://rent-be.onrender.com'; // this is web sercive url
+
 
   // Use BehaviorSubject to cache data
   private productsSubject: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(

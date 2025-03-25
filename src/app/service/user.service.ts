@@ -10,8 +10,9 @@ import { map } from 'rxjs/operators';
 export class UserService {
   private user: any = null;
   private userHistory: any[] = [];
-  private loginApiUrl = 'http://localhost:3000/users/login';
-  private signUpApiUrl = 'http://localhost:3000/users/register';
+
+  private loginApiUrl = 'https://rent-be.onrender.com/users/login';  // local url 'http://localhost:3000/users/login
+  private signUpApiUrl = 'https://rent-be.onrender.com/users/register';     // local url http://localhost:3000/users/register
 
   constructor(private http: HttpClient) {
     this.loadUserDetails();

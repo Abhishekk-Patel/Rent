@@ -2,7 +2,7 @@
   <div class="search-bar">
     <input type="text" #searchInput (input)="search()"  (keypress)="handleKeyPress($event)" placeholder="Search by Location, Category, etc."
       [(ngModel)]="searchValue" class="search-input">
-      
+
     <button class="search-btn" (click)="search()">
       <mat-icon>search</mat-icon>
     </button>
@@ -37,7 +37,7 @@
                 'selected': category.isSelected, 
                 'unselected': !category.isSelected, 
                 'expanded': category.isExpanded
-              }" [style.color]="category.isExpanded ? 'green' : 'brown'">
+              }" [style.color]="category.isExpanded ? 'green' : '#830E0E'">
                 {{ category.isSelected ? 'check_circle' : 'check_circle_outline' }}
               </mat-icon>
               <mat-panel-title class="cat-title">
@@ -48,6 +48,7 @@
         </mat-expansion-panel>
       </mat-accordion>
     </div>
+    
     <div class="rewards">
       <div class="rewards-header">
         <p class="reward-count">Available Products({{ filteredRewards.length }}) </p>
@@ -55,16 +56,24 @@
       </div>
       <div class="reward-list">
         <div *ngFor="let reward of filteredRewards" class="reward-card fancy-card">
-          <div class="reward-card-content stylish-content" [ngClass]="{'out-of-stock-blur': reward.valid_until < isDateToday}">
+          <div class="reward-card-content stylish-content"
+            [ngClass]="{'out-of-stock-blur': reward.valid_until < isDateToday}">
             <div class="image-container stylish-image">
-              <button class="nav-btn left small-btn fancy-btn" (click)="prevImage(reward)"><mat-icon>chevron_left</mat-icon></button>
-              <img [src]="reward.display_img_urls[reward.currentImageIndex] || 'assets/placeholder.png'" alt="{{ reward.name }}">
-              <button class="nav-btn right small-btn fancy-btn" (click)="nextImage(reward)"><mat-icon>chevron_right</mat-icon></button>
+              <button class="nav-btn left small-btn fancy-btn"
+                (click)="prevImage(reward)"><mat-icon>chevron_left</mat-icon></button>
+              <img [src]="reward.display_img_urls[reward.currentImageIndex] || 'assets/placeholder.png'"
+                alt="{{ reward.name }}">
+              <button class="nav-btn right small-btn fancy-btn"
+                (click)="nextImage(reward)"><mat-icon>chevron_right</mat-icon></button>
               <a class="add-to-fav-btn fancy-btn" (click)="addToFavorite(reward)"><mat-icon>favorite</mat-icon></a>
               <p class="city stylish-city"><mat-icon>location_on</mat-icon> {{reward.city}}</p>
+             <p class="review"> <app-user-rating [(rating)]="productRating" [rating]="0" [avgRating]="3.5"
+                [totalUsers]="12"></app-user-rating>
+                </p>
+           
             </div>
             <div class="reward-details fancy-details">
-              <app-user-rating [(rating)]="productRating" [rating]="0" [avgRating]="3.5" [totalUsers]="12"></app-user-rating>
+             
               <h2 class="reward-title">{{ reward.name }}</h2>
               <p class="rent stylish-text">
                 <mat-icon>attach_money</mat-icon> Rent: <strong>{{ reward.Rent | currency:'INR'}}</strong>/day
@@ -76,14 +85,19 @@
                 <mat-icon>warning</mat-icon> High Demand (Only <strong>{{ reward.quantity }}</strong> left)
               </p>
               <p *ngIf="isValidUntilWithin7Days(reward.valid_until)" class="valid-date stylish-text">
-                <mat-icon>event</mat-icon> <span> Valid Until:</span> <strong>{{ reward.valid_until | date:'shortDate' }}</strong>
+                <mat-icon>event</mat-icon> <span> Valid Until:</span> <strong>{{ reward.valid_until | date:'shortDate'
+                  }}</strong>
               </p>
             </div>
           </div>
           <p *ngIf="reward.valid_until < isDateToday" class="out-of-stock">Out of Stock</p>
           <div class="reward-card-footer stylish-footer">
-            <button class="order-now-btn fancy-btn btn-hover" [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email" (click)="productDetails(reward.pk)">Know More</button>
-            <button class="add-to-cart-btn fancy-btn btn-hover" [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email" (click)="addToCart(reward.pk)"><mat-icon>add_shopping_cart</mat-icon></button>
+            <button class="order-now-btn fancy-btn btn-hover"
+              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
+              (click)="productDetails(reward.pk)">Know More</button>
+            <button class="add-to-cart-btn fancy-btn btn-hover"
+              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
+              (click)="addToCart(reward.pk)"><mat-icon >add_shopping_cart</mat-icon></button>
           </div>
         </div>
       </div>
