@@ -13,7 +13,9 @@ import { signal } from '@angular/core';
 })
 export class MyCartServiceService {
   private readonly cartItems = new BehaviorSubject<any[]>([]);
+  private readonly favoriteItems = new BehaviorSubject<any[]>([]); // Add favorite items BehaviorSubject
   cartItems$ = this.cartItems.asObservable();
+  favoriteItems$ = this.favoriteItems.asObservable(); // Observable for favorite items
   isUser: string = '';
   myCartValue = signal(0);
   public isAddNewProductSubject = new BehaviorSubject<boolean>(false);
@@ -59,6 +61,34 @@ export class MyCartServiceService {
       this.showMessage('Item removed from cart');
     } else {
       this.showMessage('Item not found in cart');
+    }
+  }
+
+  addToFavorites(item: any): void {
+    const currentFavorites = this.favoriteItems.value;
+    const itemExists = currentFavorites.some((favItem) => favItem.pk === item.pk);
+
+    if (!itemExists) {
+      this.favoriteItems.next([...currentFavorites, item]);
+      this.showMessage('Product successfully added to favorites');
+    } else {
+      this.showMessage('Item already in favorites');
+    }
+  }
+
+  getFavoriteItems(): any[] {
+    return this.favoriteItems.value; // Return the current list of favorite items
+  }
+
+  removeFromFavorites(item: any): void {
+    const currentFavorites = this.favoriteItems.value;
+    const updatedFavorites = currentFavorites.filter((favItem) => favItem.pk !== item.pk);
+
+    if (updatedFavorites.length !== currentFavorites.length) {
+      this.favoriteItems.next(updatedFavorites);
+      this.showMessage('Item removed from favorites');
+    } else {
+      this.showMessage('Item not found in favorites');
     }
   }
 

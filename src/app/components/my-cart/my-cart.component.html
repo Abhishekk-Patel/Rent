@@ -1,80 +1,156 @@
-<mat-dialog-content class="my-cart-content">
-  <mat-horizontal-stepper #stepper>
-    <!-- Step 1: Product Details -->
-    <mat-step [stepControl]="productFormGroup">
-      <form [formGroup]="productFormGroup">
-        <ng-template matStepLabel>Product Details</ng-template>
-        <ng-container *ngIf="cartItems.length > 0">
+<div class="header">
+  <h1>{{ selectedHeader }}</h1>
+</div>
+
+<div class="cart-container">
+  <!-- Sidebar: Cart, Favorites, and Suggestions -->
+  <div class="sidebar">
+    <mat-card class="sidebar-card" (click)="selectHeader('Cart')">
+      <mat-card-title>Cart</mat-card-title>
+      <mat-icon color="primary">check_circle</mat-icon>
+    </mat-card>
+    <mat-card class="sidebar-card" (click)="selectHeader('Favorite')">
+      <mat-card-title>Favorite</mat-card-title>
+      <mat-icon>check_circle</mat-icon>
+    </mat-card>
+    <!-- <mat-card class="sidebar-card suggestions">
+      <mat-card-title>Suggestions</mat-card-title>
+      <div class="suggestions">
+        <img src="assets/sample.jpg" alt="Product" class="suggestion-image">
+        <div class="suggestion-details">
+          <p><strong>Product Name:</strong> Test</p>
+          <p><strong>Cost:</strong> 600$</p>
+          <p><strong>Location:</strong> USA</p>
+          <button mat-button color="primary">Add</button>
+        </div>
+      </div>
+    </mat-card> -->
+
+    <mat-card class="suggestions">
+      <!-- Title & Navigation Icons -->
+      <div class="suggestions-header">
+        <mat-card-title>Suggestions</mat-card-title>
+        <div class="nav-icons">
+          <mat-icon class="nav-btn">chevron_left</mat-icon>
+          <mat-icon class="nav-btn">chevron_right</mat-icon>
+        </div>
+      </div>
+    
+      <!-- Image Centered -->
+      <div class="image-container">
+        <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIALUAwAMBIgACEQEDEQH/xAAbAAEAAwEAAwAAAAAAAAAAAAAABAUGAwECB//EAD0QAAEDAwEEBQYMBwAAAAAAAAABAgMEBRESBhMhMRQVQWGBByJRkbHBFjI0NUJxc3SSobLRIzNEVGJyk//EABcBAQEBAQAAAAAAAAAAAAAAAAABAwL/xAAWEQEBAQAAAAAAAAAAAAAAAAAAARH/2gAMAwEAAhEDEQA/ANaADtmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeHuRjXOcuGtTKqB5BEtlzpLpA6ahl3kbXaFXSrcLhF7U70OdBerdcaiSno6lJJY0y5ulycM44ZTj4ATwCBPerdBcGW+WpRtU9URGaXLxXkmcYQCeAV3XltS5dXdJTpWrTo0rjOM4zjAFiAR66upbfBvqydkMecIru1fQic18AJAKFu2Fkc7T0p6d6wux7C6p54qmFk1PI2SJ6Za9q5RQOgKmr2ls9JM6GatbvGrhyMY5+F9GURUOcW1VlmlZFHWKr3uRrU3L+KrwTsAugAAAAAAAAAAAAA5VXyWb7N3sOpyqvks32bvYBmfJv8y1H3lf0NMrZp5LZXw3T+nbULDKvcqZX8sr4Gq8m/wAy1H3lf0NK3Z639Z7N3emRMyb7VH/siZT9vEitzNPHBA+eRyJFGxXud3ImT5jTrPU3y33Ko4dMrdTU9CNe398eBZVF7kq9kqS3xKrqyaRKZzc8VRMY9eWp6yVfaRlBc9mKSP4sL0bn0rrZlfXkDY1dQykpZqmVcMiYr18EPmi0dQ6zfCLK9JWt157MZ5/jNR5QK7o9pZStXz6l/Hj9FvFfzwV/X9j+DnVWub5Pu87rhqxz/FxFI2VFUsrKOCqj+JMxHp3ZTkY2CnTajamqdVKrqKi81saLjPHCJ4qiqpP8ntdv7XJSOXz6Z+UT/F3H25I+wqpFcbxTP4SJIi9/BzkX3eso0EljtCxox9vpUbyT+GiL6+Z0q2tobLO2kTdtgpn7tE7MNXBQTbGRSNlnrrlV1EqI5yLlPfk47LSyS7FXLePVyMSZrcryTdouPWqgNiLdbp7Ms1XTU8sqyuRXStRVwiJjmaOO1WlsjXRUVGj2rlqtjblFQyOyuzNvu1r6VV77ebxzPMfhMJju7zQ27ZS2W6tjq6dJt7HnTqflOKKno7yQq8ABUAAAAAAAAAAAPSdqvgkY3m5ionqPcAZ/Yq2Vdqtk0NdEkcjp1eiI5HcNLU7PqUbHW2rtlNVsrYkjdJNqbhyOymO40AApKfZe3wXdbkze7zWr0jVU0Ncvby7zjtFa6utvNoqaaJHRU8mqV2pE0pqavbz5KaEAZi52ituW1dNUTwp1dTomHK9F1Y48ufFeHgaLo1P/AG8P/NDqAMvQWett21s9VTQp1fUIupUeiacpnlnPB3tF6sFcy6db2KVrKlf5kblwjvdx7UX6zUAGsk6r2wnjWHqymZqRWuerm4/WWOzdkkttkmoaxzHLO5yvRnJEc1G4z4F4AMXQ2/aexsfS29lNUU6vVzXOVPeqKhMgqNr1mjSajpEjV6a1RW8G54/S9BqAF0AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf/2Q==" class="suggestion-image" alt="Product">
+      </div>
+    
+      <!-- Product Details -->
+      <div class="suggestion-details">
+        <p class="product-name">Product Name:- Test <span class="star-rating">⭐⭐⭐⭐⭐</span></p>
+        <p>Cost: 600$</p>
+        <p>Location: USA</p>
+      </div>
+    
+      <!-- Add Button & Cart Icon -->
+      <div class="action-section">
+        <button class="add-btn">Add   <mat-icon class="cart-icon">shopping_cart</mat-icon></button>
+      
+      </div>
+    </mat-card>
+    
+    
+  </div>
+
+  <!-- Main Content Section -->
+  <div class="main-content">
+    <!-- Back Button -->
+    <button *ngIf="showStepper" mat-button color="accent" (click)="showStepper = false">
+      <mat-icon>arrow_back</mat-icon> Back
+    </button>
+
+    <!-- Cart Content -->
+    <div *ngIf="!showStepper && selectedHeader === 'Cart'" class="cart-content">
+      <mat-card *ngFor="let item of cartItems" class="cart-item">
+        <img [src]="item.display_img_urls[0]" alt="{{ item.name }}" class="product-image">
+        <div class="product-details">
+          <p><strong>Product Name:</strong> {{ item.name }}</p>
+          <p><strong>Cost:</strong> {{ item.Rent }}$</p>
+          <p><strong>Location:</strong> USA</p>
+        </div>
+        <button mat-button color="warn" class="remove-btn" (click)="removeFromCart(item)">Remove</button>
+      </mat-card>
+      <div class="order-button">
+        <button mat-raised-button color="primary" (click)="showStepper = true">Place Order <mat-icon>arrow_forward</mat-icon></button>
+      </div>
+    </div>
+
+    <!-- Favorites Content -->
+    <div *ngIf="!showStepper && selectedHeader === 'Favorite'" class="favorites-content">
+      <mat-card *ngFor="let item of favoriteItems" class="cart-item">
+        <img [src]="item.display_img_urls[0]" alt="{{ item.name }}" class="product-image">
+        <div class="product-details">
+          <p><strong>Product Name:</strong> {{ item.name }}</p>
+          <p><strong>Cost:</strong> {{ item.Rent }}$</p>
+          <p><strong>Location:</strong> USA</p>
+        </div>
+        <button mat-button  class="remove-btn" (click)="removeFromFavorites(item)">Remove</button>
+      </mat-card>
+    </div>
+
+    <!-- Stepper Section -->
+    <div *ngIf="showStepper" class="stepper-section">
+      <mat-horizontal-stepper #stepper>
+        <mat-step [stepControl]="productFormGroup">
+          <ng-template matStepLabel>Product Details</ng-template>
           <div *ngFor="let item of cartItems" class="cart-item">
             <img [src]="item.display_img_urls[0]" alt="{{ item.name }}" class="product-image">
             <div class="product-details">
               <p><strong>Name:</strong> {{ item.name }}</p>
               <p><strong>Rent:</strong> {{ item.Rent }}</p>
             </div>
-            <button mat-button (click)="removeFromCart(item)">Remove</button>
           </div>
-          <div class="step-buttons">
-            <button mat-button matStepperNext>Next</button>
-          </div>
-        </ng-container>
-      </form>
-    </mat-step>
+          <button mat-button matStepperNext>Next</button>
+        </mat-step>
 
-    <!-- Step 2: Delivery Details -->
-    <mat-step [stepControl]="deliveryFormGroup" class="delivery-step">
-      <form [formGroup]="deliveryFormGroup">
-        <ng-template matStepLabel>Personal Details</ng-template>
-        <div class="delivery-details">
-          <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" required>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Address</mat-label>
-            <input matInput formControlName="address" required>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Email</mat-label>
-            <input matInput formControlName="email" required>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Mobile No</mat-label>
-            <input matInput formControlName="mobile" required>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Rental Period</mat-label>
-            <mat-date-range-input [formGroup]="deliveryFormGroup" formGroupName="rentalPeriod">
-              <input matStartDate formControlName="start" placeholder="Start date">
-              <input matEndDate formControlName="end" placeholder="End date">
-            </mat-date-range-input>
-            <mat-date-range-picker></mat-date-range-picker>
-          </mat-form-field>
-        </div>
-        <div class="step-buttons">
+        <mat-step [stepControl]="deliveryFormGroup">
+          <ng-template matStepLabel>Personal Details</ng-template>
+          <form [formGroup]="deliveryFormGroup">
+            <mat-form-field>
+              <mat-label>Name</mat-label>
+              <input matInput formControlName="name" required>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Address</mat-label>
+              <input matInput formControlName="address" required>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" required>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Mobile No</mat-label>
+              <input matInput formControlName="mobile" required>
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>Rental Period</mat-label>
+              <mat-date-range-input formGroupName="rentalPeriod">
+                <input matStartDate formControlName="start" placeholder="Start date">
+                <input matEndDate formControlName="end" placeholder="End date">
+              </mat-date-range-input>
+            </mat-form-field>
+          </form>
           <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext [disabled]="!deliveryFormGroup.valid" [style.opacity]="!deliveryFormGroup.valid ? '0.5' : ''">Next</button>
-        </div>
-      </form>
-    </mat-step>
+          <button mat-button matStepperNext [disabled]="!deliveryFormGroup.valid">Next</button>
+        </mat-step>
 
-    <!-- Step 3: Confirmation -->
-    <mat-step [stepControl]="paymentFormGroup">
-      <form [formGroup]="paymentFormGroup">
-        <ng-template matStepLabel>Final</ng-template>
-        <div class="confirmation-box">
-          <p><strong>Name:</strong> <span class="highlight">{{ deliveryFormGroup.get('name')?.value }}</span></p>
-          <p><strong>Address:</strong> <span class="highlight">{{ deliveryFormGroup.get('address')?.value }}</span></p>
-          <p><strong>Email:</strong> <span class="highlight">{{ deliveryFormGroup.get('email')?.value }}</span></p>
-          <p><strong>Mobile No:</strong> <span class="highlight">{{ deliveryFormGroup.get('mobile')?.value }}</span></p>
-          <p><strong>Rental Period:</strong> <span class="highlight">{{ deliveryFormGroup.get('rentalPeriod.start')?.value | date }} - {{ deliveryFormGroup.get('rentalPeriod.end')?.value | date }}</span></p>
-          <p class="highlight-message">Below details ready to send to owner</p>
-        </div>
-        <div class="step-buttons">
+        <mat-step>
+          <ng-template matStepLabel>Confirmation</ng-template>
+          <p><strong>Name:</strong> {{ deliveryFormGroup.get('name')?.value }}</p>
+          <p><strong>Address:</strong> {{ deliveryFormGroup.get('address')?.value }}</p>
+          <p><strong>Email:</strong> {{ deliveryFormGroup.get('email')?.value }}</p>
+          <p><strong>Mobile No:</strong> {{ deliveryFormGroup.get('mobile')?.value }}</p>
+          <p><strong>Rental Period:</strong> {{ deliveryFormGroup.get('rentalPeriod.start')?.value | date }} - {{ deliveryFormGroup.get('rentalPeriod.end')?.value | date }}</p>
           <button mat-button matStepperPrevious>Back</button>
           <button mat-button (click)="placeOrder()">Place Order</button>
-        </div>
-      </form>
-    </mat-step>
-  </mat-horizontal-stepper>
-</mat-dialog-content>
-
+        </mat-step>
+      </mat-horizontal-stepper>
+    </div>
+  </div>
+</div>
