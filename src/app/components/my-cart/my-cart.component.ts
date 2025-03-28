@@ -57,20 +57,21 @@ export class MyCartComponent implements OnInit {
     this.showStepper = false; // Reset stepper view when switching
   }
 
-  removeFromCart(item: any): void {
-    this.myCartService.removeFromCart(item);
-    if (!this.cartItems.length) {
-      this.showStepper = false; // Ensure we reset back to the cart layout if empty
-    }
+  removeFromCart(item: any, index: number): void {
+    item.removing = true; // Add the removing class to trigger the animation
+    setTimeout(() => {
+      this.myCartService.removeFromCart(item); // Use service function to remove item
+      this.cartItems = this.myCartService.getCartItems(); // Update cart items after animation
+    }, 500); // Delay matches the animation duration (1.5s)
   }
 
   removeFromFavorites(item: any): void {
-    this.myCartService.removeFromFavorites(item);
-    this.favoriteItems = this.myCartService.getFavoriteItems(); // Update favorite items
+    this.myCartService.removeFromFavorites(item); // Call the service to remove the item
+    this.favoriteItems = this.myCartService.getFavoriteItems(); // Update the local favoriteItems list
   }
 
   placeOrder(): void {
-    this.showStepper = true; // Switch to stepper mode
+    this.showStepper = true; 
   }
 
   confirmOrder(): void {
@@ -82,5 +83,12 @@ export class MyCartComponent implements OnInit {
     } else {
       this.myCartService.showMessage('Error! Please fill all the details');
     }
+  }
+
+  addToCard(item: any): void {
+    this.myCartService.addToCart(item); // Add the item to the cart
+    this.myCartService.removeFromFavorites(item); // Remove the item from favorites
+    this.cartItems = this.myCartService.getCartItems(); // Update the cart items list
+    this.favoriteItems = this.myCartService.getFavoriteItems(); // Update the favorite items list
   }
 }

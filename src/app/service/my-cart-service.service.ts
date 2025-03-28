@@ -84,7 +84,7 @@ export class MyCartServiceService {
     const updatedFavorites = currentFavorites.filter((favItem) => favItem.pk !== item.pk);
 
     if (updatedFavorites.length !== currentFavorites.length) {
-      this.favoriteItems.next(updatedFavorites);
+      this.favoriteItems.next(updatedFavorites); // Update the BehaviorSubject with the new list
       this.showMessage('Item removed from favorites');
     } else {
       this.showMessage('Item not found in favorites');

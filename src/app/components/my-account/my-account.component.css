@@ -159,6 +159,86 @@
   color: #ffeb3b;
 }
 
+/* Sidebar hover effects */
+.sidebar-card {
+  cursor: pointer;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar-card:hover {
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05);
+}
+
+/* Align icon and text in the same row */
+.sidebar-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Fancy empty message styling */
+.empty-message {
+  text-align: center;
+  font-style: italic;
+  color: #ff5722; /* Highlighted color for text */
+  margin: 20px 0;
+  font-size: 1.5rem;
+  animation: fadeIn 0.8s ease-in-out, bounce 1.5s infinite ease-in-out;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4); /* Gradient background */
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.empty-message:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.empty-message .fancy-icon {
+  font-size: 2rem;
+  color: #ff4081; /* Highlighted color for icons */
+  display: block;
+  margin-top: 10px;
+  animation: pulse 1.5s infinite;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Bounce animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Pulse animation for the icon */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
   .item-details {

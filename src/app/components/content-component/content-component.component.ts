@@ -5,6 +5,7 @@ import {
   AfterViewInit,
   OnInit,
   OnDestroy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -50,12 +51,14 @@ export class ContentComponentComponent
     public dataService: DataService,
     public orderService: OrderService,
     public userService: UserService,
-    private store: Store<{ productData: any }>
+    private store: Store<{ productData: any }>,
+    private cdr: ChangeDetectorRef // Inject ChangeDetectorRef
   ) {
     this.store.dispatch({ type: 'LoadProductData' });
   }
 
   ngOnInit() {
+    this.isLoading = true; // Set isLoading to true before data fetch
     this.productData$.subscribe((data) => {
       this.rewards = data.map((item: any) => ({
         pk: item._id,
@@ -76,7 +79,8 @@ export class ContentComponentComponent
       this.filteredRewards = [...this.rewards]; // Set filteredRewards to the fetched data
       this.updateRewardsAndCategories();
       this.filterRewardsByCategory('All');
-      this.isLoading = false;
+      this.isLoading = false; // Set isLoading to false after data is loaded
+      this.cdr.detectChanges(); // Trigger change detection
     });
 
     this.mycartService.setIsAddNewProduct(false);
@@ -217,6 +221,7 @@ export class ContentComponentComponent
     }
   }
   addToFavorite(reward: any) {
+    this.mycartService.addToFavorites(reward);
     console.log(reward, 'test');
   }
 
@@ -225,6 +230,7 @@ export class ContentComponentComponent
   }
 
   loadMoreRewards() {
+    this.isLoading = true; // Show loader before loading more rewards
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = this.currentPage * this.pageSize;
     const newRewards = this.rewards
@@ -241,7 +247,8 @@ export class ContentComponentComponent
       ...new Set([...this.filteredRewards, ...newRewards]),
     ];
     this.currentPage++;
-    this.isLoading = false;
+    this.isLoading = false; // Hide loader after rewards are loaded
+    this.cdr.detectChanges(); // Trigger change detection
   }
 
   productDetails(primaryKey: number) {
