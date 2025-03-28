@@ -18,39 +18,39 @@
       </div>
     </mat-card>
 
-    <mat-card class="suggestions">
+    <mat-card class="suggestions" *ngIf="suggestedProducts.length > 0">
       <!-- Title & Navigation Icons -->
       <div class="suggestions-header">
         <mat-card-title>Suggestions</mat-card-title>
         <div class="nav-icons">
-          <mat-icon class="nav-btn">chevron_left</mat-icon>
-          <mat-icon class="nav-btn">chevron_right</mat-icon>
+          <mat-icon class="nav-btn" (click)="prevSuggestion()">chevron_left</mat-icon>
+          <mat-icon class="nav-btn" (click)="nextSuggestion()">chevron_right</mat-icon>
         </div>
       </div>
 
       <!-- Image Centered -->
       <div class="image-container">
-        <img
-          src="data:image/jpeg;base64,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"
-          class="suggestion-image" alt="Product">
+        <img [src]="suggestedProducts[currentSuggestionIndex]?.display_img_urls[0]" 
+             alt="{{ suggestedProducts[currentSuggestionIndex]?.productName }}" 
+             class="suggestion-image">
       </div>
 
       <!-- Product Details -->
       <div class="suggestion-details">
-        <p class="product-name">Product Name:- Test <span class="star-rating">⭐⭐⭐⭐⭐</span></p>
-        <p>Cost: 600$</p>
-        <p>Location: USA</p>
+        <p class="product-name">Product Name: {{ suggestedProducts[currentSuggestionIndex]?.productName }} 
+          <span class="star-rating">⭐⭐⭐⭐⭐</span>
+        </p>
+        <p>Cost: {{ suggestedProducts[currentSuggestionIndex]?.productRent | currency:'INR' }}</p>
+        <p>Location: {{ suggestedProducts[currentSuggestionIndex]?.city }}</p>
       </div>
 
       <!-- Add Button & Cart Icon -->
       <div class="action-section">
-        <button class="add-btn">Add <mat-icon class="cart-icon">shopping_cart</mat-icon></button>
-
+        <button class="add-btn" (click)="addToCard(suggestedProducts[currentSuggestionIndex])">
+          Add <mat-icon class="cart-icon">shopping_cart</mat-icon>
+        </button>
       </div>
     </mat-card>
-
-   
-
   </div>
 
   <!-- Main Content Section -->
@@ -66,12 +66,13 @@
         <p>Your cart is empty. <span class="fancy-icon">🛒</span></p>
       </div>
       <mat-card *ngFor="let item of cartItems; let i = index" class="cart-item"
+     
         [@fadeOut]="item.removing ? 'out' : 'in'">
-        <img [src]="item.display_img_urls[0]" alt="{{ item.name }}" class="product-image">
+        <img [src]="item.display_img_urls[0]" alt="{{ item.productName }}" class="product-image">
         <div class="product-details">
           <p><strong>Product Name:</strong> {{ item.name }}</p>
           <p><strong>Cost:</strong> {{ item.Rent }}$</p>
-          <p><strong>Location:</strong> USA</p>
+          <p><strong>Location:</strong> {{item.city}}</p>
         </div>
         <button mat-button class="remove-btn" (click)="removeFromCart(item, i)">Remove</button>
       </mat-card>
@@ -93,13 +94,14 @@
           <p><strong>Cost:</strong> {{ item.Rent }}$</p>
           <p><strong>Location:</strong> USA</p>
         </div>
-       
-        <div class="buttons">
-        <button mat-button class="fav-remove-btn" (click)="removeFromFavorites(item)">Remove</button>
-        <button mat-button class="fav-add-to-cart" (click)="addToCard(item)"><mat-icon>add_shopping_cart</mat-icon></button>
 
-            </div>
-        
+        <div class="buttons">
+          <button mat-button class="fav-remove-btn" (click)="removeFromFavorites(item)">Remove</button>
+          <button mat-button class="fav-add-to-cart"
+            (click)="addToCard(item)"><mat-icon>add_shopping_cart</mat-icon></button>
+
+        </div>
+
       </mat-card>
     </div>
 
