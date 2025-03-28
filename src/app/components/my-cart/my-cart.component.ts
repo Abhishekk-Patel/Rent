@@ -4,11 +4,19 @@ import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { DataService } from 'src/app/service/data.service';
 import { OrderService } from 'src/app/service/order.service';
 import { interval, Subscription } from 'rxjs';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-my-cart',
   templateUrl: './my-cart.component.html',
   styleUrls: ['./my-cart.component.css'],
+  animations: [
+    trigger('fadeOut', [
+      state('in', style({ opacity: 1 })),
+      state('out', style({ opacity: 0, transform: 'translateX(100%)' })),
+      transition('in => out', [animate('0.5s ease-out')]),
+    ]),
+  ],
 })
 export class MyCartComponent implements OnInit, OnDestroy {
   cartItems: any[] = [];
@@ -99,6 +107,7 @@ export class MyCartComponent implements OnInit, OnDestroy {
   }
 
   addToCard(item: any): void {
+    console.log('Adding to cart', item);
     this.myCartService.addToCart(item); // Add the item to the cart
     this.myCartService.removeFromFavorites(item); // Remove the item from favorites
     this.cartItems = this.myCartService.getCartItems(); // Update the cart items list

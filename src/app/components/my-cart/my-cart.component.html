@@ -70,8 +70,8 @@
         [@fadeOut]="item.removing ? 'out' : 'in'">
         <img [src]="item.display_img_urls[0]" alt="{{ item.productName }}" class="product-image">
         <div class="product-details">
-          <p><strong>Product Name:</strong> {{ item.name }}</p>
-          <p><strong>Cost:</strong> {{ item.Rent }}$</p>
+          <p><strong>Product Name:</strong> {{ item.name || item.productName }}</p>
+          <p><strong>Cost:</strong> {{ item.Rent || item.productRent }}$</p>
           <p><strong>Location:</strong> {{item.city}}</p>
         </div>
         <button mat-button class="remove-btn" (click)="removeFromCart(item, i)">Remove</button>
