@@ -59,7 +59,7 @@ export class OrderService {
   getYourOrders(userEmail: string): Observable<any[]> {
     console.log(userEmail);
     return this.http
-      .get(`http://localhost:3000/orders/fetchOrders/${userEmail}`)
+      .get(`https://rent-be.onrender.com/orders/fetchOrders/${userEmail}`)
       .pipe(
         map((response: any) => response),
         catchError((error) => {
@@ -71,7 +71,7 @@ export class OrderService {
 
   // Fetch orders using a different method (just for consistency)
   fetchOrders(userEmail: string): Observable<any> {
-    return this.http.get(`http://localhost:3000/orders/fetchOrders/${userEmail}`).pipe(
+    return this.http.get(`https://rent-be.onrender.com/orders/fetchOrders/${userEmail}`).pipe(
       catchError((error) => {
         console.error('Error fetching orders:', error);
         throw error; // Rethrow error or handle it as needed

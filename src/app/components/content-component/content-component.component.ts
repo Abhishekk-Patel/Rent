@@ -7,6 +7,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { debounceTime, fromEvent, Subscription } from 'rxjs';
 import { DataService } from 'src/app/service/data.service';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
@@ -41,51 +42,45 @@ export class ContentComponentComponent
   isDateToday: string = new Date().toISOString().split('T')[0];
   productRating: any = 0;
 
+  productData$ = this.store.select('productData');
+
   constructor(
     public mycartService: MyCartServiceService,
     public router: Router,
     public dataService: DataService,
     public orderService: OrderService,
-    public userService: UserService
+    public userService: UserService,
+    private store: Store<{ productData: any }>
   ) {
-    this.dataService.getAllProductData();
+    this.store.dispatch({ type: 'LoadProductData' });
   }
 
   ngOnInit() {
+    this.productData$.subscribe((data) => {
+      this.rewards = data.map((item: any) => ({
+        pk: item._id,
+        name: item.productName,
+        Rent: item.productRent,
+        description: item.productDescription || 'No description provided',
+        category: item.category || 'General',
+        quantity: item.quantity || 0,
+        userRole: item.userRole || 'Both',
+        valid_until: item.validUntil,
+        display_img_urls: item.images.map((img: any) => img.url),
+        currentImageIndex: 0,
+        city: item.city || 'Unknown',
+        low_quantity: item.lowQuantity || 5,
+        buyers: item.buyers || 0,
+        ProductOwnerEmail: item.productOwnerEmail,
+      }));
+      this.filteredRewards = [...this.rewards]; // Set filteredRewards to the fetched data
+      this.updateRewardsAndCategories();
+      this.filterRewardsByCategory('All');
+      this.isLoading = false;
+    });
+
     this.mycartService.setIsAddNewProduct(false);
     this.isLoading = true;
-
-    this.dataService.products$.subscribe(
-      (response: any) => {
-        console.log('item', response);
-        this.rewards = response.map((item: any) => ({
-          
-          pk: item._id,
-          name: item.productName,
-          Rent: item.productRent,
-          description: item.productDescription || 'No description provided',
-          category: item.category || 'General',
-          quantity: item.quantity || 0,
-          userRole: item.userRole || 'Both',
-          valid_until: item.validUntil,
-          display_img_urls: item.images.map((img: any) => img.url),
-          currentImageIndex: 0,
-          city: item.city || 'Unknown',
-          low_quantity: item.lowQuantity || 5,
-          buyers: item.buyers || 0,
-          ProductOwnerEmail: item.productOwnerEmail,
-        }));
-        this.filteredRewards = [...this.rewards]; // Set filteredRewards to the fetched data
-        this.updateRewardsAndCategories();
-        this.filterRewardsByCategory('All');
-        this.isLoading = false;
-      },
-      (error) => {
-        console.error('Error fetching products:', error);
-        this.alertMsg = 'Failed to load products. Please try again later.';
-        this.isLoading = false;
-      }
-    );
 
     window.addEventListener('scroll', this.onScroll.bind(this));
     this.loadMoreRewards();
@@ -148,7 +143,9 @@ export class ContentComponentComponent
   }
 
   search(): void {
-    const searchValue = this.searchInput.nativeElement.value.trim().toLowerCase();
+    const searchValue = this.searchInput.nativeElement.value
+      .trim()
+      .toLowerCase();
     this.searchValue = searchValue;
     this.filterRewards();
   }
@@ -161,16 +158,27 @@ export class ContentComponentComponent
 
   onPanelChange() {
     const expandedCategory = this.getExpandedCategory();
-    this.filterRewardsByCategory(expandedCategory ? expandedCategory.name : 'All');
+    this.filterRewardsByCategory(
+      expandedCategory ? expandedCategory.name : 'All'
+    );
   }
 
   filterRewardsByCategory(categoryName: string) {
-    this.filteredRewards = this.rewards.filter((reward) => {
-      const matchesCategory = categoryName === 'All' || reward.category.toLocaleLowerCase().includes(categoryName.toLocaleLowerCase());
-      const matchesSearch = reward.name.toLocaleLowerCase().includes(this.searchValue) || reward.city.toLocaleLowerCase().includes(this.searchValue);
-      const matchesUserRole = reward.userRole === this.userRole || reward.userRole === 'Both';
-      return matchesCategory && matchesSearch && matchesUserRole;
-    }).slice(0, this.pageSize);
+    this.filteredRewards = this.rewards
+      .filter((reward) => {
+        const matchesCategory =
+          categoryName === 'All' ||
+          reward.category
+            .toLocaleLowerCase()
+            .includes(categoryName.toLocaleLowerCase());
+        const matchesSearch =
+          reward.name.toLocaleLowerCase().includes(this.searchValue) ||
+          reward.city.toLocaleLowerCase().includes(this.searchValue);
+        const matchesUserRole =
+          reward.userRole === this.userRole || reward.userRole === 'Both';
+        return matchesCategory && matchesSearch && matchesUserRole;
+      })
+      .slice(0, this.pageSize);
     this.currentPage = 1;
   }
 
@@ -184,7 +192,9 @@ export class ContentComponentComponent
 
   sortRewards(order: string) {
     this.filteredRewards.sort((a, b) => {
-      return order === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+      return order === 'asc'
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name);
     });
   }
 
@@ -203,7 +213,6 @@ export class ContentComponentComponent
   addToCart(pk: number) {
     const reward = this.rewards.find((reward) => reward.pk === pk);
     if (reward) {
-      console.log(reward, 'reward');
       this.mycartService.addToCart(reward);
     }
   }
@@ -218,12 +227,19 @@ export class ContentComponentComponent
   loadMoreRewards() {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = this.currentPage * this.pageSize;
-    const newRewards = this.rewards.filter((reward) => {
-      const matchesSearch = reward.name.toLocaleLowerCase().includes(this.searchValue) || reward.city.toLocaleLowerCase().includes(this.searchValue);
-      const matchesUserRole = reward.userRole === this.userRole || reward.userRole === 'Both';
-      return matchesSearch && matchesUserRole;
-    }).slice(startIndex, endIndex);
-    this.filteredRewards = [...new Set([...this.filteredRewards, ...newRewards])];
+    const newRewards = this.rewards
+      .filter((reward) => {
+        const matchesSearch =
+          reward.name.toLocaleLowerCase().includes(this.searchValue) ||
+          reward.city.toLocaleLowerCase().includes(this.searchValue);
+        const matchesUserRole =
+          reward.userRole === this.userRole || reward.userRole === 'Both';
+        return matchesSearch && matchesUserRole;
+      })
+      .slice(startIndex, endIndex);
+    this.filteredRewards = [
+      ...new Set([...this.filteredRewards, ...newRewards]),
+    ];
     this.currentPage++;
     this.isLoading = false;
   }
@@ -233,14 +249,17 @@ export class ContentComponentComponent
   }
 
   nextImage(reward: any) {
-    reward.currentImageIndex = (reward.currentImageIndex + 1) % reward.display_img_urls.length;
+    reward.currentImageIndex =
+      (reward.currentImageIndex + 1) % reward.display_img_urls.length;
     if (!reward.display_img_urls[reward.currentImageIndex]) {
       reward.currentImageIndex = 0;
     }
   }
 
   prevImage(reward: any) {
-    reward.currentImageIndex = (reward.currentImageIndex - 1 + reward.display_img_urls.length) % reward.display_img_urls.length;
+    reward.currentImageIndex =
+      (reward.currentImageIndex - 1 + reward.display_img_urls.length) %
+      reward.display_img_urls.length;
     if (!reward.display_img_urls[reward.currentImageIndex]) {
       reward.currentImageIndex = reward.display_img_urls.length - 1;
     }
@@ -256,9 +275,11 @@ export class ContentComponentComponent
   }
 
   updateRewardsAndCategories() {
-    this.filteredRewards = this.rewards.filter((reward) => {
-      return reward.userRole === this.userRole || reward.userRole === 'Both';
-    }).slice(0, this.pageSize);
+    this.filteredRewards = this.rewards
+      .filter((reward) => {
+        return reward.userRole === this.userRole || reward.userRole === 'Both';
+      })
+      .slice(0, this.pageSize);
     this.categories = Category_LIST.filter((cat) => {
       return cat.useRole === this.userRole || cat.useRole === 'Both';
     });
@@ -276,16 +297,23 @@ export class ContentComponentComponent
 
   applyLocationFilter(location: string) {
     this.filteredRewards = this.rewards.filter((reward) => {
-      return reward.city.toLocaleLowerCase().includes(location.toLocaleLowerCase());
+      return reward.city
+        .toLocaleLowerCase()
+        .includes(location.toLocaleLowerCase());
     });
   }
 
   private filterRewards() {
-    this.filteredRewards = this.rewards.filter((reward) => {
-      const matchesSearch = reward.name.toLocaleLowerCase().includes(this.searchValue) || reward.city.toLocaleLowerCase().includes(this.searchValue);
-      const matchesUserRole = reward.userRole === this.userRole || reward.userRole === 'Both';
-      return matchesSearch && matchesUserRole;
-    }).slice(0, this.pageSize);
+    this.filteredRewards = this.rewards
+      .filter((reward) => {
+        const matchesSearch =
+          reward.name.toLocaleLowerCase().includes(this.searchValue) ||
+          reward.city.toLocaleLowerCase().includes(this.searchValue);
+        const matchesUserRole =
+          reward.userRole === this.userRole || reward.userRole === 'Both';
+        return matchesSearch && matchesUserRole;
+      })
+      .slice(0, this.pageSize);
     this.currentPage = 1;
   }
 }

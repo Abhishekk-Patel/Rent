@@ -4,6 +4,8 @@ import { DataService } from 'src/app/service/data.service';
 import { UserService } from 'src/app/service/user.service';
 import { OrderService } from 'src/app/service/order.service';
 import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { LoadOrderData } from '../Store/productData.action';
 
 @Component({
   selector: 'app-my-account',
@@ -17,12 +19,16 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   yourOrders: any[] = [];
   orderSubscription: Subscription | null = null;
 
+  getOrderData$ = this.store.select('orderData');
+
   constructor(
     private userService: UserService,
     public router: Router,
     public dataService: DataService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private store: Store<{ orderData: any[] }>
   ) {
+    this.store.dispatch(LoadOrderData({ email: this.userService.getUserDetails().email }));
     // Ensure user is logged in, otherwise redirect to home
     if (!this.userService.getUserDetails()) {
       this.router.navigate(['']);
@@ -30,6 +36,13 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.getOrderData$.subscribe((res) => {
+      console.log(res, 'orderData');
+      if (res) {
+        this.receivedOrders = res;
+      }
+    });
+
     // Get user details when the component initializes
     this.user = this.userService.getUserDetails();
     console.log('User details:', this.user);

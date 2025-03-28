@@ -42,7 +42,10 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { UserRatingComponent } from './components/user-rating/user-rating.component';
 import { AuthGuard } from './guards/auth.guard'; // Import the AuthGuard
-
+import { StoreModule } from '@ngrx/store';
+import { productReducer, orderReducer } from './components/Store/productData.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { productDataEffects } from './components/Store/productData.effects';
 @NgModule({
   declarations: [
     AppComponent,
@@ -91,6 +94,8 @@ import { AuthGuard } from './guards/auth.guard'; // Import the AuthGuard
     MatButtonToggleModule,
     HttpClientModule,
     MatTabsModule,
+    StoreModule.forRoot({ productData: productReducer, orderData: orderReducer }),
+    EffectsModule.forRoot([productDataEffects])
   ],
   providers: [AuthGuard], // Register the AuthGuard
   bootstrap: [AppComponent],

@@ -1,44 +1,25 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataService {
-  //private apiUrl = 'http://localhost:3000'; // local url
-  private apiUrl = 'https://rent-be.onrender.com'; // this is web sercive url
-
-
-  // Use BehaviorSubject to cache data
-  private productsSubject: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(
-    []
-  );
-  public products$: Observable<any[]> = this.productsSubject.asObservable();
+  private apiUrl = 'https://rent-be.onrender.com'; // Web service URL
 
   constructor(private http: HttpClient) {}
 
-  // Fetch all products data and store it in the BehaviorSubject
-  getAllProductData(): void {
-    if (this.productsSubject.value.length > 0) {
-      // If data is already available, don't call the API again
-      return;
-    }
-
-    this.http
-      .get<any[]>(`${this.apiUrl}/products`)
-      .pipe(
-        tap((data) => {
-          // Store the fetched data in the BehaviorSubject
-          this.productsSubject.next(data);
-        }),
-        catchError((error) => {
-          console.error('Error fetching product data', error);
-          throw error;
-        })
-      )
-      .subscribe();
+  // Fetch all products data
+  getAllProductData(): Observable<any[]> {
+    console.log('Fetching product data from API'); // Debug log
+    return this.http.get<any[]>(`${this.apiUrl}/products`).pipe(
+      catchError((error) => {
+        console.error('Error fetching product data:', error); // Debug log
+        return of([]);
+      })
+    );
   }
 
   // Get product data by email

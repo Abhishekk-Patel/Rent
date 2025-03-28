@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { Subscription } from 'rxjs';
-import { DataService } from 'src/app/service/data.service';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-product-details-popup',
@@ -17,10 +17,10 @@ export class ProductDetailsPopupComponent implements OnInit, OnDestroy {
 
   constructor(
     public mycartService: MyCartServiceService,
-    public dataservice: DataService,
     public readonly router: Router,
     public dialogRef: MatDialogRef<ProductDetailsPopupComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private store: Store<{ productData: any[] }>
   ) {
     this.mycartService.isAddNewProduct$.subscribe((res) => {
       this.isAddNewProduct = res;
@@ -28,7 +28,7 @@ export class ProductDetailsPopupComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscription = this.dataservice.products$.subscribe((res) => {
+    this.subscription = this.store.select('productData').subscribe((res) => {
       const products = res.map((item: any) => ({
         pk: item._id,
         name: item.productName,
