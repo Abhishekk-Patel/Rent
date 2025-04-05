@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+   "start": "npx serve -s dist/Rent -l $PORT",
+   "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -25,11 +25,11 @@
     "@ngrx/store": "^16.3.0",
     "@ngrx/store-devtools": "^16.3.0",
     "bad-words": "^4.0.0",
-    "mime": "^4.0.7",
     "rxjs": "~7.8.0",
     "socket.io-client": "^4.8.1",
     "tslib": "^2.3.0",
-    "zone.js": "~0.13.3"
+    "zone.js": "~0.13.3",
+    "mime": "^3.0.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^16.2.16",
