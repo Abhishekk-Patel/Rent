@@ -40,6 +40,9 @@ mat-card-title {
     order: 2;
   }
 }
+.sidebar-content:hover {
+transform: scale(1.02);
+}
 
 .buttons {
   display: flex;
@@ -47,12 +50,14 @@ mat-card-title {
 
 }
 
-.fav-remove-btn{
+.fav-remove-btn {
   color: red;
 }
-.remove-btn{
+
+.remove-btn {
   color: #830E0E;
 }
+
 .fav-add-to-cart {
   color: #830E0E;
 
@@ -102,8 +107,16 @@ mat-card-title {
   margin-right: 10px;
 }
 
+/* Animation for suggestion-details transition */
 .suggestion-details {
-  flex-grow: 1;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.suggestion-details.hidden {
+  opacity: 0;
+  transform: translateX(-20px);
 }
 
 .suggestion-details p {
@@ -165,14 +178,23 @@ mat-card-title {
 .add-btn {
   background-color: #830E0E;
   color: white;
-  border-radius: 16px;
+
   padding: 5px 20px;
   display: flex;
   align-items: center;
   gap: 10px;
 
+  justify-content: space-between;
+  display: inline-flex;
+
+  .mat-icon {
+    font-size: 18px;
+    padding-top: 3px;
+  }
+
   .add-cart-icon {
     color: white !important;
+
 
   }
 }
@@ -223,10 +245,43 @@ mat-card-title {
   width: 100%;
 }
 
+/* Stepper Section */
 .stepper-section {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+mat-horizontal-stepper {
+  width: 100%;
+  max-width: 600px;
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+mat-step {
+  margin-bottom: 20px;
+}
+
+mat-form-field {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+button {
+  margin: 10px 5px;
+}
+
+.stepper-section button {
+  align-self: flex-end;
 }
 
 /* Cart Item */
@@ -370,7 +425,9 @@ mat-horizontal-stepper {
 /* Header */
 .header {
   width: 100%;
-  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background-color: #830E0E;
   color: white;
   padding: 5px 30px;
@@ -379,4 +436,11 @@ mat-horizontal-stepper {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 500;
+  font-size: 24px !important;
 }

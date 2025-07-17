@@ -95,6 +95,9 @@ export class MyCartComponent implements OnInit, OnDestroy {
     this.showStepper = true; 
   }
 
+  closeCartModel(){
+    this.myCartService.closeCartModel(); // Call the service to close the cart model
+  }
   confirmOrder(): void {
     if (this.deliveryFormGroup.valid) {
       const orderData = [[...this.cartItems], [this.deliveryFormGroup.value]];
@@ -155,7 +158,14 @@ export class MyCartComponent implements OnInit, OnDestroy {
 
   startAutoSlider(): void {
     this.sliderSubscription = interval(3000).subscribe(() => {
-      this.nextSuggestion(); // Automatically move to the next suggestion every 5 seconds
+      const suggestionDetails = document.querySelector('.suggestion-details');
+      if (suggestionDetails) {
+        suggestionDetails.classList.add('hidden'); // Add hidden class to start transition
+        setTimeout(() => {
+          this.nextSuggestion(); // Change the suggestion after the transition
+          suggestionDetails.classList.remove('hidden'); // Remove hidden class to reveal new content
+        }, 500); // Match the duration of the CSS transition
+      }
     });
   }
 }

@@ -1,5 +1,8 @@
 <div class="header">
   <h1>{{ selectedHeader }}</h1>
+  <button (click)="closeCartModel()" mat-icon-button aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
 </div>
 
 <div class="cart-container">
@@ -106,63 +109,65 @@
     </div>
 
     <!-- Stepper Section -->
-    <div *ngIf="showStepper" class="stepper-section">
-      <mat-horizontal-stepper #stepper>
-        <mat-step [stepControl]="productFormGroup">
-          <ng-template matStepLabel>Product Details</ng-template>
-          <div *ngFor="let item of cartItems" class="cart-item">
-            <img [src]="item.display_img_urls[0]" alt="{{ item.name }}" class="product-image">
-            <div class="product-details">
-              <p><strong>Name:</strong> {{ item.name }}</p>
-              <p><strong>Rent:</strong> {{ item.Rent }}</p>
+    <div *ngIf="showStepper" class="stepper-container">
+      <div class="stepper-section">
+        <mat-horizontal-stepper #stepper>
+          <mat-step [stepControl]="productFormGroup">
+            <ng-template matStepLabel>Product Details</ng-template>
+            <div *ngFor="let item of cartItems" class="cart-item">
+              <img [src]="item.display_img_urls[0]" alt="{{ item.name }}" class="product-image">
+              <div class="product-details">
+                <p><strong>Name:</strong> {{ item.name }}</p>
+                <p><strong>Rent:</strong> {{ item.Rent }}</p>
+              </div>
             </div>
-          </div>
-          <button mat-button matStepperNext>Next</button>
-        </mat-step>
+            <button mat-button matStepperNext>Next</button>
+          </mat-step>
 
-        <mat-step [stepControl]="deliveryFormGroup">
-          <ng-template matStepLabel>Personal Details</ng-template>
-          <form [formGroup]="deliveryFormGroup">
-            <mat-form-field>
-              <mat-label>Name</mat-label>
-              <input matInput formControlName="name" required>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Address</mat-label>
-              <input matInput formControlName="address" required>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Email</mat-label>
-              <input matInput formControlName="email" required>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Mobile No</mat-label>
-              <input matInput formControlName="mobile" required>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Rental Period</mat-label>
-              <mat-date-range-input formGroupName="rentalPeriod">
-                <input matStartDate formControlName="start" placeholder="Start date">
-                <input matEndDate formControlName="end" placeholder="End date">
-              </mat-date-range-input>
-            </mat-form-field>
-          </form>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext [disabled]="!deliveryFormGroup.valid">Next</button>
-        </mat-step>
+          <mat-step [stepControl]="deliveryFormGroup">
+            <ng-template matStepLabel>Personal Details</ng-template>
+            <form [formGroup]="deliveryFormGroup">
+              <mat-form-field>
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="name" required>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Address</mat-label>
+                <input matInput formControlName="address" required>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" required>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Mobile No</mat-label>
+                <input matInput formControlName="mobile" required>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Rental Period</mat-label>
+                <mat-date-range-input formGroupName="rentalPeriod">
+                  <input matStartDate formControlName="start" placeholder="Start date">
+                  <input matEndDate formControlName="end" placeholder="End date">
+                </mat-date-range-input>
+              </mat-form-field>
+            </form>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext [disabled]="!deliveryFormGroup.valid">Next</button>
+          </mat-step>
 
-        <mat-step>
-          <ng-template matStepLabel>Confirmation</ng-template>
-          <p><strong>Name:</strong> {{ deliveryFormGroup.get('name')?.value }}</p>
-          <p><strong>Address:</strong> {{ deliveryFormGroup.get('address')?.value }}</p>
-          <p><strong>Email:</strong> {{ deliveryFormGroup.get('email')?.value }}</p>
-          <p><strong>Mobile No:</strong> {{ deliveryFormGroup.get('mobile')?.value }}</p>
-          <p><strong>Rental Period:</strong> {{ deliveryFormGroup.get('rentalPeriod.start')?.value | date }} - {{
-            deliveryFormGroup.get('rentalPeriod.end')?.value | date }}</p>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button (click)="placeOrder()">Place Order</button>
-        </mat-step>
-      </mat-horizontal-stepper>
+          <mat-step>
+            <ng-template matStepLabel>Confirmation</ng-template>
+            <p><strong>Name:</strong> {{ deliveryFormGroup.get('name')?.value }}</p>
+            <p><strong>Address:</strong> {{ deliveryFormGroup.get('address')?.value }}</p>
+            <p><strong>Email:</strong> {{ deliveryFormGroup.get('email')?.value }}</p>
+            <p><strong>Mobile No:</strong> {{ deliveryFormGroup.get('mobile')?.value }}</p>
+            <p><strong>Rental Period:</strong> {{ deliveryFormGroup.get('rentalPeriod.start')?.value | date }} - {{
+              deliveryFormGroup.get('rentalPeriod.end')?.value | date }}</p>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button (click)="placeOrder()">Place Order</button>
+          </mat-step>
+        </mat-horizontal-stepper>
+      </div>
     </div>
   </div>
 </div>
