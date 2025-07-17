@@ -7,7 +7,8 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class DataService {
-  private apiUrl = 'https://rent-be.onrender.com'; // Web service URL
+  //private apiUrl = 'https://rent-be.onrender.com'; // Web service URL
+  private apiUrl = 'http://localhost:3000'
 
   constructor(private http: HttpClient) {}
 

@@ -11,8 +11,10 @@ export class UserService {
   private user: any = null;
   private userHistory: any[] = [];
 
-  private loginApiUrl = 'https://rent-be.onrender.com/users/login';  // local url 'http://localhost:3000/users/login
-  private signUpApiUrl = 'https://rent-be.onrender.com/users/register';     // local url http://localhost:3000/users/register
+//  private loginApiUrl = 'https://rent-be.onrender.com/users/login';  
+    private loginApiUrl = 'http://localhost:3000/users/login';    // local url
+  //private signUpApiUrl = 'https://rent-be.onrender.com/users/register';
+         signUpApiUrl = 'http://localhost:3000/users/register';   // local url
 
   constructor(private http: HttpClient) {
     this.loadUserDetails();
