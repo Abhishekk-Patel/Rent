@@ -95,6 +95,10 @@ export class MyCartServiceService {
     this.dialog.open(MyCartComponent);
   }
 
+  closeCartModel(): void {
+    this.dialog.closeAll();
+  }
+
   openProductDetails(primaryKey: number): void {
     this.dialog.open(ProductDetailsPopupComponent, {
       data: { primaryKey },
