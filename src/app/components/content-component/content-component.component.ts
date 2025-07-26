@@ -40,6 +40,7 @@ export class ContentComponentComponent
   private pageSize: number = 10;
   private currentPage: number = 1;
   private loadingTimeout: any;
+  data:any;
   isDateToday: string = new Date().toISOString().split('T')[0];
   productRating: any = 0;
 
@@ -58,8 +59,57 @@ export class ContentComponentComponent
   }
 
   ngOnInit() {
+    this.data =   {
+        "_id": "67b090e3747349507c359a00",
+        "productName": "Mens",
+        "productDescription": "NA",
+        "productRent": 1200,
+        "category": "Groom’s Suit",
+        "quantity": 1,
+        "userRole": "Groom",
+        "validUntil": "2026-02-15T00:00:00.000Z",
+        "productOwnerEmail": "abhishekpatel67@gmail.com",
+        "productListedDate": "2025-02-15T00:00:00.000Z",
+        "city": "Test",
+        "images": [
+            {
+                "_id": "67b090e3747349507c359a01",
+                "filename": "image0.jpg",
+                "url": "https://mys3rentbucket.s3.ap-south-1.amazonaws.com/1739624672473_image0.jpg"
+            },
+            {
+                "_id": "67b090e3747349507c359a02",
+                "filename": "image1.jpg",
+                "url": "https://mys3rentbucket.s3.ap-south-1.amazonaws.com/1739624672495_image1.jpg"
+            },
+            {
+                "_id": "67b090e3747349507c359a03",
+                "filename": "image2.jpg",
+                "url": "https://mys3rentbucket.s3.ap-south-1.amazonaws.com/1739624672498_image2.jpg"
+            }
+        ],
+        "__v": 0,
+        "ratings": [
+            {
+                "_id": "687bdb5525dd53570083dd1b",
+                "productId": "67b090e3747349507c359a00",
+                "rating": 4,
+                "createdAt": "2025-07-19T17:52:23.012Z",
+                "__v": 0
+            },
+            {
+                "_id": "687bde1725dd53570083dd20",
+                "productId": "67b090e3747349507c359a00",
+                "rating": 3,
+                "createdAt": "2025-07-19T18:04:07.692Z",
+                "__v": 0
+            }
+        ],
+        "userId": "67a7b26a1730b16b90c52300"
+    };
     this.isLoading = true; // Set isLoading to true before data fetch
     this.productData$.subscribe((data) => {
+      console.log(data, 'product data from store');
       this.rewards = data.map((item: any) => ({
         pk: item._id,
         name: item.productName,
@@ -75,6 +125,8 @@ export class ContentComponentComponent
         low_quantity: item.lowQuantity || 5,
         buyers: item.buyers || 0,
         ProductOwnerEmail: item.productOwnerEmail,
+        ProductRatings: item.ratings || [],
+        userId: item.userId || '',
       }));
       this.filteredRewards = [...this.rewards]; // Set filteredRewards to the fetched data
       this.updateRewardsAndCategories();
@@ -322,5 +374,12 @@ export class ContentComponentComponent
       })
       .slice(0, this.pageSize);
     this.currentPage = 1;
+  }
+  onRatingChange(newRating: number, reward: any) {
+    console.log(reward,"reward");
+    console.log(newRating,'newRating');
+    reward.rating = newRating;
+    // Optionally, send the new rating to the backend here
+     this.userService.updateRating(reward.pk, newRating,reward.userId).subscribe(res=> console.log(res,"response"));
   }
 }

@@ -1,4 +1,3 @@
-
 <div class="search-section stylish-search-section">
   <div class="search-bar">
     <input type="text" #searchInput (input)="search()" (keypress)="handleKeyPress($event)"
@@ -35,8 +34,8 @@
           <mat-expansion-panel-header>
             <mat-panel-description>
               <mat-icon class="status-icon" [ngClass]="{
-                'selected': category.isSelected, 
-                'unselected': !category.isSelected, 
+                'selected': category.isSelected,
+                'unselected': !category.isSelected,
                 'expanded': category.isExpanded
               }" [style.color]="category.isExpanded ? 'green' : '#830E0E'">
                 {{ category.isSelected ? 'check_circle' : 'check_circle_outline' }}
@@ -49,7 +48,7 @@
         </mat-expansion-panel>
       </mat-accordion>
     </div>
-
+     <!-- <app-card [product]="data"></app-card> -->
     <div class="rewards">
       <div class="rewards-header">
         <p class="reward-count">Available Products({{ filteredRewards.length }}) </p>
@@ -60,7 +59,8 @@
       <div class="reward-list">
         <div *ngFor="let reward of filteredRewards" class="rental-card">
           <div class="card-image">
-            <img [src]="reward.display_img_urls[reward.currentImageIndex] || 'assets/placeholder.png'" [alt]="reward.name" />
+            <img [src]="reward.display_img_urls[reward.currentImageIndex] || 'assets/placeholder.png'"
+              [alt]="reward.name" />
             <div class="heart-icon" (click)="addToFavorite(reward)">
               <mat-icon>favorite</mat-icon>
             </div>
@@ -70,9 +70,19 @@
             <div class="nav-arrow right" (click)="nextImage(reward)">
               <mat-icon>chevron_right</mat-icon>
             </div>
+            <div style="position: absolute; bottom: 10px; right: 10px; z-index: 3;">
+
+              <app-product-rating [rating]="reward.ProductRatings[0] ? reward.ProductRatings[0].rating : 0"
+                [avgRating]="reward.avgRating" [totalUsers]="reward.totalUsers"
+                (ratingChange)="onRatingChange($event, reward)"
+                [disabled]="this.userService.getUserDetails().userId === reward.userId"></app-product-rating>
+            </div>
           </div>
           <div class="card-content">
-            <div class="date">{{ reward.valid_until | date:'MMM d' }}</div>
+
+            <div class="date">{{ reward.valid_until | date:'MMM d' }}
+
+            </div>
             <div class="rent">₹{{ reward.Rent }}/day</div>
             <div class="size">
               <mat-icon>straighten</mat-icon> {{ reward.size || 'N/A' }}
@@ -82,12 +92,15 @@
             </div>
           </div>
           <div class="card-actions">
-            <button class="know-more" [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
+            <button class="know-more"
+              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
               (click)="productDetails(reward.pk)">Know More</button>
-            <div class="cart-icon" [class.disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
+            <button class="cart-icon"
+              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
               (click)="addToCart(reward.pk)">
+              Add to Cart
               <mat-icon>add_shopping_cart</mat-icon>
-            </div>
+            </button>
           </div>
         </div>
       </div>
