@@ -1,0 +1,43 @@
+<mat-card class="custom-card">
+  <div class="image-container">
+    <button mat-icon-button (click)="prevImage()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <img [src]="product.images[currentImageIndex].url" alt="Product image" />
+
+    <button mat-icon-button (click)="nextImage()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+
+  <mat-card-title>{{ product.productName }}</mat-card-title>
+  <mat-card-subtitle>Category: {{ product.category }}</mat-card-subtitle>
+
+  <mat-card-content>
+    <p><strong>City:</strong> {{ product.city }}</p>
+    <p><strong>Description:</strong> {{ product.productDescription }}</p>
+    <p><strong>Listed On:</strong> {{ product.productListedDate | date:'mediumDate' }}</p>
+    <p><strong>Valid Until:</strong> {{ product.validUntil | date:'mediumDate' }}</p>
+    <p><strong>Owner Email:</strong> {{ product.productOwnerEmail }}</p>
+    <p><strong>Rent:</strong> ₹{{ product.productRent }}</p>
+    <p><strong>Quantity:</strong> {{ product.quantity }}</p>
+    <p><strong>User Role:</strong> {{ product.userRole }}</p>
+    <p><strong>User ID:</strong> {{ product.userId }}</p>
+
+    <div class="rating">
+      <mat-icon *ngFor="let i of [1,2,3,4,5]" [color]="i <= getAverageRating() ? 'warn' : ''">
+        star
+      </mat-icon>
+      ({{ product.ratings?.length || 0 }})
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-stroked-button color="primary">Know More</button>
+    <button mat-flat-button color="accent">Add to Cart</button>
+    <button mat-icon-button>
+      <mat-icon>favorite_border</mat-icon>
+    </button>
+  </mat-card-actions>
+</mat-card>
