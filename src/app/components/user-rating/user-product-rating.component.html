@@ -1,0 +1,12 @@
+<div class="rating-container" [class.disabled]="disabled" [style.pointerEvents]="disabled ? 'none' : 'auto'" [style.opacity]="disabled ? 0.5 : 1">
+  <!-- <div class="rating-display"> {{ avgRating.toFixed(1) }} / 5 ({{ totalUsers }} users)</div>
+ -->
+ <div class="stars">
+    <mat-icon *ngFor="let star of stars; let i = index"
+              (click)="setRating(i + 1)"
+              [class.filled]="i < rating"
+              [class.disabled]="disabled">
+      {{ i < rating ? 'star' : 'star_border' }}
+    </mat-icon>
+  </div>
+</div>

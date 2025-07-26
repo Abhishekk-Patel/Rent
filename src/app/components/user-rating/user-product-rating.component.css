@@ -5,6 +5,11 @@
   gap: 5px;
   cursor: pointer;
 }
+.rating-container.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .stars {
   display: flex;
 }
