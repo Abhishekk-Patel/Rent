@@ -40,12 +40,13 @@ import { HttpClientModule } from '@angular/common/http';
 import { PartnerBrandSliderComponent } from './components/partner-brand-slider/partner-brand-slider.component'; // Import HttpClientModule
 import { MatTabsModule } from '@angular/material/tabs';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { UserRatingComponent } from './components/user-rating/user-rating.component';
 import { AuthGuard } from './guards/auth.guard'; // Import the AuthGuard
 import { StoreModule } from '@ngrx/store';
 import { productReducer, orderReducer } from './components/Store/productData.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { productDataEffects } from './components/Store/productData.effects';
+import { UserProductRatingComponent } from './components/user-rating/user-product-rating.component';
+import { CardComponent } from './components/content-component/card/card.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -60,7 +61,8 @@ import { productDataEffects } from './components/Store/productData.effects';
     AddProductComponent,
     MyAccountComponent,
     PartnerBrandSliderComponent,
-    UserRatingComponent,
+    UserProductRatingComponent,
+    CardComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
