@@ -1,16 +1,17 @@
 .header-toolbar {
   display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #FFFFFF;
-      padding: 20px;
-      background-color: #FFFFFF;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  justify-content: space-between;
+  align-items: center;
+  background: #FFFFFF;
+  padding: 20px;
+  background-color: #FFFFFF;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
-     
+
   .logo-section {
     display: flex;
     align-items: center;
+
     .company-logo {
       border-radius: 1px solid white;
       height: 40px;
@@ -18,21 +19,26 @@
       border-radius: 5px;
     }
   }
+
   .spacer {
     flex: 1;
   }
+
   .icon-section {
     display: flex;
     gap: 10px;
     align-items: center;
+
     :is(button) {
       color: #830E0E;
       margin-left: 10px;
+
       .mat-badge-content {
         top: 1px;
-        
+
       }
     }
+
     .blink {
       animation: blinker 5.5s linear infinite;
     }
@@ -44,15 +50,18 @@
     opacity: 0;
   }
 }
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
   background-color: red;
+
   .logo {
     height: 40px;
   }
+
   .icons img {
     margin-left: 15px;
     height: 30px;
