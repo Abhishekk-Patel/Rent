@@ -12,18 +12,14 @@
   </div>
 
   <mat-card-title>{{ product.productName }}</mat-card-title>
-  <mat-card-subtitle>Category: {{ product.category }}</mat-card-subtitle>
 
   <mat-card-content>
     <p><strong>City:</strong> {{ product.city }}</p>
     <p><strong>Description:</strong> {{ product.productDescription }}</p>
     <p><strong>Listed On:</strong> {{ product.productListedDate | date:'mediumDate' }}</p>
     <p><strong>Valid Until:</strong> {{ product.validUntil | date:'mediumDate' }}</p>
-    <p><strong>Owner Email:</strong> {{ product.productOwnerEmail }}</p>
     <p><strong>Rent:</strong> ₹{{ product.productRent }}</p>
     <p><strong>Quantity:</strong> {{ product.quantity }}</p>
-    <p><strong>User Role:</strong> {{ product.userRole }}</p>
-    <p><strong>User ID:</strong> {{ product.userId }}</p>
 
     <div class="rating">
       <mat-icon *ngFor="let i of [1,2,3,4,5]" [color]="i <= getAverageRating() ? 'warn' : ''">

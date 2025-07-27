@@ -48,7 +48,7 @@
         </mat-expansion-panel>
       </mat-accordion>
     </div>
-     <!-- <app-card [product]="data"></app-card> -->
+     <app-card [product]="data"></app-card>
     <div class="rewards">
       <div class="rewards-header">
         <p class="reward-count">Available Products({{ filteredRewards.length }}) </p>
@@ -79,15 +79,16 @@
             </div>
           </div>
           <div class="card-content">
-
-            <div class="date">{{ reward.valid_until | date:'MMM d' }}
+            <mat-card-title>{{ reward.productName }}</mat-card-title>
+               <div class="title">{{reward.productName}} </div>
+            <div class="date">{{ reward.valid_until |  date:'mediumDate'  }}
 
             </div>
             <div class="rent">₹{{ reward.Rent }}/day</div>
             <div class="size">
-              <mat-icon>straighten</mat-icon> {{ reward.size || 'N/A' }}
+              {{ reward.size || 'N/A' }}
             </div>
-            <div *ngIf="reward.quantity && reward.quantity <= reward.low_quantity" class="badge">
+            <div *ngIf=" reward.quantity && reward.quantity <= reward.low_quantity" class="badge">
               High Demand (Only {{ reward.quantity }} left)
             </div>
           </div>
