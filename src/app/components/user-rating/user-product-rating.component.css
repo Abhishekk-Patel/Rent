@@ -17,6 +17,10 @@ mat-icon {
   color: gray;
   transition: color 0.2s;
 }
+.total-users{
+  font-size: 9px;
+  color: #ffffff;
+}
 .filled {
   color: gold;
 }

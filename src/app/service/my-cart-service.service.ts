@@ -7,6 +7,7 @@ import { ProductDetailsPopupComponent } from '../components/product-details-popu
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { signal } from '@angular/core';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +26,8 @@ export class MyCartServiceService {
     private readonly router: Router,
     private readonly snackBar: MatSnackBar,
     private readonly httpClient: HttpClient,
-    private readonly dialog: MatDialog
+    private readonly dialog: MatDialog,
+    private readonly userService: UserService
    
   ) {}
 
@@ -34,6 +36,7 @@ export class MyCartServiceService {
   }
 
   addToCart(item: any): void {
+    console.log('Adding item to cart:', item);
     const currentItems = this.cartItems.value;
     const itemExists = currentItems.some((cartItem) => cartItem.pk === item.pk);
 
@@ -61,6 +64,15 @@ export class MyCartServiceService {
     } else {
       this.showMessage('Item not found in cart');
     }
+
+    this.httpClient.post('http://localhost:3000/api/cart/remove', { userId: this.userService.getUserDetails().userId, pk: item.pk }).subscribe(
+      response => {
+        console.log('Item removed from cart:', response);
+      },
+      error => {
+        console.error('Error removing item from cart:', error);
+      }
+    );
   }
 
   addToFavorites(item: any): void {

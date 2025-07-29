@@ -5,6 +5,7 @@ import { DataService } from 'src/app/service/data.service';
 import { OrderService } from 'src/app/service/order.service';
 import { interval, Subscription } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { UserService } from 'src/app/service/user.service';
 
 @Component({
   selector: 'app-my-cart',
@@ -34,7 +35,8 @@ export class MyCartComponent implements OnInit, OnDestroy {
     private readonly fb: FormBuilder,
     private readonly myCartService: MyCartServiceService,
     private readonly dataService: DataService,
-    private readonly orderService: OrderService
+    private readonly orderService: OrderService,
+    private readonly userService: UserService
   ) {
     this.productFormGroup = this.fb.group({});
 
@@ -58,6 +60,11 @@ export class MyCartComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // this.myCartService.fetchCartData(this.userService.getUserDetails().userId)
+    //   .subscribe((data) => {
+    //     //this.cartItems = data.cartItems || [];
+    //     //this.myCartService.cartItems$.next(this.cartItems); // Update the cart items in the service
+    //   });
     this.myCartService.cartItems$.subscribe((items) => {
       this.cartItems = items;
       this.generateSuggestions(); // Generate suggestions whenever cart items change
@@ -115,6 +122,7 @@ export class MyCartComponent implements OnInit, OnDestroy {
     this.myCartService.removeFromFavorites(item); // Remove the item from favorites
     this.cartItems = this.myCartService.getCartItems(); // Update the cart items list
     this.favoriteItems = this.myCartService.getFavoriteItems(); // Update the favorite items list
+
   }
 
   generateSuggestions(): void {

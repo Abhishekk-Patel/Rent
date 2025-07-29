@@ -40,8 +40,9 @@ mat-card-title {
     order: 2;
   }
 }
+
 .sidebar-content:hover {
-transform: scale(1.02);
+  transform: scale(1.02);
 }
 
 .buttons {
@@ -178,7 +179,7 @@ transform: scale(1.02);
 .add-btn {
   background-color: #830E0E;
   color: white;
-
+  cursor: pointer;
   padding: 5px 20px;
   display: flex;
   align-items: center;

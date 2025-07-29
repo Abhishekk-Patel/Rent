@@ -127,6 +127,11 @@ export class ContentComponentComponent
         ProductOwnerEmail: item.productOwnerEmail,
         ProductRatings: item.ratings || [],
         userId: item.userId || '',
+        userRatings: item.ratings || [],
+        totalUserRated: item.totalUserRated
+          ? item.totalUserRated
+          : item.ratings.length || 0,
+
       }));
       this.filteredRewards = [...this.rewards]; // Set filteredRewards to the fetched data
       this.updateRewardsAndCategories();

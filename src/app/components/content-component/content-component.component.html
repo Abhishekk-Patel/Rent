@@ -1,7 +1,14 @@
 <div class="search-section stylish-search-section">
   <div class="search-bar">
-    <input type="text" #searchInput (input)="search()" (keypress)="handleKeyPress($event)"
-      placeholder="Search by Location, Category, etc." [(ngModel)]="searchValue" class="search-input" />
+    <input
+      type="text"
+      #searchInput
+      (input)="search()"
+      (keypress)="handleKeyPress($event)"
+      placeholder="Search by Location, Category, etc."
+      [(ngModel)]="searchValue"
+      class="search-input"
+    />
 
     <button class="search-btn" (click)="search()">
       <mat-icon>search</mat-icon>
@@ -9,8 +16,9 @@
   </div>
   <div class="filters" *ngIf="searchValue">
     <span>Applied Filters:</span>
-    <button mat-button class="filter">{{searchValue}}</button>
-    <button mat-button class="filter clearFilterBtn" (click)="clear()">clear
+    <button mat-button class="filter">{{ searchValue }}</button>
+    <button mat-button class="filter clearFilterBtn" (click)="clear()">
+      clear
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -23,22 +31,37 @@
     <div class="categories">
       <div class="categories-header">
         <h3>Categories</h3>
-        <mat-button-toggle-group [(ngModel)]="userRole" (change)="onUserRoleChange($event)" class="user-role-toggle">
+        <mat-button-toggle-group
+          [(ngModel)]="userRole"
+          (change)="onUserRoleChange($event)"
+          class="user-role-toggle"
+        >
           <mat-button-toggle value="Bride">Bride</mat-button-toggle>
           <mat-button-toggle value="Groom">Groom</mat-button-toggle>
         </mat-button-toggle-group>
       </div>
       <mat-accordion>
-        <mat-expansion-panel class="category-item" *ngFor="let category of categories; let i = index"
-          [(expanded)]="category.isExpanded" (opened)="onPanelChange()" (closed)="onPanelChange()">
+        <mat-expansion-panel
+          class="category-item"
+          *ngFor="let category of categories; let i = index"
+          [(expanded)]="category.isExpanded"
+          (opened)="onPanelChange()"
+          (closed)="onPanelChange()"
+        >
           <mat-expansion-panel-header>
             <mat-panel-description>
-              <mat-icon class="status-icon" [ngClass]="{
-                'selected': category.isSelected,
-                'unselected': !category.isSelected,
-                'expanded': category.isExpanded
-              }" [style.color]="category.isExpanded ? 'green' : '#830E0E'">
-                {{ category.isSelected ? 'check_circle' : 'check_circle_outline' }}
+              <mat-icon
+                class="status-icon"
+                [ngClass]="{
+                  selected: category.isSelected,
+                  unselected: !category.isSelected,
+                  expanded: category.isExpanded
+                }"
+                [style.color]="category.isExpanded ? 'green' : '#830E0E'"
+              >
+                {{
+                  category.isSelected ? "check_circle" : "check_circle_outline"
+                }}
               </mat-icon>
               <mat-panel-title class="cat-title">
                 {{ category.name }}
@@ -48,19 +71,29 @@
         </mat-expansion-panel>
       </mat-accordion>
     </div>
-     <app-card [product]="data"></app-card>
     <div class="rewards">
       <div class="rewards-header">
-        <p class="reward-count">Available Products({{ filteredRewards.length }}) </p>
-        <button class="sort-btn" *ngIf="filteredRewards.length !=1" (click)="openSortPanel()">
+        <p class="reward-count">
+          Available Products({{ filteredRewards.length }})
+        </p>
+        <button
+          class="sort-btn"
+          *ngIf="filteredRewards.length != 1"
+          (click)="openSortPanel()"
+        >
           <mat-icon>sort</mat-icon> Sort
         </button>
       </div>
       <div class="reward-list">
         <div *ngFor="let reward of filteredRewards" class="rental-card">
           <div class="card-image">
-            <img [src]="reward.display_img_urls[reward.currentImageIndex] || 'assets/placeholder.png'"
-              [alt]="reward.name" />
+            <img
+              [src]="
+                reward.display_img_urls[reward.currentImageIndex] ||
+                'assets/placeholder.png'
+              "
+              [alt]="reward.name"
+            />
             <div class="heart-icon" (click)="addToFavorite(reward)">
               <mat-icon>favorite</mat-icon>
             </div>
@@ -70,53 +103,95 @@
             <div class="nav-arrow right" (click)="nextImage(reward)">
               <mat-icon>chevron_right</mat-icon>
             </div>
-            <div style="position: absolute; bottom: 10px; right: 10px; z-index: 3;">
 
-              <app-product-rating [rating]="reward.ProductRatings[0] ? reward.ProductRatings[0].rating : 0"
-                [avgRating]="reward.avgRating" [totalUsers]="reward.totalUsers"
+            <div class="rating-container">
+              <div class="location-info">
+                <mat-icon class="location-icon">location_on</mat-icon>
+                <span class="location-city">{{ reward.city }}</span>
+              </div>
+              <app-product-rating
+                [rating]="
+                  reward.ProductRatings[0] ? reward.ProductRatings[0].rating : 0
+                "
+                [avgRating]="reward.avgRating"
+                [totalUsers]="reward.totalUserRated"
                 (ratingChange)="onRatingChange($event, reward)"
-                [disabled]="this.userService.getUserDetails().userId === reward.userId"></app-product-rating>
+                [disabled]="
+                  this.userService.getUserDetails().userId === reward.userId
+                "
+              ></app-product-rating>
             </div>
           </div>
           <div class="card-content">
-            <mat-card-title>{{ reward.productName }}</mat-card-title>
-               <div class="title">{{reward.productName}} </div>
-            <div class="date">{{ reward.valid_until |  date:'mediumDate'  }}
-
+            <mat-card-title class="product-title">{{
+              reward.name | uppercase
+            }}</mat-card-title>
+            <div class="date">
+              <strong>Listed On:</strong>
+              {{ reward.valid_until | date : "mediumDate" }}
             </div>
-            <div class="rent">₹{{ reward.Rent }}/day</div>
+            <div class="rent">
+              <strong>Rent:</strong> ₹{{ reward.Rent }}/day
+            </div>
             <div class="size">
-              {{ reward.size || 'N/A' }}
+              <strong>Size:</strong> {{ reward.size || "N/A" }}
             </div>
-            <div *ngIf=" reward.quantity && reward.quantity <= reward.low_quantity" class="badge">
+            <div
+              *ngIf="reward.quantity && reward.quantity <= reward.low_quantity"
+              class="badge"
+            >
               High Demand (Only {{ reward.quantity }} left)
             </div>
           </div>
           <div class="card-actions">
-            <button class="know-more"
-              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
-              (click)="productDetails(reward.pk)">Know More</button>
-            <button class="cart-icon"
-              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
-              (click)="addToCart(reward.pk)">
-              Add to Cart
-              <mat-icon>add_shopping_cart</mat-icon>
+            <button
+              class="know-more"
+              [disabled]="
+                reward.quantity === 0 ||
+                reward.ProductOwnerEmail === userService.getUserDetails().email
+              "
+              (click)="productDetails(reward.pk)"
+            >
+              Know More
+            </button>
+            <button
+              class="cart-icon"
+              [disabled]="
+                reward.quantity === 0 ||
+                reward.ProductOwnerEmail === userService.getUserDetails().email
+              "
+              (click)="addToCart(reward.pk)"
+            >
+              <span class="cart-label">Add to Cart</span>
+              <mat-icon class="cart-icon-inner">add_shopping_cart</mat-icon>
             </button>
           </div>
         </div>
       </div>
       <div *ngIf="isLoading" class="skeleton-container">
-        <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]"></div>
+        <div
+          class="skeleton-card"
+          *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+        ></div>
       </div>
     </div>
   </div>
 
-  <app-sort-panel (mouseleave)="closePanel()" *ngIf="isSortPanelOpen" (close)="closeSortPanel()"
-    (sort)="sortRewards($event)" (filterByPrice)="applyPriceFilter($event)"
-    (filterByLocation)="applyLocationFilter($event)"></app-sort-panel>
+  <app-sort-panel
+    (mouseleave)="closePanel()"
+    *ngIf="isSortPanelOpen"
+    (close)="closeSortPanel()"
+    (sort)="sortRewards($event)"
+    (filterByPrice)="applyPriceFilter($event)"
+    (filterByLocation)="applyLocationFilter($event)"
+  ></app-sort-panel>
 
   <app-alert-msgs *ngIf="!isLoading" [message]="alertMsg"></app-alert-msgs>
-  <button class="scroll-to-top-btn" [class.show]="showScrollToTop" (click)="scrollToTop()">
+  <button
+    class="scroll-to-top-btn"
+    [class.show]="showScrollToTop"
+    (click)="scrollToTop()"
+  >
     <mat-icon>arrow_upward</mat-icon>
   </button>
 </section>

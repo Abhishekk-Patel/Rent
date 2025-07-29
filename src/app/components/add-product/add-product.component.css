@@ -1,6 +1,6 @@
 .product-container-top {
-  background-image: url("../../../assets/download.jpeg");
-  background-size: cover;
+  /* background-image: url("../../../assets/download.jpeg"); */
+  background-size: cover; 
   background-position: center;
   background-repeat: no-repeat;
   min-height: 100vh; /* Ensure it covers the full viewport height */
