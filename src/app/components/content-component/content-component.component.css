@@ -170,27 +170,7 @@
   color: white !important;
 }
 
-@media (max-width: 768px) {
-  .categories {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-  }
 
-  .categories-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .title-and-toggle {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .user-role-toggle {
-    margin-top: 10px;
-  }
-}
 
 .category-list {
   list-style: none;
@@ -560,48 +540,13 @@
   background: #0056b3;
 }
 
-@media (max-width: 768px) {
-  .reward-card-footer {
-    flex-direction: column;
-    gap: 10px;
-  }
 
-  .reward-card-footer .order-now-btn,
-  .reward-card-footer .add-to-cart-btn {
-    width: 100%;
-    text-align: center;
-  }
-}
 
-@media (max-width: 768px) {
-  .categories {
-    width: 100%;
-    padding: 10px;
-  }
-}
 
-@media (max-width: 768px) {
-  .layout {
-    flex-direction: column;
-  }
 
-  .categories {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-  }
 
-  .rewards {
-    width: 100%;
-    padding: 0;
-  }
-}
 
-@media (max-width: 768px) {
-  .reward-card {
-    max-width: 100%;
-  }
-}
+
 
 .spinner-container {
   position: fixed;
@@ -639,20 +584,7 @@
   color: white !important;
 }
 
-@media (max-width: 768px) {
-  .categories-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
 
-  .mat-button-toggle-group {
-    margin-top: 10px;
-  }
-
-  .user-role-toggle {
-    margin-top: 10px;
-  }
-}
 
 .scroll-to-top-btn {
   position: fixed;
@@ -900,5 +832,55 @@
     width: 100%;
     height: 44px;
     max-height: 44px;
+  }
+}
+
+@media (max-width: 768px) {
+  .categories {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+
+  .categories-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .title-and-toggle {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .user-role-toggle {
+    margin-top: 10px;
+  }
+
+  .layout {
+    flex-direction: column;
+  }
+
+  .rewards {
+    width: 100%;
+    padding: 0;
+  }
+
+  .reward-card {
+    max-width: 100%;
+  }
+
+  .reward-card-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .reward-card-footer .order-now-btn,
+  .reward-card-footer .add-to-cart-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .mat-button-toggle-group {
+    margin-top: 10px;
   }
 }
