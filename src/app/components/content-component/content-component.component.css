@@ -872,12 +872,12 @@
   max-height: 35px;
 }
 .cart-icon:disabled {
-  color: #b3d1fa !important;
-  background: #f0f4fa !important;
+  color: white !important;
+  background: #b3d1fa!important;
   cursor: not-allowed !important;
 }
 .cart-icon:hover:not(.disabled) {
-  background-color: #f9fafb;
+  background-color: #b3d1fa;
   border-color: #9ca3af;
 }
 
