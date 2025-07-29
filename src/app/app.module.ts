@@ -46,7 +46,6 @@ import { productReducer, orderReducer } from './components/Store/productData.red
 import { EffectsModule } from '@ngrx/effects';
 import { productDataEffects } from './components/Store/productData.effects';
 import { UserProductRatingComponent } from './components/user-rating/user-product-rating.component';
-import { CardComponent } from './components/content-component/card/card.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -62,7 +61,6 @@ import { CardComponent } from './components/content-component/card/card.componen
     MyAccountComponent,
     PartnerBrandSliderComponent,
     UserProductRatingComponent,
-    CardComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
