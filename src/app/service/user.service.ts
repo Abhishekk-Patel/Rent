@@ -88,7 +88,7 @@ export class UserService {
     }
   }
   updateRating(productId: string, rating: number,userId:number): Observable<any> {
-    console.log(productId, rating, userId, 'productId, rating, userId');
+
     const url = 'http://localhost:3000/productRating';
     return this.http.post<any>(url, { productId, rating,userId });
   }

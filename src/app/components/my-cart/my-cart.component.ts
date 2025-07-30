@@ -60,12 +60,10 @@ export class MyCartComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // this.myCartService.fetchCartData(this.userService.getUserDetails().userId)
-    //   .subscribe((data) => {
-    //     //this.cartItems = data.cartItems || [];
-    //     //this.myCartService.cartItems$.next(this.cartItems); // Update the cart items in the service
-    //   });
+  
+   console.log('Cart data from API:',this.myCartService.fetchCartItems());
     this.myCartService.cartItems$.subscribe((items) => {
+      console.log('Cart items static fetched', items);
       this.cartItems = items;
       this.generateSuggestions(); // Generate suggestions whenever cart items change
     });
@@ -117,7 +115,6 @@ export class MyCartComponent implements OnInit, OnDestroy {
   }
 
   addToCard(item: any): void {
-    console.log('Adding to cart', item);
     this.myCartService.addToCart(item); // Add the item to the cart
     this.myCartService.removeFromFavorites(item); // Remove the item from favorites
     this.cartItems = this.myCartService.getCartItems(); // Update the cart items list

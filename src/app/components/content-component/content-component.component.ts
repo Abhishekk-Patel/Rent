@@ -109,8 +109,7 @@ export class ContentComponentComponent
     };
     this.isLoading = true; // Set isLoading to true before data fetch
     this.productData$.subscribe((data) => {
-      console.log(data, 'product data from store');
-      this.rewards = data.map((item: any) => ({
+     this.rewards = data.map((item: any) => ({
         pk: item._id,
         name: item.productName,
         Rent: item.productRent,
@@ -279,7 +278,7 @@ export class ContentComponentComponent
   }
   addToFavorite(reward: any) {
     this.mycartService.addToFavorites(reward);
-    console.log(reward, 'test');
+  
   }
 
   showLoadingSpinner() {
@@ -381,8 +380,7 @@ export class ContentComponentComponent
     this.currentPage = 1;
   }
   onRatingChange(newRating: number, reward: any) {
-    console.log(reward,"reward");
-    console.log(newRating,'newRating');
+    
     reward.rating = newRating;
     // Optionally, send the new rating to the backend here
      this.userService.updateRating(reward.pk, newRating,reward.userId).subscribe(res=> console.log(res,"response"));

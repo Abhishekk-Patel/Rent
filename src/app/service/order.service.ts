@@ -57,7 +57,6 @@ export class OrderService {
 
   // Fetch your orders with error handling
   getYourOrders(userEmail: string): Observable<any[]> {
-    console.log(userEmail);
     return this.http
       .get(`https://rent-be.onrender.com/orders/fetchOrders/${userEmail}`)
       .pipe(

@@ -14,7 +14,7 @@ export class DataService {
 
   // Fetch all products data
   getAllProductData(): Observable<any[]> {
-    console.log('Fetching product data from API'); // Debug log
+
     return this.http.get<any[]>(`${this.apiUrl}/products`).pipe(
       catchError((error) => {
         console.error('Error fetching product data:', error); // Debug log

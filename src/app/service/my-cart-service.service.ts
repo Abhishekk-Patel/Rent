@@ -36,7 +36,17 @@ export class MyCartServiceService {
   }
 
   addToCart(item: any): void {
-    console.log('Adding item to cart:', item);
+    console.log(this.userService.getUserDetails().userId,"user frim my cart service");
+   const userId = this.userService.getUserDetails().userId;
+ this.httpClient.post<any>(`http://localhost:3000/api/cart/add`, { ...item, userId }).subscribe(   response => {
+
+        console.log('Item added to cart:', response);
+      },
+      error => {
+        console.error('Error adding item to cart:', error);
+      }
+    );
+
     const currentItems = this.cartItems.value;
     const itemExists = currentItems.some((cartItem) => cartItem.pk === item.pk);
 
@@ -52,6 +62,14 @@ export class MyCartServiceService {
   getCartItems(): any[] {
     return this.cartItems.value;
   }
+ fetchCartItems(): void {
+    this.httpClient.get<any>(`http://localhost:3000/api/cart/${this.userService.getUserDetails().userId}`).subscribe(res => {
+      console.log('Cart items fetched:', res);
+      
+    //  this.cartItems.next(res.items);
+    });
+  } 
+
 
   removeFromCart(item: any): void {
     const currentItems = this.cartItems.value;

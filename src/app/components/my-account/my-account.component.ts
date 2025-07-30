@@ -6,6 +6,7 @@ import { OrderService } from 'src/app/service/order.service';
 import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { LoadOrderData } from '../Store/productData.action';
+import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 
 @Component({
   selector: 'app-my-account',
@@ -26,6 +27,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     public router: Router,
     public dataService: DataService,
     private orderService: OrderService,
+    private myCartService: MyCartServiceService,
     private store: Store<{ orderData: any[] }>
   ) {
     this.store.dispatch(LoadOrderData({ email: this.userService.getUserDetails().email }));
@@ -45,7 +47,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
 
     // Get user details when the component initializes
     this.user = this.userService.getUserDetails();
-    console.log('User details:', this.user);
+   
 
     // Check if the user is available and fetch user history
     if (this.user && this.user.email) {
@@ -150,7 +152,6 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   }
 
   deleteHistoryItem(item: any): void {
-    console.log('Deleting item:', item._id);
     // Remove the item from the user history
     this.userHistory = this.userHistory.filter(
       (historyItem) => historyItem._id !== item._id
@@ -158,7 +159,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     // Optionally, call a service to delete the item from the backend
     this.dataService.deleteProductById(item._id).subscribe(
       () => {
-        console.log('Item deleted successfully');
+        this.myCartService.showMessage('Item deleted successfully');
       },
       (error: Error) => {
         console.error('Error deleting item:', error);
