@@ -21,7 +21,8 @@
       </div>
     </mat-card>
 
-    <mat-card class="suggestions" *ngIf="suggestedProducts.length > 0">
+    <mat-card class="suggestions" *ngIf="suggestedProducts.length > 0"
+      (mouseenter)="pauseAutoSlider()" (mouseleave)="resumeAutoSlider()">
       <!-- Title & Navigation Icons -->
       <div class="suggestions-header">
         <mat-card-title>Suggestions</mat-card-title>
@@ -69,12 +70,16 @@
         <p>Your cart is empty. <span class="fancy-icon">🛒</span></p>
       </div>
       <mat-card *ngFor="let item of cartItems; let i = index" class="cart-item"
-     
         [@fadeOut]="item.removing ? 'out' : 'in'">
-        <img [src]="item.display_img_urls[0]" alt="{{ item.productName }}" class="product-image">
+        <img *ngIf="item.display_img_urls && item.display_img_urls.length > 0; else noImage"
+             [src]="item.display_img_urls[0]"
+             alt="{{ item.productName }}" class="product-image">
+        <ng-template #noImage>
+          <img src="assets/placeholder.png" alt="No image available" class="product-image">
+        </ng-template>
         <div class="product-details">
-          <p><strong>Product Name:</strong> {{ item.name || item.productName }}</p>
-          <p><strong>Cost:</strong> {{ item.Rent || item.productRent }}$</p>
+          <p><strong>Product Name:</strong> {{ item.productName }}</p>
+          <p><strong>Cost:</strong> {{ item.productRent | currency:'INR' }}</p>
           <p><strong>Location:</strong> {{item.city}}</p>
         </div>
         <button mat-button class="remove-btn" (click)="removeFromCart(item, i)">Remove</button>
@@ -91,20 +96,16 @@
         <p>Your favorites list is empty. <span class="fancy-icon">❤️</span></p>
       </div>
       <mat-card *ngFor="let item of favoriteItems" class="cart-item">
-        <img [src]="item.display_img_urls[0]" alt="{{ item.name }}" class="product-image">
+        <img [src]="item.display_img_urls[0]" alt="{{ item.productName }}" class="product-image">
         <div class="product-details">
-          <p><strong>Product Name:</strong> {{ item.name }}</p>
-          <p><strong>Cost:</strong> {{ item.Rent }}$</p>
-          <p><strong>Location:</strong> USA</p>
+          <p><strong>Product Name:</strong> {{ item.productName }}</p>
+          <p><strong>Cost:</strong> {{ item.productRent | currency:'INR' }}</p>
+          <p><strong>Location:</strong> {{item.city || 'N/A'}}</p>
         </div>
-
         <div class="buttons">
           <button mat-button class="fav-remove-btn" (click)="removeFromFavorites(item)">Remove</button>
-          <button mat-button class="fav-add-to-cart"
-            (click)="addToCard(item)"><mat-icon>add_shopping_cart</mat-icon></button>
-
+          <button mat-button class="fav-add-to-cart" (click)="addToCard(item)"><mat-icon>add_shopping_cart</mat-icon></button>
         </div>
-
       </mat-card>
     </div>
 
@@ -115,10 +116,10 @@
           <mat-step [stepControl]="productFormGroup">
             <ng-template matStepLabel>Product Details</ng-template>
             <div *ngFor="let item of cartItems" class="cart-item">
-              <img [src]="item.display_img_urls[0]" alt="{{ item.name }}" class="product-image">
+              <img [src]="item.display_img_urls[0]" alt="{{ item.productName }}" class="product-image">
               <div class="product-details">
-                <p><strong>Name:</strong> {{ item.name }}</p>
-                <p><strong>Rent:</strong> {{ item.Rent }}</p>
+                <p><strong>Name:</strong> {{ item.productName }}</p>
+                <p><strong>Rent:</strong> {{ item.productRent | currency:'INR' }}</p>
               </div>
             </div>
             <button mat-button matStepperNext>Next</button>

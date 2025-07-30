@@ -28,7 +28,6 @@ export class MyCartServiceService {
     private readonly httpClient: HttpClient,
     private readonly dialog: MatDialog,
     private readonly userService: UserService
-   
   ) {}
 
   setIsAddNewProduct(value: boolean): void {
@@ -36,66 +35,110 @@ export class MyCartServiceService {
   }
 
   addToCart(item: any): void {
-    console.log(this.userService.getUserDetails().userId,"user frim my cart service");
-   const userId = this.userService.getUserDetails().userId;
- this.httpClient.post<any>(`http://localhost:3000/api/cart/add`, { ...item, userId }).subscribe(   response => {
-
-        console.log('Item added to cart:', response);
-      },
-      error => {
-        console.error('Error adding item to cart:', error);
-      }
-    );
-
+    const userId = this.userService.getUserDetails().userId;
     const currentItems = this.cartItems.value;
-    const itemExists = currentItems.some((cartItem) => cartItem.pk === item.pk);
-
-    if (!itemExists) {
-      this.cartItems.next([...currentItems, item]);
-      this.myCartValue.update((value) => value + 1);
-      this.showMessage('Product successfully added in cart');
-    } else {
+    // Prevent adding if already in cart
+    if (currentItems.some((cartItem) => cartItem.pk === (item.pk || item._id))) {
       this.showMessage('Item already in cart');
+      return;
     }
+    // Normalize item for backend contract
+    const productToAdd: any = {
+      userId: userId,
+      pk: item.pk || item._id,
+      quantity: item.quantity && item.quantity > 0 ? item.quantity : 1,
+      productName: item.productName || item.name,
+      productRent: item.productRent || item.price || item.Rent,
+      city: item.city || '',
+      display_img_urls: item.display_img_urls || (item.images ? item.images.map((img: any) => img.url) : []),
+      category: item.category || item.productCategory || '',
+    };
+    this.httpClient
+      .post<any>(`http://localhost:3000/api/cart/add`, productToAdd)
+      .subscribe(
+        (response) => {
+          // After successful add, fetch cart from backend to ensure sync
+          this.fetchCartItems();
+          this.myCartValue.update((value) => value + 1);
+          this.showMessage('Product successfully added in cart');
+        },
+        (error) => {
+          this.showMessage('Error adding item to cart');
+          console.error('Error adding item to cart:', error);
+        }
+      );
   }
 
   getCartItems(): any[] {
-    return this.cartItems.value;
+    // Always return the latest cart items from BehaviorSubject, normalized for UI/suggestions
+    return this.cartItems.value.map((item) => ({
+      pk: item.pk || item._id,
+      productName: item.productName || item.name,
+      productRent: item.productRent || item.price || item.Rent,
+      city: item.city || '',
+      display_img_urls: item.display_img_urls || (item.images ? item.images.map((img: any) => img.url) : []),
+      quantity: item.quantity || 1,
+      category: item.category || item.productCategory || '',
+    }));
   }
- fetchCartItems(): void {
-    this.httpClient.get<any>(`http://localhost:3000/api/cart/${this.userService.getUserDetails().userId}`).subscribe(res => {
-      console.log('Cart items fetched:', res);
-      
-    //  this.cartItems.next(res.items);
-    });
-  } 
-
+  fetchCartItems(): void {
+    const userId = this.userService.getUserDetails().userId;
+    this.httpClient
+      .get<any>(`http://localhost:3000/api/cart/${userId}`)
+      .subscribe(
+        (res) => {
+          // Map API response: each item has { product, quantity }
+          if (res && Array.isArray(res.items)) {
+            const mapped = res.items.map((item: any) => {
+              const prod = item.product || item;
+              return {
+                pk: prod.pk || prod._id,
+                productName: prod.productName || prod.name,
+                productRent: prod.productRent || prod.price || prod.Rent,
+                city: prod.city || '',
+                display_img_urls: prod.display_img_urls || (prod.images ? prod.images.map((img: any) => img.url) : []),
+                quantity: item.quantity || 1,
+                category: prod.category || prod.productCategory || '',
+              };
+            });
+            this.cartItems.next(mapped);
+            this.myCartValue.set(mapped.length);
+          } else {
+            this.cartItems.next([]);
+            this.myCartValue.set(0);
+          }
+        },
+        (error) => {
+          this.cartItems.next([]);
+          this.myCartValue.set(0);
+        }
+      );
+  }
 
   removeFromCart(item: any): void {
-    const currentItems = this.cartItems.value;
-    const updatedItems = currentItems.filter((cartItem) => cartItem.pk !== item.pk);
-
-    if (updatedItems.length !== currentItems.length) {
-      this.cartItems.next(updatedItems);
-      this.myCartValue.update((value) => value - 1);
-      this.showMessage('Item removed from cart');
-    } else {
-      this.showMessage('Item not found in cart');
-    }
-
-    this.httpClient.post('http://localhost:3000/api/cart/remove', { userId: this.userService.getUserDetails().userId, pk: item.pk }).subscribe(
-      response => {
-        console.log('Item removed from cart:', response);
-      },
-      error => {
-        console.error('Error removing item from cart:', error);
-      }
-    );
+    const userId = this.userService.getUserDetails().userId;
+    console.log(userId, "userIdfrom cart");
+    const productId = item.pk || item.product?.pk;
+    console.log(productId, "productId for remove from cart");
+    this.httpClient
+      .post('http://localhost:3000/api/cart/remove', {  userId,productId })
+      .subscribe(
+        (response) => {
+          this.showMessage('Item removed from cart');
+          this.fetchCartItems(); // Refresh cart from backend
+        },
+        (error) => {
+          this.showMessage('Error removing item from cart');
+          console.error('Error removing item from cart:', error);
+        }
+      );
   }
 
   addToFavorites(item: any): void {
     const currentFavorites = this.favoriteItems.value;
-    const itemExists = currentFavorites.some((favItem) => favItem.pk === item.pk);
+    const itemExists = currentFavorites.some(
+      (favItem) => favItem.pk === item.pk
+    );
 
     if (!itemExists) {
       this.favoriteItems.next([...currentFavorites, item]);
@@ -106,12 +149,23 @@ export class MyCartServiceService {
   }
 
   getFavoriteItems(): any[] {
-    return this.favoriteItems.value; // Return the current list of favorite items
+    // Always return normalized favorite items for UI/suggestions
+    return this.favoriteItems.value.map((item) => ({
+      pk: item.pk || item._id,
+      productName: item.productName || item.name,
+      productRent: item.productRent || item.price || item.Rent,
+      city: item.city || '',
+      display_img_urls: item.display_img_urls || (item.images ? item.images.map((img: any) => img.url) : []),
+      quantity: item.quantity || 1,
+      category: item.category || item.productCategory || '',
+    }));
   }
 
   removeFromFavorites(item: any): void {
     const currentFavorites = this.favoriteItems.value;
-    const updatedFavorites = currentFavorites.filter((favItem) => favItem.pk !== item.pk);
+    const updatedFavorites = currentFavorites.filter(
+      (favItem) => favItem.pk !== item.pk
+    );
 
     if (updatedFavorites.length !== currentFavorites.length) {
       this.favoriteItems.next(updatedFavorites); // Update the BehaviorSubject with the new list
@@ -136,18 +190,21 @@ export class MyCartServiceService {
   }
 
   addProductDetailsApi(formData: FormData) {
-    this.httpClient.post('http://localhost:3000/upload', formData).subscribe(response => {
-      this.dialog.open(ProductDetailsPopupComponent, {
-        data: {response},
-      });
-    }, error => {
-      console.error("Error submitting product details", error);
-      // Handle error here
-    });
+    this.httpClient.post('http://localhost:3000/upload', formData).subscribe(
+      (response) => {
+        this.dialog.open(ProductDetailsPopupComponent, {
+          data: { response },
+        });
+      },
+      (error) => {
+        console.error('Error submitting product details', error);
+        // Handle error here
+      }
+    );
   }
-  
+
   itemExistsInCart(pk: number): boolean {
-    return this.cartItems.value.some((cartItem) => cartItem === pk);
+    return this.cartItems.value.some((cartItem) => cartItem.pk === pk);
   }
 
   showMessage(message: string): void {

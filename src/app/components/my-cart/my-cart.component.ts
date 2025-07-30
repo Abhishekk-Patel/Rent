@@ -60,10 +60,9 @@ export class MyCartComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-  
-   console.log('Cart data from API:',this.myCartService.fetchCartItems());
+    // Always fetch cart items from API on init
+    this.myCartService.fetchCartItems();
     this.myCartService.cartItems$.subscribe((items) => {
-      console.log('Cart items static fetched', items);
       this.cartItems = items;
       this.generateSuggestions(); // Generate suggestions whenever cart items change
     });
@@ -115,50 +114,110 @@ export class MyCartComponent implements OnInit, OnDestroy {
   }
 
   addToCard(item: any): void {
-    this.myCartService.addToCart(item); // Add the item to the cart
-    this.myCartService.removeFromFavorites(item); // Remove the item from favorites
-    this.cartItems = this.myCartService.getCartItems(); // Update the cart items list
-    this.favoriteItems = this.myCartService.getFavoriteItems(); // Update the favorite items list
-
+    // Determine the unique identifier (pk or _id)
+    const itemId = item.pk || item._id;
+    if (!itemId) {
+      this.myCartService.showMessage('Invalid item');
+      return;
+    }
+    if (this.myCartService.itemExistsInCart(itemId)) {
+      this.myCartService.showMessage('Item already in cart');
+      return;
+    }
+    // Normalize item for cart (ensure productName and productRent are set)
+    const normalizedItem = {
+      ...item,
+      pk: item.pk || item._id,
+      productName: item.productName || item.name,
+      productRent: item.productRent || item.Rent,
+      display_img_urls: item.display_img_urls || (item.images ? item.images.map((img: any) => img.url) : []),
+    };
+    this.myCartService.addToCart(normalizedItem);
+    this.myCartService.removeFromFavorites(normalizedItem);
+    // No need to manually update cartItems/favoriteItems, as subscriptions will update them
   }
 
   generateSuggestions(): void {
-    if (this.cartItems.length > 0 || this.favoriteItems.length > 0) {
-      // Fetch related products based on cart or favorite items
-      const relatedCategories = [
-        ...new Set([
-          ...this.cartItems.map((item) => item.category),
-          ...this.favoriteItems.map((item) => item.category),
-        ]),
-      ];
-      this.dataService.getAllProductData().subscribe((products) => {
-        this.suggestedProducts = products
-          .filter((product) => relatedCategories.includes(product.category))
-          .map((product) => ({
+    // Improved: Exclude both cart and favorite items, rank by category frequency
+    const cartCategories = this.cartItems.map((item) => item.category);
+    const favoriteCategories = this.favoriteItems.map((item) => item.category);
+    const allCategories = [...cartCategories, ...favoriteCategories];
+    const categoryFrequency: { [key: string]: number } = {};
+    allCategories.forEach((cat) => {
+      if (cat) categoryFrequency[cat] = (categoryFrequency[cat] || 0) + 1;
+    });
+
+    // Collect all product IDs to exclude (cart + favorites)
+    const excludeIds = new Set([
+      ...this.cartItems.map((item) => item.pk || item._id),
+      ...this.favoriteItems.map((item) => item.pk || item._id),
+    ]);
+
+    this.dataService.getAllProductData().subscribe((products) => {
+      // Exclude products already in cart or favorites
+      let filtered = products.filter((product: any) => !excludeIds.has(product._id));
+
+      // If there are relevant categories, rank by frequency
+      if (Object.keys(categoryFrequency).length > 0) {
+        filtered = filtered
+          .map((product: any) => ({
             ...product,
-            display_img_urls: product.images.map((img: any) => img.url), // Transform product data
-          }));
-      });
-    } else {
-      // Fetch random products if cart and favorite lists are empty
-      this.dataService.getAllProductData().subscribe((products) => {
-        this.suggestedProducts = products
-          .slice(0, 5) // Limit to 5 random products
-          .map((product) => ({
-            ...product,
-            display_img_urls: product.images.map((img: any) => img.url), // Transform product data
-          }));
-      });
-    }
+            _score: categoryFrequency[product.category] || 0,
+          }))
+          .filter((product: any) => product._score > 0)
+          .sort((a: any, b: any) => b._score - a._score);
+      } else {
+        // If no related categories, shuffle and pick top 5
+        filtered = filtered.sort(() => Math.random() - 0.5);
+      }
+
+      // Limit to top 5 suggestions
+      this.suggestedProducts = filtered.slice(0, 5).map((product: any) => ({
+        ...product,
+        display_img_urls: product.images.map((img: any) => img.url),
+      }));
+    });
   }
 
   nextSuggestion(): void {
-    this.currentSuggestionIndex = (this.currentSuggestionIndex + 1) % this.suggestedProducts.length;
+    if (!this.suggestedProducts || this.suggestedProducts.length === 0) return;
+    const suggestionDetails = document.querySelector('.suggestion-details');
+    if (suggestionDetails) {
+      suggestionDetails.classList.add('hidden');
+      setTimeout(() => {
+        this.currentSuggestionIndex = (this.currentSuggestionIndex + 1) % this.suggestedProducts.length;
+        suggestionDetails.classList.remove('hidden');
+      }, 500);
+    } else {
+      this.currentSuggestionIndex = (this.currentSuggestionIndex + 1) % this.suggestedProducts.length;
+    }
   }
 
   prevSuggestion(): void {
-    this.currentSuggestionIndex =
-      (this.currentSuggestionIndex - 1 + this.suggestedProducts.length) % this.suggestedProducts.length;
+    if (!this.suggestedProducts || this.suggestedProducts.length === 0) return;
+    const suggestionDetails = document.querySelector('.suggestion-details');
+    if (suggestionDetails) {
+      suggestionDetails.classList.add('hidden');
+      setTimeout(() => {
+        this.currentSuggestionIndex = (this.currentSuggestionIndex - 1 + this.suggestedProducts.length) % this.suggestedProducts.length;
+        suggestionDetails.classList.remove('hidden');
+      }, 500);
+    } else {
+      this.currentSuggestionIndex = (this.currentSuggestionIndex - 1 + this.suggestedProducts.length) % this.suggestedProducts.length;
+    }
+  }
+
+  pauseAutoSlider(): void {
+    if (this.sliderSubscription) {
+      this.sliderSubscription.unsubscribe();
+      this.sliderSubscription = undefined as any;
+    }
+  }
+
+  resumeAutoSlider(): void {
+    if (!this.sliderSubscription) {
+      this.startAutoSlider();
+    }
   }
 
   startAutoSlider(): void {
