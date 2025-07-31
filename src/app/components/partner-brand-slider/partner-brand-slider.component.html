@@ -1,20 +1,39 @@
 <section class="partner-brands-slider">
   <div class="main-slider">
-    <div class="brand" *ngFor="let brand of brands; let i = index" [class.active]="i === currentIndex">
-      <div class="cta-img-wrapper">
-        <img [src]="brand.imageUrl" [alt]="brand.name" class="brand-img">
-        <div class="button-wrapper">
-          <button class="cta-btn" (click)="scrollToContent()">
-            <span>Browse Collection</span>
-            <mat-icon style="vertical-align: middle; margin-left: 4px;">touch_app</mat-icon>
-          </button>
-          <button class="cta-btn product-btn" style="margin-left: 12px; background-color
-: #3b82f6;" (click)="addNewProduct()">
-            <span>List Your Product</span>
-            <mat-icon style="vertical-align: middle; margin-left: 4px;">add_circle</mat-icon>
-          </button>
-        </div>
-       
+    <div 
+      class="brand" 
+      *ngFor="let brand of brands; let i = index" 
+      [class.active]="i === currentIndex"
+      style="width: 100%; box-sizing: border-box;"
+    >
+      <div class="cta-img-wrapper" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+      <img 
+        [src]="brand.imageUrl" 
+        [alt]="brand.name" 
+        class="brand-img"
+        style="max-width: 100%; height: auto; border-radius: 8px;"
+      >
+      <div 
+        class="button-wrapper" 
+        style="display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: center; margin-top: 12px;"
+      >
+        <button 
+        class="cta-btn" 
+        (click)="scrollToContent()" 
+        style="width: 90%; max-width: 250px; font-size: 1rem;"
+        >
+        <span>Browse Collection</span>
+        <mat-icon style="vertical-align: middle; margin-left: 4px;">touch_app</mat-icon>
+        </button>
+        <button 
+        class="cta-btn product-btn" 
+        style="width: 90%; max-width: 250px; margin-left: 0; background-color: #3b82f6; font-size: 1rem;"
+        (click)="addNewProduct()"
+        >
+        <span>List Your Product</span>
+        <mat-icon style="vertical-align: middle; margin-left: 4px;">add_circle</mat-icon>
+        </button>
+      </div>
       </div>
     </div>
 
