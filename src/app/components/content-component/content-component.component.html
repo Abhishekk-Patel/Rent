@@ -15,8 +15,13 @@
           <mat-button-toggle value="Bride">Bride</mat-button-toggle>
           <mat-button-toggle value="Groom">Groom</mat-button-toggle>
         </mat-button-toggle-group>
+        <!-- Hamburger icon for mobile/tablet -->
+        <button class="hamburger-btn" (click)="showCategoryMenu = !showCategoryMenu" aria-label="Toggle categories" *ngIf="isMobileView">
+          <mat-icon>{{ showCategoryMenu ? 'close' : 'menu' }}</mat-icon>
+        </button>
       </div>
-      <mat-accordion>
+      <!-- Desktop view: show categories normally -->
+      <mat-accordion *ngIf="!isMobileView">
         <mat-expansion-panel
           class="category-item"
           *ngFor="let category of categories; let i = index"
@@ -46,6 +51,24 @@
           </mat-expansion-panel-header>
         </mat-expansion-panel>
       </mat-accordion>
+      <!-- Mobile/tablet view: hamburger menu -->
+      <div class="mobile-category-menu" *ngIf="isMobileView && showCategoryMenu">
+        <ul class="category-list">
+          <li class="category-item" *ngFor="let category of categories; let i = index" (click)="selectCategory(category)">
+            <mat-icon
+              class="status-icon"
+              [ngClass]="{
+                selected: category.isSelected,
+                unselected: !category.isSelected
+              }"
+              [style.color]="category.isSelected ? 'green' : '#830E0E'"
+            >
+              {{ category.isSelected ? "check_circle" : "check_circle_outline" }}
+            </mat-icon>
+            <span class="cat-title">{{ category.name }}</span>
+          </li>
+        </ul>
+      </div>
     </div>
     <div class="rewards">
       <div class="rewards-header">

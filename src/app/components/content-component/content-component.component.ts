@@ -26,6 +26,8 @@ export class ContentComponentComponent
   implements OnInit, AfterViewInit, OnDestroy
 {
   alertMsg: string = 'Opps! No match found';
+  isMobileView: boolean = false;
+  showCategoryMenu: boolean = false;
   public totalPages: any;
   categories = Category_LIST;
   rewards: any[] = [];
@@ -60,6 +62,13 @@ export class ContentComponentComponent
   }
 
   ngOnInit() {
+    this.checkMobileView();
+    window.addEventListener('resize', this.checkMobileView.bind(this));
+  
+
+ 
+
+ 
     this.data =   {
         "_id": "67b090e3747349507c359a00",
         "productName": "Mens",
@@ -150,6 +159,12 @@ export class ContentComponentComponent
       console.log(data, 'receive order content page'); // Store the message in Msg variable
     });
   }
+   checkMobileView() {
+    this.isMobileView = window.innerWidth <= 768;
+    if (!this.isMobileView) {
+      this.showCategoryMenu = false;
+    }
+  }
 
   ngAfterViewInit() {
     fromEvent(this.searchInput.nativeElement, 'input')
@@ -171,6 +186,7 @@ export class ContentComponentComponent
   }
 
   ngOnDestroy() {
+    window.removeEventListener('resize', this.checkMobileView.bind(this));
     window.removeEventListener('scroll', this.onScroll.bind(this));
     if (this.scrollSubscription) {
       this.scrollSubscription.unsubscribe();
@@ -195,6 +211,12 @@ export class ContentComponentComponent
 
   getExpandedCategory() {
     return this.categories.find((category) => category.isExpanded);
+  }
+   selectCategory(category: any) {
+    this.categories.forEach(cat => cat.isSelected = false);
+    category.isSelected = true;
+    this.filterRewardsByCategory(category.name);
+    this.showCategoryMenu = false;
   }
 
   handleKeyPress(event: KeyboardEvent): void {
