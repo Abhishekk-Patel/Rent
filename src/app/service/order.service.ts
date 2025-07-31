@@ -15,7 +15,7 @@ export class OrderService {
 
   connectToSocket(productOwnerEmail: string): void {
     // Ensure the socket connects with the product owner's email as a query parameter
-    this.socket = io('http://localhost:4000', {
+    this.socket = io('https://rent-be.onrender.com:4000', {
       query: { email: productOwnerEmail }, // Send the product owner's email to the server
     });
   }

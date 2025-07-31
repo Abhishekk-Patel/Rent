@@ -22,6 +22,8 @@ export class MyCartServiceService {
   public isAddNewProductSubject = new BehaviorSubject<boolean>(false);
   isAddNewProduct$ = this.isAddNewProductSubject.asObservable();
 
+  url ='https://rent-be.onrender.com';
+
   constructor(
     private readonly router: Router,
     private readonly snackBar: MatSnackBar,
@@ -54,7 +56,7 @@ export class MyCartServiceService {
       category: item.category || item.productCategory || '',
     };
     this.httpClient
-      .post<any>(`http://localhost:3000/api/cart/add`, productToAdd)
+      .post<any>(`${this.url}/api/cart/add`, productToAdd)
       .subscribe(
         (response) => {
           // After successful add, fetch cart from backend to ensure sync
@@ -84,7 +86,7 @@ export class MyCartServiceService {
   fetchCartItems(): void {
     const userId = this.userService.getUserDetails().userId;
     this.httpClient
-      .get<any>(`http://localhost:3000/api/cart/${userId}`)
+      .get<any>(`${this.url}/api/cart/${userId}`)
       .subscribe(
         (res) => {
           // Map API response: each item has { product, quantity }
@@ -120,7 +122,7 @@ export class MyCartServiceService {
     const pk = item.pk || item.product?.pk;
   
     this.httpClient
-      .delete<any>(`http://localhost:3000/api/cart/remove`, { body: {userId,pk } })
+      .delete<any>(`${this.url}/api/cart/remove`, { body: {userId,pk } })
       .subscribe(
         (response) => {
           this.showMessage('Item removed from cart');
@@ -189,7 +191,7 @@ export class MyCartServiceService {
   }
 
   addProductDetailsApi(formData: FormData) {
-    this.httpClient.post('http://localhost:3000/upload', formData).subscribe(
+    this.httpClient.post(`${this.url}/upload`, formData).subscribe(
       (response) => {
         this.dialog.open(ProductDetailsPopupComponent, {
           data: { response },

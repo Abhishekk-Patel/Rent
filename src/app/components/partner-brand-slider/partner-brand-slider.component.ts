@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-partner-brand-slider',
@@ -7,19 +8,29 @@ import { Component } from '@angular/core';
 })
 export class PartnerBrandSliderComponent {
   brands = [
-    { name: 'Brand 3', imageUrl: './assets/22.webp' },
-    { name: 'Brand 2', imageUrl: './assets/16.png' },
-    { name: 'Brand 1', imageUrl: './assets/20.webp' },
+    // { name: 'Brand 3', imageUrl: './assets/22.webp' },
+    // { name: 'Brand 2', imageUrl: './assets/16.png' },
+    // { name: 'Brand 1', imageUrl: './assets/20.webp' },
     
-    { name: 'Brand 4', imageUrl: './assets/23.webp' },
-    { name: 'Brand 5', imageUrl: './assets/24.webp' },
-    { name: 'Brand 6', imageUrl: './assets/25.webp' },
-    { name: 'Brand 7', imageUrl: './assets/26.webp' },
-    { name: 'Brand 8', imageUrl: './assets/27.webp' },
-    { name: 'Brand 9', imageUrl: './assets/28.webp' },
+    // { name: 'Brand 4', imageUrl: './assets/23.webp' },
+    // { name: 'Brand 5', imageUrl: './assets/24.webp' },
+    // { name: 'Brand 6', imageUrl: './assets/25.webp' },
+    // { name: 'Brand 7', imageUrl: './assets/26.webp' },
+    // { name: 'Brand 8', imageUrl: './assets/27.webp' },
+    // { name: 'Brand 9', imageUrl: './assets/28.webp' },
+   
+    //  {name:'Brannd10', imageUrl: './assets/CTALow2.png'},
+  {name:'Brannd10', imageUrl: './assets/CTA22.jpg'},
+
+
   ];
 
   currentIndex = 0;
+
+  constructor(
+      public readonly router: Router,
+      
+    ) {}
 
   goToSlide(index: number) {
     this.currentIndex = index;
@@ -36,5 +47,15 @@ export class PartnerBrandSliderComponent {
   prevSlide() {
     this.currentIndex =
       (this.currentIndex - 1 + this.brands.length) % this.brands.length;
+  }
+  addNewProduct() {
+    this.router.navigate(['/add-product']);
+  }
+
+  scrollToContent() {
+    const contentSection = document.querySelector('.content');
+    if (contentSection) {
+      (contentSection as HTMLElement).scrollIntoView({ behavior: 'smooth', });
+    }
   }
 }

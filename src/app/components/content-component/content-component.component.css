@@ -39,7 +39,7 @@
 .search-section {
  padding: 10px;
     border-radius: 8px;
-    border: 2px solid beige;
+    border: 2px solid #fdfaf5;
     width: -webkit-fill-available;
 }
 
@@ -68,7 +68,7 @@
 }
 
 .search-btn {
-  background: beige;
+  background: #fdfaf5;
   border: none;
   padding: 4px 6px;
   border-radius: 20px;
@@ -131,7 +131,7 @@
   border-radius: 8px;
   /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); */
   height: auto;
- background-color: beige;
+ background-color: #fdfaf5;
 }
 
 .categories-header {
@@ -746,7 +746,7 @@
 }
 .badge {
   display: inline-block;
-  background: beige;
+  background: #fdfaf5;
   color: black;
   font-size: 12px;
   padding: 6px 12px;

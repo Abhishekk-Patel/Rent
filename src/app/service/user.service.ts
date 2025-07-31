@@ -11,11 +11,11 @@ export class UserService {
   private user: any = null;
   private userHistory: any[] = [];
 
-//  private loginApiUrl = 'https://rent-be.onrender.com/users/login';
-    private loginApiUrl = 'http://localhost:3000/users/login';    // local url
-  //private signUpApiUrl = 'https://rent-be.onrender.com/users/register';
-         signUpApiUrl = 'http://localhost:3000/users/register';   // local url
-
+  private loginApiUrl = 'https://rent-be.onrender.com/users/login';
+  //  private loginApiUrl = 'http://localhost:3000/users/login';    // local url
+  private signUpApiUrl = 'https://rent-be.onrender.com/users/register';
+  //       signUpApiUrl = 'http://localhost:3000/users/register';   // local url
+url ='https://rent-be.onrender.com';
   constructor(private http: HttpClient) {
     this.loadUserDetails();
     this.loadUserHistory(); // Fix: Load user history in the constructor
@@ -89,7 +89,7 @@ export class UserService {
   }
   updateRating(productId: string, rating: number,userId:number): Observable<any> {
 
-    const url = 'http://localhost:3000/productRating';
+    const url = `${this.url}/productRating`;
     return this.http.post<any>(url, { productId, rating,userId });
   }
 }

@@ -1,7 +1,21 @@
 <section class="partner-brands-slider">
   <div class="main-slider">
     <div class="brand" *ngFor="let brand of brands; let i = index" [class.active]="i === currentIndex">
-      <img [src]="brand.imageUrl" [alt]="brand.name">
+      <div class="cta-img-wrapper">
+        <img [src]="brand.imageUrl" [alt]="brand.name" class="brand-img">
+        <div class="button-wrapper">
+          <button class="cta-btn" (click)="scrollToContent()">
+            <span>Browse Collection</span>
+            <mat-icon style="vertical-align: middle; margin-left: 4px;">touch_app</mat-icon>
+          </button>
+          <button class="cta-btn product-btn" style="margin-left: 12px; background-color
+: #3b82f6;" (click)="addNewProduct()">
+            <span>List Your Product</span>
+            <mat-icon style="vertical-align: middle; margin-left: 4px;">add_circle</mat-icon>
+          </button>
+        </div>
+       
+      </div>
     </div>
 
     <!-- Animated Dots or Buttons for Navigation -->
