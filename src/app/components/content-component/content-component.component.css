@@ -37,10 +37,10 @@
   line-height: 16px;
 }
 .search-section {
-  margin-bottom: 16px;
-  padding: 10px;
-  border-radius: 0 0 40px 40px;
-  border: 1px solid #830e0e;
+ padding: 10px;
+    border-radius: 8px;
+    border: 2px solid beige;
+    width: -webkit-fill-available;
 }
 
 .search-section .search-bar .mat-mdc-form-field {
@@ -68,13 +68,13 @@
 }
 
 .search-btn {
-  background: #830e0e;
+  background: beige;
   border: none;
   padding: 4px 6px;
   border-radius: 20px;
   cursor: pointer;
   transition: background 0.3s, transform 0.2s;
-  color: white;
+  color: #3b82f6;
 }
 
 .search-btn:hover {
@@ -118,8 +118,6 @@
 
 .content {
   padding: 20px;
-  padding-top: 60px;
-  /* background-color: #FFF5F7; */
 }
 
 .layout {
@@ -131,8 +129,9 @@
 .categories {
   padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  /* box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); */
   height: auto;
+ background-color: beige;
 }
 
 .categories-header {
@@ -218,6 +217,8 @@
   align-items: center;
   margin-bottom: 10px;
   padding-right: 10px;
+  gap: 35px;
+ 
 }
 
 .reward-count {
@@ -227,16 +228,17 @@
 }
 
 .sort-btn {
-  background: linear-gradient(45deg, #830e0e, black);
+  background: #3b82f6 ;
   color: white;
   padding: 8px 20px;
   cursor: pointer;
   border: none;
-  border-radius: 25px;
+ 
   font-size: 14px;
   font-weight: bold;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  
   transition: all 0.3s ease;
+  display: flex; align-items: center; gap: 4px;
 }
 
 .sort-btn:hover {
@@ -253,7 +255,7 @@
 .reward-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 63px;
   justify-content: center;
 }
 
@@ -639,7 +641,7 @@
 /* Modern Glassmorphic Rental Card Styles */
 .rental-card {
   width: 240px;
-  border-radius: 20px;
+  /* border-radius: 20px; */
   backdrop-filter: blur(10px);
   background: rgba(255, 255, 255, 0.25);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
@@ -720,16 +722,18 @@
 .date {
   font-size: 12px;
   color: #666;
+  font-weight: 300;
 }
 .product-title {
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 400;
   color: #333;
   margin: 0;
 }
 .rent {
   font-size: 14px;
   color: #666;
+  font-weight: 300;
 }
 .size {
   font-size: 14px;
@@ -737,17 +741,18 @@
   align-items: center;
   gap: 6px;
   color: #555;
+  font-weight: 300;
+
 }
 .badge {
   display: inline-block;
-  background: #dadabc;
-  color: white;
+  background: beige;
+  color: black;
   font-size: 12px;
   padding: 6px 12px;
   border-radius: 20px;
   margin-top: 10px;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(255, 77, 79, 0.1);
+ 
 }
 .card-actions {
   display: flex;
@@ -789,12 +794,11 @@
   background-color: #3b82f6; /* Tailwind's blue-500 */
   color: #ffffff;
   padding: 0;
-  font-weight: 600;
+  font-weight: 500;
   border: none;
   border-radius: 0.5rem; /* 8px rounded corners */
   cursor: pointer;
   transition: background-color 0.2s ease;
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.4);
   width: 100%;
   min-width: 0;
   justify-content: center;

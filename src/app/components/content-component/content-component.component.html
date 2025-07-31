@@ -1,28 +1,4 @@
-<div class="search-section stylish-search-section">
-  <div class="search-bar">
-    <input
-      type="text"
-      #searchInput
-      (input)="search()"
-      (keypress)="handleKeyPress($event)"
-      placeholder="Search by Location, Category, etc."
-      [(ngModel)]="searchValue"
-      class="search-input"
-    />
 
-    <button class="search-btn" (click)="search()">
-      <mat-icon>search</mat-icon>
-    </button>
-  </div>
-  <div class="filters" *ngIf="searchValue">
-    <span>Applied Filters:</span>
-    <button mat-button class="filter">{{ searchValue }}</button>
-    <button mat-button class="filter clearFilterBtn" (click)="clear()">
-      clear
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
-</div>
 
 <app-partner-brand-slider *ngIf="!searchValue"></app-partner-brand-slider>
 
@@ -73,15 +49,40 @@
     </div>
     <div class="rewards">
       <div class="rewards-header">
-        <p class="reward-count">
-          Available Products({{ filteredRewards.length }})
-        </p>
+        <div class="search-section stylish-search-section">
+  <div class="search-bar">
+    <input
+      type="text"
+      #searchInput
+      (input)="search()"
+      (keypress)="handleKeyPress($event)"
+      placeholder="Search by Location, Category, etc."
+      [(ngModel)]="searchValue"
+      class="search-input"
+    />
+
+    <button class="search-btn" (click)="search()">
+      <mat-icon>search</mat-icon>
+    </button>
+  </div>
+  <div class="filters" *ngIf="searchValue">
+    <span>Applied Filters:</span>
+    <button mat-button class="filter">{{ searchValue }}</button>
+    <button mat-button class="filter clearFilterBtn" (click)="clear()">
+      clear
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
+
         <button
           class="sort-btn"
           *ngIf="filteredRewards.length != 1"
           (click)="openSortPanel()"
+          style=""
         >
-          <mat-icon>sort</mat-icon> Sort
+          <mat-icon style="vertical-align: middle;">sort</mat-icon>
+          <span>Filter</span>
         </button>
       </div>
       <div class="reward-list">
