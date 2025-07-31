@@ -117,11 +117,10 @@ export class MyCartServiceService {
 
   removeFromCart(item: any): void {
     const userId = this.userService.getUserDetails().userId;
-    console.log(userId, "userIdfrom cart");
-    const productId = item.pk || item.product?.pk;
-    console.log(productId, "productId for remove from cart");
+    const pk = item.pk || item.product?.pk;
+  
     this.httpClient
-      .post('http://localhost:3000/api/cart/remove', {  userId,productId })
+      .delete<any>(`http://localhost:3000/api/cart/remove`, { body: {userId,pk } })
       .subscribe(
         (response) => {
           this.showMessage('Item removed from cart');

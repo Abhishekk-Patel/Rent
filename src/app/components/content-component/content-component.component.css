@@ -166,7 +166,7 @@
 }
 
 .mat-button-toggle-checked {
-  background-color: #830e0e !important;
+  background-color: #3b82f6;
   color: white !important;
 }
 
@@ -580,7 +580,7 @@
 }
 
 .mat-button-toggle-checked {
-  background-color: #830e0e !important;
+  background-color: #3b82f6!important;
   color: white !important;
 }
 
@@ -740,7 +740,7 @@
 }
 .badge {
   display: inline-block;
-  background: #830e0e;
+  background: #dadabc;
   color: white;
   font-size: 12px;
   padding: 6px 12px;
