@@ -46,6 +46,7 @@ import { productReducer, orderReducer } from './components/Store/productData.red
 import { EffectsModule } from '@ngrx/effects';
 import { productDataEffects } from './components/Store/productData.effects';
 import { UserProductRatingComponent } from './components/user-rating/user-product-rating.component';
+import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
 @NgModule({
   declarations: [
     AppComponent,
@@ -62,7 +63,6 @@ import { UserProductRatingComponent } from './components/user-rating/user-produc
     PartnerBrandSliderComponent,
     UserProductRatingComponent,
   ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -94,10 +94,26 @@ import { UserProductRatingComponent } from './components/user-rating/user-produc
     MatButtonToggleModule,
     HttpClientModule,
     MatTabsModule,
+    SocialLoginModule,
     StoreModule.forRoot({ productData: productReducer, orderData: orderReducer }),
     EffectsModule.forRoot([productDataEffects])
   ],
-  providers: [AuthGuard], // Register the AuthGuard
+  providers: [
+    AuthGuard,
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider('204670204818-b33g0rdegov9g9tae1j5c30ikdumi2hr.apps.googleusercontent.com')
+          }
+        ]
+      } as SocialAuthServiceConfig
+    }
+  ],
   bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {}
