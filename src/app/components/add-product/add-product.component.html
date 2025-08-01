@@ -1,7 +1,7 @@
 
 <div class="product-container-top">
   <div class="add-product-container">
-    <h2>Add Your Rental Item</h2>
+    <h2>List Your Product</h2>
     <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
@@ -83,7 +83,7 @@
 
       <div class="form-row image-upload">
         <label for="file-upload" class="custom-file-upload">
-          <mat-icon>cloud_upload</mat-icon> Upload Images (at least 3)
+          <mat-icon>cloud_upload</mat-icon> Upload Images
         </label>
         <input id="file-upload" type="file" (change)="onFilesSelected($event)" accept="image/*" multiple>
         <div *ngIf="selectedImages.length" class="image-preview">

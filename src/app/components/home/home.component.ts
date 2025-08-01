@@ -18,6 +18,9 @@ export class HomeComponent implements OnInit {
   isLoggedIn: boolean = false;
   hidePassword: boolean = true;
   hideConfirmPassword: boolean = true;
+  isLoading: boolean = false;
+  loginError: string = '';
+  signUpError: string = '';
 
   constructor(
     public router: Router,
@@ -81,23 +84,62 @@ export class HomeComponent implements OnInit {
   }
 
   login() {
-    this.userService.login(this.loginForm).subscribe(success => {
-      if (success) {
-        this.isLoggedIn = true;
-        this.showLogin = false;
+    this.isLoading = true;
+    this.loginError = '';
+    this.userService.login(this.loginForm).subscribe(
+      (response: any) => {
+        this.isLoading = false;
+        if (response === true) {
+          this.isLoggedIn = true;
+          this.showLogin = false;
+        } else if (response && response.error) {
+          this.loginError = response.error;
+        } else {
+          this.loginError = 'Login failed. Please check your credentials.';
+        }
+      },
+      err => {
+        this.isLoading = false;
+        if (err && err.error && err.error.error) {
+          this.loginError = err.error.error;
+        } else {
+          this.loginError = 'Login failed. Please try again later.';
+        }
       }
-    });
+    );
   }
 
   signUp() {
-    this.userService.signUp(this.signUpForm).subscribe(success => {
-      if (success) {
-      
-        this.isLoggedIn = true;
-        this.showSignUp = false;
-        this.showRentOptions = true;
+    this.isLoading = true;
+    this.signUpError = '';
+    this.userService.signUp(this.signUpForm).subscribe(
+      (response: any) => {
+        this.isLoading = false;
+        if (response === true) {
+          this.isLoggedIn = true;
+          this.showSignUp = false;
+          this.showRentOptions = true;
+        } else if (response && response.error) {
+          this.signUpError = response.error;
+          if (response.details && response.details.includes('duplicate key')) {
+            this.signUpError += ': Email already exists.';
+          }
+        } else {
+          this.signUpError = 'Sign up failed. Please check your details.';
+        }
+      },
+      err => {
+        this.isLoading = false;
+        if (err && err.error && err.error.error) {
+          this.signUpError = err.error.error;
+          if (err.error.details && err.error.details.includes('duplicate key')) {
+            this.signUpError += ': Email already exists.';
+          }
+        } else {
+          this.signUpError = 'Sign up failed. Please try again later.';
+        }
       }
-    });
+    );
   }
 
   togglePasswordVisibility() {
@@ -114,5 +156,10 @@ export class HomeComponent implements OnInit {
 
   get signUpFormControl() {
     return this.signUpForm.controls;
+  }
+
+  loginWithGoogle() {
+    // TODO: Implement Google login logic here
+    window.alert('Google login is not yet implemented.');
   }
 }

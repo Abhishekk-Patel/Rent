@@ -30,12 +30,14 @@
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('src/assets/HomeBg.jpg') no-repeat center center/cover;
   animation: fadeIn 0.5s ease-in-out;
 }
+  
 
 /* Modal content */
 .modal-content {
   display: flex;
   flex-direction: row;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: #fdfaf5;
+  /* background-color: #fdfaf5; */
   padding: 40px;
   border-radius: 12px;
   width: 70%;
@@ -62,9 +64,9 @@
   left: 50%;
   transform: translateX(-50%);
   cursor: pointer;
-  color: white;
   font-size: 24px;
   transition: transform 0.3s, color 0.3s;
+  top: 93%;
 }
 
 .back-arrow:hover {
@@ -97,16 +99,15 @@
 
 .card p {
   font-size: 1.2em;
-  font-weight: bold;
-  color: #fff;
   margin-top: 10px;
+  font-weight: 300;
 }
 
 /* Divider */
 .divider,
 .divider-vertical {
   width: 2px;
-  background-color: white;
+  background-color: grey;
   margin: 0 20px;
 }
 
@@ -121,7 +122,7 @@
 
 .login-form h2,
 .signup-form h2 {
-  color: white;
+  color: black;
   margin-bottom: 20px;
 }
 
@@ -152,8 +153,6 @@
 
 .login-btn,
 .signup-btn {
-  background-color: brown;
-  color: white;
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -170,7 +169,7 @@
 
 .login-form p,
 .signup-form p {
-  color: white;
+  
   margin-top: 10px;
 }
 
@@ -185,11 +184,45 @@
 .signup-form a:hover {
   color: #e6b800;
 }
+.gsi-material-button {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -webkit-appearance: none;
+  background-color: WHITE;
+  background-image: none;
+  border: 1px solid #747775;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  color: #1f1f1f;
+  cursor: pointer;
+  font-family: 'Roboto', arial, sans-serif;
+  font-size: 14px;
+  height: 40px;
+  letter-spacing: 0.25px;
+  outline: none;
+  overflow: hidden;
+  padding: 0 12px;
+  position: relative;
+  text-align: center;
+  -webkit-transition: background-color .218s, border-color .218s, box-shadow .218s;
+  transition: background-color .218s, border-color .218s, box-shadow .218s;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: auto;
+  min-width: 220px;
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 
 .error {
   color: red;
   font-size: 16px;
-  margin-top: -12px;
+  margin-top: 10px;
   margin-bottom: 10px;
 }
 
@@ -197,7 +230,7 @@
 .about-section {
   flex: 1;
   padding-right: 20px;
-  color: white;
+  color: black;
 }
 
 .about-section h2 {
@@ -207,6 +240,7 @@
 .about-section p {
   font-size: 1.1em;
   line-height: 1.6;
+  font-weight: 300;
 }
 
 .form-section {
@@ -233,6 +267,13 @@
 ::ng-deep .mat-form-field-outline-start,
 ::ng-deep .mat-form-field-outline-end {
   border-color: white !important;
+}
+
+/* Override Angular Material raised button color for this component */
+::ng-deep .mat-mdc-raised-button:not(:disabled) {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  font-weight: 400 !important;  
 }
 
 /* Animations */
@@ -319,4 +360,80 @@
   .card p {
     font-size: 1em;
   }
+}
+
+/* OR separator styles */
+.or-separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 16px 0 8px 0;
+}
+.or-separator span {
+  background: #fff;
+  color: #888;
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  z-index: 1;
+}
+.or-separator:before,
+.or-separator:after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+  margin: 0 8px;
+}
+
+/* Google login button styles */
+.google-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 10px;
+  background: #fff !important;
+  color: #444 !important;
+  border: 1px solid #ccc !important;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s;
+}
+.google-login-btn:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+  background: #f5f5f5 !important;
+}
+.google-icon {
+  width: 22px;
+  height: 22px;
+}
+.gsi-material-button-content-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  flex: 1;
+  min-width: 0;
+}
+.gsi-material-button-icon {
+  margin-left: 12px;
+  margin-right: 8px;
+  min-width: 24px;
+  min-height: 24px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gsi-material-button-contents {
+  font-weight: 500;
+  color: #1f1f1f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  text-align: left;
 }
