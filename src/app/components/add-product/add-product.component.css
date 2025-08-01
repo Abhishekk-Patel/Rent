@@ -1,6 +1,6 @@
 .product-container-top {
-  background-image: url("../../../assets/download.jpeg");
-  background-size: cover;
+  /* background-image: url("../../../assets/download.jpeg"); */
+  background-size: cover; 
   background-position: center;
   background-repeat: no-repeat;
   min-height: 100vh; /* Ensure it covers the full viewport height */
@@ -8,6 +8,7 @@
   justify-content: center;
   align-items: center;
   padding-bottom: 0; /* Remove bottom padding */
+    background-color: #fdfaf5; 
 }
 
 .add-product-container {
@@ -19,6 +20,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.5s ease-in-out;
   border: 2px solid brown; /* Add border to match the gradient */
+
 }
 
 @keyframes fadeIn {
@@ -111,20 +113,38 @@ mat-form-field .mat-form-field-outline-thick {
   padding-bottom: 20px;
 }
 
-.custom-file-upload {
-  display: inline-block;
-  padding: 10px 20px;
+.custom-file-upload  {
+  background-color: #ffffff;
+  color: #111827;
+  border: 1px solid #d1d5db;
+  padding: 0;
+  border-radius: 0.5rem;
+  font-weight: 400;
   cursor: pointer;
-  background: linear-gradient(135deg, brown, black); /* Match gradient */
-  color: white;
-  border-radius: 25px;
-  font-size: 16px;
-  font-weight: bold;
-  transition: all 0.3s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  width: 100%;
+  min-width: 0;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  height: 35px;
+  max-height: 35px;
+  gap: 10px;
+}
+.custom-file-upload:disabled {
+  background: #b3d1fa;
+  color: #fff;
+  cursor: not-allowed;
+}
+.custom-file-upload:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
 }
 
+
 .custom-file-upload:hover {
-  background: linear-gradient(135deg, black, brown); /* Match gradient */
+background-color: #f9fafb;
+  border-color: #9ca3af;
   transform: translateY(-2px);
 }
 
@@ -159,16 +179,20 @@ mat-form-field .mat-form-field-outline-thick {
 }
 
 button {
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
   padding: 12px;
   font-size: 16px;
   font-weight: bold;
   border-radius: 25px;
-  background: linear-gradient(135deg, brown, black); /* Match gradient */
-  color: white;
+ background-color: #3b82f6 !important;
+  color: white !important;
   transition: all 0.3s ease;
   animation: fadeIn 0.5s ease-in-out;
+  font-weight: 400;
+  
 }
 
 button:hover {
@@ -184,6 +208,9 @@ button:hover {
   .add-product-container {
     padding: 20px 10px; /* Adjusted padding for smaller screens */
     margin: 20px auto; /* Adjusted margin for smaller screens */
+    width: 100%;
+    border: none;
+    box-shadow: none;
   }
 
   .form-row {

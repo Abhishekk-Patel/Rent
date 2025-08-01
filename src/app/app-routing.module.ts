@@ -4,12 +4,13 @@ import { HomeComponent } from './components/home/home.component';
 import { ContentComponentComponent } from './components/content-component/content-component.component';
 import { AddProductComponent } from './components/add-product/add-product.component';
 import { MyAccountComponent } from './components/my-account/my-account.component';
+import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent }, // Set HomeComponent as the default route
+  { path: '', component: HomeComponent },
   { path: 'content', component: ContentComponentComponent },
-  { path: 'add-product', component: AddProductComponent },
-  { path: 'my-account', component: MyAccountComponent }, 
+  { path: 'add-product', component: AddProductComponent }, //canActivate: [AuthGuard]
+  { path: 'my-account', component: MyAccountComponent }, //canActivate: [AuthGuard]
   { path: '**', redirectTo: '', pathMatch: 'full' } // Redirect any unknown paths to HomeComponent
 ];
 

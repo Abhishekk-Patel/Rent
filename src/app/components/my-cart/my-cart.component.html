@@ -1,80 +1,174 @@
-<mat-dialog-content class="my-cart-content">
-  <mat-horizontal-stepper #stepper>
-    <!-- Step 1: Product Details -->
-    <mat-step [stepControl]="productFormGroup">
-      <form [formGroup]="productFormGroup">
-        <ng-template matStepLabel>Product Details</ng-template>
-        <ng-container *ngIf="cartItems.length > 0">
-          <div *ngFor="let item of cartItems" class="cart-item">
-            <img [src]="item.display_img_urls[0]" alt="{{ item.name }}" class="product-image">
-            <div class="product-details">
-              <p><strong>Name:</strong> {{ item.name }}</p>
-              <p><strong>Rent:</strong> {{ item.Rent }}</p>
+<div class="header">
+  <h1>{{ selectedHeader }}</h1>
+  <button (click)="closeCartModel()" mat-icon-button aria-label="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="cart-container">
+  <!-- Sidebar: Cart and Favorites -->
+  <div class="sidebar">
+    <mat-card class="sidebar-card" (click)="selectHeader('Cart')">
+      <div class="sidebar-content">
+        <mat-icon color="primary">check_circle</mat-icon>
+        <mat-card-title>Cart <span>({{cartItems.length}})</span></mat-card-title>
+      </div>
+    </mat-card>
+    <mat-card class="sidebar-card" (click)="selectHeader('Favorite')">
+      <div class="sidebar-content">
+        <mat-icon>check_circle</mat-icon>
+        <mat-card-title>Favorite <span>({{favoriteItems.length}})</span></mat-card-title>
+      </div>
+    </mat-card>
+
+    <mat-card class="suggestions" *ngIf="suggestedProducts.length > 0"
+      (mouseenter)="pauseAutoSlider()" (mouseleave)="resumeAutoSlider()">
+      <!-- Title & Navigation Icons -->
+      <div class="suggestions-header">
+        <mat-card-title>Suggestions</mat-card-title>
+        <div class="nav-icons">
+          <mat-icon class="nav-btn" (click)="prevSuggestion()">chevron_left</mat-icon>
+          <mat-icon class="nav-btn" (click)="nextSuggestion()">chevron_right</mat-icon>
+        </div>
+      </div>
+
+      <!-- Image Centered -->
+      <div class="image-container">
+        <img [src]="suggestedProducts[currentSuggestionIndex]?.display_img_urls[0]" 
+             alt="{{ suggestedProducts[currentSuggestionIndex]?.productName }}" 
+             class="suggestion-image">
+      </div>
+
+      <!-- Product Details -->
+      <div class="suggestion-details">
+        <p class="product-name">Product Name: {{ suggestedProducts[currentSuggestionIndex]?.productName }} 
+          <span class="star-rating">⭐⭐⭐⭐⭐</span>
+        </p>
+        <p>Cost: {{ suggestedProducts[currentSuggestionIndex]?.productRent | currency:'INR' }}</p>
+        <p>Location: {{ suggestedProducts[currentSuggestionIndex]?.city }}</p>
+      </div>
+
+      <!-- Add Button & Cart Icon -->
+      <div class="action-section">
+        <button class="add-btn" (click)="addToCard(suggestedProducts[currentSuggestionIndex])">
+          Add <mat-icon class="cart-icon">shopping_cart</mat-icon>
+        </button>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Main Content Section -->
+  <div class="main-content">
+    <!-- Back Button -->
+    <button *ngIf="showStepper" mat-button color="accent" (click)="showStepper = false">
+      <mat-icon>arrow_back</mat-icon> Back
+    </button>
+
+    <!-- Cart Content -->
+    <div *ngIf="!showStepper && selectedHeader === 'Cart'" class="cart-content">
+      <div *ngIf="cartItems.length === 0" class="empty-message">
+        <p>Your cart is empty. <span class="fancy-icon">🛒</span></p>
+      </div>
+      <mat-card *ngFor="let item of cartItems; let i = index" class="cart-item"
+        [@fadeOut]="item.removing ? 'out' : 'in'">
+        <img *ngIf="item.display_img_urls && item.display_img_urls.length > 0; else noImage"
+             [src]="item.display_img_urls[0]"
+             alt="{{ item.productName }}" class="product-image">
+        <ng-template #noImage>
+          <img src="assets/placeholder.png" alt="No image available" class="product-image">
+        </ng-template>
+        <div class="product-details">
+          <p><strong>Product Name:</strong> {{ item.productName }}</p>
+          <p><strong>Cost:</strong> {{ item.productRent | currency:'INR' }}</p>
+          <p><strong>Location:</strong> {{item.city}}</p>
+        </div>
+        <button mat-button class="remove-btn" (click)="removeFromCart(item, i)">Remove</button>
+      </mat-card>
+      <div *ngIf="cartItems.length > 0" class="order-button">
+        <button mat-raised-button class="order-btn" (click)="showStepper = true">Place Order
+          <mat-icon>arrow_forward</mat-icon></button>
+      </div>
+    </div>
+
+    <!-- Favorites Content -->
+    <div *ngIf="!showStepper && selectedHeader === 'Favorite'" class="favorites-content">
+      <div *ngIf="favoriteItems.length === 0" class="empty-message">
+        <p>Your favorites list is empty. <span class="fancy-icon">❤️</span></p>
+      </div>
+      <mat-card *ngFor="let item of favoriteItems" class="cart-item">
+        <img [src]="item.display_img_urls[0]" alt="{{ item.productName }}" class="product-image">
+        <div class="product-details">
+          <p><strong>Product Name:</strong> {{ item.productName }}</p>
+          <p><strong>Cost:</strong> {{ item.productRent | currency:'INR' }}</p>
+          <p><strong>Location:</strong> {{item.city || 'N/A'}}</p>
+        </div>
+        <div class="buttons">
+          <button mat-button class="fav-remove-btn" (click)="removeFromFavorites(item)">Remove</button>
+          <button mat-button class="fav-add-to-cart" (click)="addToCard(item)"><mat-icon>add_shopping_cart</mat-icon></button>
+        </div>
+      </mat-card>
+    </div>
+
+    <!-- Stepper Section -->
+    <div *ngIf="showStepper" class="stepper-container">
+      <div class="stepper-section">
+        <mat-horizontal-stepper #stepper>
+          <mat-step [stepControl]="productFormGroup">
+            <ng-template matStepLabel>Product Details</ng-template>
+            <div *ngFor="let item of cartItems" class="cart-item">
+              <img [src]="item.display_img_urls[0]" alt="{{ item.productName }}" class="product-image">
+              <div class="product-details">
+                <p><strong>Name:</strong> {{ item.productName }}</p>
+                <p><strong>Rent:</strong> {{ item.productRent | currency:'INR' }}</p>
+              </div>
             </div>
-            <button mat-button (click)="removeFromCart(item)">Remove</button>
-          </div>
-          <div class="step-buttons">
             <button mat-button matStepperNext>Next</button>
-          </div>
-        </ng-container>
-      </form>
-    </mat-step>
+          </mat-step>
 
-    <!-- Step 2: Delivery Details -->
-    <mat-step [stepControl]="deliveryFormGroup" class="delivery-step">
-      <form [formGroup]="deliveryFormGroup">
-        <ng-template matStepLabel>Personal Details</ng-template>
-        <div class="delivery-details">
-          <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" required>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Address</mat-label>
-            <input matInput formControlName="address" required>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Email</mat-label>
-            <input matInput formControlName="email" required>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Mobile No</mat-label>
-            <input matInput formControlName="mobile" required>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>Rental Period</mat-label>
-            <mat-date-range-input [formGroup]="deliveryFormGroup" formGroupName="rentalPeriod">
-              <input matStartDate formControlName="start" placeholder="Start date">
-              <input matEndDate formControlName="end" placeholder="End date">
-            </mat-date-range-input>
-            <mat-date-range-picker></mat-date-range-picker>
-          </mat-form-field>
-        </div>
-        <div class="step-buttons">
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext [disabled]="!deliveryFormGroup.valid" [style.opacity]="!deliveryFormGroup.valid ? '0.5' : ''">Next</button>
-        </div>
-      </form>
-    </mat-step>
+          <mat-step [stepControl]="deliveryFormGroup">
+            <ng-template matStepLabel>Personal Details</ng-template>
+            <form [formGroup]="deliveryFormGroup">
+              <mat-form-field>
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="name" required>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Address</mat-label>
+                <input matInput formControlName="address" required>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" required>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Mobile No</mat-label>
+                <input matInput formControlName="mobile" required>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Rental Period</mat-label>
+                <mat-date-range-input formGroupName="rentalPeriod">
+                  <input matStartDate formControlName="start" placeholder="Start date">
+                  <input matEndDate formControlName="end" placeholder="End date">
+                </mat-date-range-input>
+              </mat-form-field>
+            </form>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext [disabled]="!deliveryFormGroup.valid">Next</button>
+          </mat-step>
 
-    <!-- Step 3: Confirmation -->
-    <mat-step [stepControl]="paymentFormGroup">
-      <form [formGroup]="paymentFormGroup">
-        <ng-template matStepLabel>Final</ng-template>
-        <div class="confirmation-box">
-          <p><strong>Name:</strong> <span class="highlight">{{ deliveryFormGroup.get('name')?.value }}</span></p>
-          <p><strong>Address:</strong> <span class="highlight">{{ deliveryFormGroup.get('address')?.value }}</span></p>
-          <p><strong>Email:</strong> <span class="highlight">{{ deliveryFormGroup.get('email')?.value }}</span></p>
-          <p><strong>Mobile No:</strong> <span class="highlight">{{ deliveryFormGroup.get('mobile')?.value }}</span></p>
-          <p><strong>Rental Period:</strong> <span class="highlight">{{ deliveryFormGroup.get('rentalPeriod.start')?.value | date }} - {{ deliveryFormGroup.get('rentalPeriod.end')?.value | date }}</span></p>
-          <p class="highlight-message">Below details ready to send to owner</p>
-        </div>
-        <div class="step-buttons">
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button (click)="placeOrder()">Place Order</button>
-        </div>
-      </form>
-    </mat-step>
-  </mat-horizontal-stepper>
-</mat-dialog-content>
-
+          <mat-step>
+            <ng-template matStepLabel>Confirmation</ng-template>
+            <p><strong>Name:</strong> {{ deliveryFormGroup.get('name')?.value }}</p>
+            <p><strong>Address:</strong> {{ deliveryFormGroup.get('address')?.value }}</p>
+            <p><strong>Email:</strong> {{ deliveryFormGroup.get('email')?.value }}</p>
+            <p><strong>Mobile No:</strong> {{ deliveryFormGroup.get('mobile')?.value }}</p>
+            <p><strong>Rental Period:</strong> {{ deliveryFormGroup.get('rentalPeriod.start')?.value | date }} - {{
+              deliveryFormGroup.get('rentalPeriod.end')?.value | date }}</p>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button (click)="placeOrder()">Place Order</button>
+          </mat-step>
+        </mat-horizontal-stepper>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,22 @@
-/* ...existing code... */
+/* Base container styling */
+.my-container {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 900px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: slideIn 0.5s ease-in-out;
+  position: relative;
+  border: 2px solid brown;
+  margin: auto;
+}
+
+/* Modal background */
 .modal {
   display: flex;
   justify-content: center;
@@ -8,56 +26,52 @@
   left: 0;
   width: 100%;
   height: 100%;
+  overflow: auto;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('src/assets/HomeBg.jpg') no-repeat center center/cover;
   animation: fadeIn 0.5s ease-in-out;
 }
+  
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
+/* Modal content */
 .modal-content {
   display: flex;
-  background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white background for glassy effect */
+  flex-direction: row;
+  background-color: #fdfaf5;
+  /* background-color: #fdfaf5; */
   padding: 40px;
   border-radius: 12px;
-  width: 70%; /* Adjusted width to 70% for login/signup section */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Box shadow with black color */
-  backdrop-filter: blur(20px); /* Blur effect for the glassy background */
-  -webkit-backdrop-filter: blur(20px); /* For Safari support */
+  width: 70%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   animation: slideIn 0.5s ease-in-out;
   position: relative;
   border: 2px solid brown;
 }
 
-.modal-content-rent-sell {
-  width: 40%; /* Adjusted width to 40% for rent/sell section */
-}
-
+/* Section widths */
+.modal-content-rent-sell,
 .modal-content-bride-groom {
-  width: 40%; /* Adjusted width to 50% for bride/groom section */
+  width: 40%;
 }
 
-@keyframes slideIn {
-  from { transform: translateY(-20px); }
-  to { transform: translateY(0); }
-}
-
+/* Back arrow */
 .back-arrow {
   position: absolute;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   cursor: pointer;
-  color: white;
   font-size: 24px;
   transition: transform 0.3s, color 0.3s;
+  top: 93%;
 }
 
 .back-arrow:hover {
   transform: scale(1.2);
-  color: brown; /* Change color on hover */
+  color: brown;
 }
 
 .back-arrow img {
@@ -65,6 +79,7 @@
   height: 30px;
 }
 
+/* Cards */
 .card {
   flex: 1;
   text-align: center;
@@ -84,60 +99,41 @@
 
 .card p {
   font-size: 1.2em;
-  font-weight: bold;
-  color: #fff; /* Change text color to white for better contrast */
   margin-top: 10px;
+  font-weight: 300;
 }
 
-.divider {
-  width: 2px;
-  background-color: white; /* Change divider color to white for better contrast */
-  margin: 0 20px;
-}
-
+/* Divider */
+.divider,
 .divider-vertical {
   width: 2px;
-  background-color: white; /* Change divider color to white for better contrast */
+  background-color: grey;
   margin: 0 20px;
 }
 
-.login-form, .signup-form {
+/* Forms */
+.login-form,
+.signup-form {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
 }
 
-.login-form h2, .signup-form h2 {
-  color: white;
+.login-form h2,
+.signup-form h2 {
+  color: black;
   margin-bottom: 20px;
 }
 
-.login-input, .signup-input {
+.login-input,
+.signup-input {
   width: 100%;
   margin: 10px 0;
 }
 
 .half-width {
   width: 48%;
-}
-
-::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
-  color: white;
-  border-color: white !important;
-}
-
-::ng-deep .mat-form-field-label {
-  color: white !important;
-}
-
-::ng-deep .mat-input-element::placeholder {
-  color: white !important;
-}
-
-::ng-deep .mat-form-field-outline-start, 
-::ng-deep .mat-form-field-outline-end {
-  border-color: white !important;
 }
 
 .password-container {
@@ -155,9 +151,8 @@
   color: brown;
 }
 
-.login-btn, .signup-btn {
-  background-color: brown;
-  color: white;
+.login-btn,
+.signup-btn {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -166,37 +161,43 @@
   transition: background-color 0.3s, transform 0.3s;
 }
 
-.login-btn:hover, .signup-btn:hover {
+.login-btn:hover,
+.signup-btn:hover {
   background-color: #e6b800;
   transform: scale(1.05);
 }
 
-.login-form p, .signup-form p {
-  color: white;
+.login-form p,
+.signup-form p {
+  
   margin-top: 10px;
 }
 
-.login-form a, .signup-form a {
+.login-form a,
+.signup-form a {
   color: #e6b800;
   cursor: pointer;
   text-decoration: underline;
 }
 
-.login-form a:hover, .signup-form a:hover {
+.login-form a:hover,
+.signup-form a:hover {
   color: #e6b800;
 }
+
 
 .error {
   color: red;
   font-size: 16px;
-  margin-top: -12px;
+  margin-top: 10px;
   margin-bottom: 10px;
 }
 
+/* About section */
 .about-section {
   flex: 1;
   padding-right: 20px;
-  color: white;
+  color: black;
 }
 
 .about-section h2 {
@@ -206,6 +207,7 @@
 .about-section p {
   font-size: 1.1em;
   line-height: 1.6;
+  font-weight: 300;
 }
 
 .form-section {
@@ -215,17 +217,85 @@
   justify-content: center;
 }
 
+/* Angular Material overrides */
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: white;
+  border-color: white !important;
+}
+
+::ng-deep .mat-form-field-label {
+  color: white !important;
+}
+
+::ng-deep .mat-input-element::placeholder {
+  color: white !important;
+}
+
+::ng-deep .mat-form-field-outline-start,
+::ng-deep .mat-form-field-outline-end {
+  border-color: white !important;
+}
+
+/* Override Angular Material raised button color for this component */
+::ng-deep .mat-mdc-raised-button:not(:disabled) {
+  background-color: #3b82f6 !important;
+  color: white !important;
+  font-weight: 400 !important;  
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive styles */
 @media (max-width: 768px) {
-  .modal-content {
-    width: 90%;
-    padding: 20px;
+  .my-container {
+    width: 95%;
+    padding: 1rem;
   }
 
-  .login-input, .signup-input {
+  .modal-content {
+    flex-direction: column;
+    width: 95%;
+    padding: 20px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-content-rent-sell,
+  .modal-content-bride-groom {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .divider-vertical {
+    display: none;
+  }
+
+  .login-input,
+  .signup-input {
     margin: 5px 0;
   }
 
-  .login-btn, .signup-btn {
+  .login-btn,
+  .signup-btn {
     width: 100%;
     padding: 10px;
   }
@@ -238,4 +308,48 @@
     width: 100%;
   }
 }
-/* ...existing code... */
+
+@media (max-width: 480px) {
+  .my-container {
+    padding: 0.75rem;
+    border-width: 1px;
+  }
+
+  .modal-content {
+    padding: 15px;
+  }
+
+  .login-form h2,
+  .signup-form h2 {
+    font-size: 1.5em;
+  }
+
+  .card p {
+    font-size: 1em;
+  }
+}
+
+/* OR separator styles */
+.or-separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 16px 0 8px 0;
+}
+.or-separator span {
+  background: #fff;
+  color: #888;
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  z-index: 1;
+}
+.or-separator:before,
+.or-separator:after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+  margin: 0 8px;
+}
+

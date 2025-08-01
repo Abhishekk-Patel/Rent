@@ -1,25 +1,77 @@
 .partner-brands-slider {
+  position: relative;
+  width: 100%;
+  min-height: 120px; /* Ensures some height but not fixed */
+  background-color: #fdfaf5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2vw 0; /* Responsive vertical padding */
+}
+
+.partner-brands-slider .brand img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 500px; /* Responsive max height */
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+.cta-img-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+}
+.button-wrapper{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.cta-btn {
+  position: absolute;
+  left: 25%;
+  top: 70%;
+  transform: translate(-50%, -50%);
+  background-color: #c3541c;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: background 0.2s, transform 0.2s;
+  z-index: 3;
+}
+
+.cta-btn:hover {
+  background-color: #a3420f;
+  transform: translate(-50%, -50%) scale(1.05);
+}
+.product-btn{
+  left: 25%;
+  top: 84%
+}
+.main-slider {
   position: relative;
   width: 100%;
-  height: 300px; /* Adjust height as needed */
-  background-color: #f5f5f5;
-  margin-bottom: 20px;
-  /* border-radius: 40px 40px 40px 40px; */
-  /* margin-top: -16px; */
-
+  height: 100%;
+  overflow: hidden;
 }
 
 .partner-brands-slider .brand {
   display: none;
-  flex-shrink: 0;
-  width: 100%;
-  height: 100%;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
 .partner-brands-slider .brand.active {
@@ -29,31 +81,84 @@
 .partner-brands-slider .brand img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensure the image covers the container */
+  object-fit: cover;
 }
 
-.nav-btn {
+/* Center the dots container */
+.nav-dots {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  z-index: 2;
+}
+
+/* Style for each dot */
+.nav-dot {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  z-index: 1;
-  transition: background-color 0.3s ease;
+  background-color: rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s ease;
 }
 
-.nav-btn.left {
-  left: 10px;
+.nav-dot.active {
+  background-color: #fff;
+  transform: scale(1.5);
 }
 
-.nav-btn.right {
-  right: 10px;
+.nav-dot:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
-.nav-btn:hover {
-  background-color: rgba(0, 0, 0, 0.7);
+/* Mobile responsiveness */
+@media (max-width: 1024px) {
+  .partner-brands-slider .brand img {
+    height: 300px; /* Adjust image height for tablets */
+  }
+
+  .nav-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .nav-dots {
+    gap: 12px;
+  }
+}
+
+/* Tablet and smaller devices */
+@media (max-width: 768px) {
+  .partner-brands-slider .brand img {
+    height: 250px; /* Adjust image height for smaller screens */
+  }
+
+  .nav-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .nav-dots {
+    gap: 10px;
+  }
+}
+
+/* Mobile (smallest screens) */
+@media (max-width: 480px) {
+  .partner-brands-slider .brand img {
+    height: 200px; /* Further adjust for smaller devices */
+  }
+
+  .nav-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .nav-dots {
+    gap: 8px;
+  }
 }

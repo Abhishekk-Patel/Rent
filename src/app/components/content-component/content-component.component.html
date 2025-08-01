@@ -1,18 +1,4 @@
-<div class="search-section stylish-search-section">
-  <div class="search-bar">
-    <input type="text" #searchInput (keypress)="handleKeyPress($event)" placeholder="Search by Location, Category, etc." [(ngModel)]="searchValue" class="search-input">
-    <button class="search-btn" (click)="search()">
-      <mat-icon>search</mat-icon>
-    </button>
-  </div>
-  <div class="filters" *ngIf="searchValue">
-    <span>Applied Filters:</span>
-    <button mat-button class="filter">{{searchValue}}</button>
-    <button mat-button class="filter clearFilterBtn" (click)="clear()">clear
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
-</div>
+
 
 <app-partner-brand-slider *ngIf="!searchValue"></app-partner-brand-slider>
 
@@ -21,22 +7,42 @@
     <div class="categories">
       <div class="categories-header">
         <h3>Categories</h3>
-        <mat-button-toggle-group [(ngModel)]="userRole" (change)="onUserRoleChange($event)" class="user-role-toggle">
+        <mat-button-toggle-group
+          [(ngModel)]="userRole"
+          (change)="onUserRoleChange($event)"
+          class="user-role-toggle"
+        >
           <mat-button-toggle value="Bride">Bride</mat-button-toggle>
           <mat-button-toggle value="Groom">Groom</mat-button-toggle>
         </mat-button-toggle-group>
+        <!-- Hamburger icon for mobile/tablet -->
+        <button class="hamburger-btn" (click)="showCategoryMenu = !showCategoryMenu" aria-label="Toggle categories" *ngIf="isMobileView">
+          <mat-icon>{{ showCategoryMenu ? 'close' : 'menu' }}</mat-icon>
+        </button>
       </div>
-      <mat-accordion>
-        <mat-expansion-panel class="category-item" *ngFor="let category of categories; let i = index" 
-          [(expanded)]="category.isExpanded" (opened)="onPanelChange()" (closed)="onPanelChange()">
+      <!-- Desktop view: show categories normally -->
+      <mat-accordion *ngIf="!isMobileView">
+        <mat-expansion-panel
+          class="category-item"
+          *ngFor="let category of categories; let i = index"
+          [(expanded)]="category.isExpanded"
+          (opened)="onPanelChange()"
+          (closed)="onPanelChange()"
+        >
           <mat-expansion-panel-header>
             <mat-panel-description>
-              <mat-icon class="status-icon" [ngClass]="{
-                'selected': category.isSelected, 
-                'unselected': !category.isSelected, 
-                'expanded': category.isExpanded
-              }" [style.color]="category.isExpanded ? 'green' : 'brown'">
-                {{ category.isSelected ? 'check_circle' : 'check_circle_outline' }}
+              <mat-icon
+                class="status-icon"
+                [ngClass]="{
+                  selected: category.isSelected,
+                  unselected: !category.isSelected,
+                  expanded: category.isExpanded
+                }"
+                [style.color]="category.isExpanded ? 'green' : '#830E0E'"
+              >
+                {{
+                  category.isSelected ? "check_circle" : "check_circle_outline"
+                }}
               </mat-icon>
               <mat-panel-title class="cat-title">
                 {{ category.name }}
@@ -45,52 +51,171 @@
           </mat-expansion-panel-header>
         </mat-expansion-panel>
       </mat-accordion>
-    </div>
-
-    <div class="rewards">
-      <div *ngIf="isLoading" class="spinner-container">
-        <mat-spinner></mat-spinner>
+      <!-- Mobile/tablet view: hamburger menu -->
+      <div class="mobile-category-menu" *ngIf="isMobileView && showCategoryMenu">
+        <ul class="category-list">
+          <li class="category-item" *ngFor="let category of categories; let i = index" (click)="selectCategory(category)">
+            <mat-icon
+              class="status-icon"
+              [ngClass]="{
+                selected: category.isSelected,
+                unselected: !category.isSelected
+              }"
+              [style.color]="category.isSelected ? 'green' : '#830E0E'"
+            >
+              {{ category.isSelected ? "check_circle" : "check_circle_outline" }}
+            </mat-icon>
+            <span class="cat-title">{{ category.name }}</span>
+          </li>
+        </ul>
       </div>
+    </div>
+    <div class="rewards">
       <div class="rewards-header">
-        <p class="reward-count">Available Products({{ filteredRewards.length }}) </p>
-        <button class="sort-btn" *ngIf="filteredRewards.length !=1" (click)="openSortPanel()">Sort</button>
+        <div class="search-section stylish-search-section">
+  <div class="search-bar">
+    <input
+      type="text"
+      #searchInput
+      (input)="search()"
+      (keypress)="handleKeyPress($event)"
+      placeholder="Search by Location, Category, etc."
+      [(ngModel)]="searchValue"
+      class="search-input"
+    />
+
+    <button class="search-btn" (click)="search()">
+      <mat-icon>search</mat-icon>
+    </button>
+  </div>
+  <div class="filters" *ngIf="searchValue">
+    <span>Applied Filters:</span>
+    <button mat-button class="filter">{{ searchValue }}</button>
+    <button mat-button class="filter clearFilterBtn" (click)="clear()">
+      clear
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
+
+        <button
+          class="sort-btn"
+          *ngIf="filteredRewards.length != 1"
+          (click)="openSortPanel()"
+          style=""
+        >
+          <mat-icon style="vertical-align: middle;">sort</mat-icon>
+          <span>Filter</span>
+        </button>
       </div>
       <div class="reward-list">
-        <div *ngFor="let reward of filteredRewards" class="reward-card">
-          <div class="reward-card-content" [ngClass]="{'out-of-stock-blur': reward.valid_until < isDateToday}">
-            <div class="image-container">
-              <button class="nav-btn left small-btn" (click)="prevImage(reward)"><mat-icon>chevron_left</mat-icon></button>
-              <img [src]="reward.display_img_urls[reward.currentImageIndex] || 'assets/placeholder.png'" alt="{{ reward.name }}">
-              <button class="nav-btn right small-btn" (click)="nextImage(reward)"><mat-icon>chevron_right</mat-icon></button>
-              <a class="add-to-fav-btn"><mat-icon>favorite_border</mat-icon></a>
-              <p class="city small-city"><mat-icon>location_on</mat-icon> {{reward.city}}</p>
+        <div *ngFor="let reward of filteredRewards" class="rental-card">
+          <div class="card-image">
+            <img
+              [src]="
+                reward.display_img_urls[reward.currentImageIndex] ||
+                'assets/placeholder.png'
+              "
+              [alt]="reward.name"
+            />
+            <div class="heart-icon" (click)="addToFavorite(reward)">
+              <mat-icon>favorite</mat-icon>
             </div>
-            <div class="reward-details">
-              <h2>{{ reward.name }}</h2>
-              <p class="rent">Rent: {{ reward.Rent | currency:'INR'}}/day </p>
-              <p *ngIf="reward.quantity && reward.quantity <= reward.low_quantity" class="high-demand">
-                <mat-icon>warning</mat-icon> ON High Demand (Only {{ reward.quantity }} left)
-              </p>
-              <p *ngIf="isValidUntilWithin7Days(reward.valid_until)" class="valid-date">
-                <mat-icon>event</mat-icon> <span> Valid Until:</span> {{ reward.valid_until | date:'shortDate' }}
-              </p>
+            <div class="nav-arrow left" (click)="prevImage(reward)">
+              <mat-icon>chevron_left</mat-icon>
+            </div>
+            <div class="nav-arrow right" (click)="nextImage(reward)">
+              <mat-icon>chevron_right</mat-icon>
+            </div>
+
+            <div class="rating-container">
+              <div class="location-info">
+                <mat-icon class="location-icon">location_on</mat-icon>
+                <span class="location-city">{{ reward.city }}</span>
+              </div>
+              <app-product-rating
+                [rating]="
+                  reward.ProductRatings[0] ? reward.ProductRatings[0].rating : 0
+                "
+                [avgRating]="reward.avgRating"
+                [totalUsers]="reward.totalUserRated"
+                (ratingChange)="onRatingChange($event, reward)"
+                [disabled]="
+                  this.userService.getUserDetails().userId === reward.userId
+                "
+              ></app-product-rating>
             </div>
           </div>
-          <p *ngIf="reward.valid_until < isDateToday " class="out-of-stock">Out of Stock</p>
-          <div class="reward-card-footer">
-            <button class="order-now-btn" [disabled]="reward.quantity === 0" (click)="productDetails(reward.pk)">Know More</button>
-            <button class="add-to-cart-btn" [disabled]="reward.quantity === 0" (click)="addToCart(reward.pk)"><mat-icon>add_shopping_cart</mat-icon></button>
+          <div class="card-content">
+            <mat-card-title class="product-title">{{
+              reward.name | uppercase
+            }}</mat-card-title>
+            <div class="date">
+              <strong>Listed On:</strong>
+              {{ reward.valid_until | date : "mediumDate" }}
+            </div>
+            <div class="rent">
+              <strong>Rent:</strong> ₹{{ reward.Rent }}/day
+            </div>
+            <div class="size">
+              <strong>Size:</strong> {{ reward.size || "N/A" }}
+            </div>
+            <div
+              *ngIf="reward.quantity && reward.quantity <= reward.low_quantity"
+              class="badge"
+            >
+              High Demand (Only {{ reward.quantity }} left)
+            </div>
+          </div>
+          <div class="card-actions">
+            <button
+              class="know-more"
+              [disabled]="
+                reward.quantity === 0 ||
+                reward.ProductOwnerEmail === userService.getUserDetails().email
+              "
+              (click)="productDetails(reward.pk)"
+            >
+              Know More
+            </button>
+            <button
+              class="cart-icon"
+              [disabled]="
+                reward.quantity === 0 ||
+                reward.ProductOwnerEmail === userService.getUserDetails().email
+              "
+              (click)="addToCart(reward.pk)"
+            >
+              <span class="cart-label">Add to Cart</span>
+              <mat-icon class="cart-icon-inner">add_shopping_cart</mat-icon>
+            </button>
           </div>
         </div>
+      </div>
+      <div *ngIf="isLoading" class="skeleton-container">
+        <div
+          class="skeleton-card"
+          *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+        ></div>
       </div>
     </div>
   </div>
 
-  <app-sort-panel (mouseleave)="closePanel()" *ngIf="isSortPanelOpen" (close)="closeSortPanel()"
-    (sort)="sortRewards($event)" (filterByPrice)="applyPriceFilter($event)" (filterByLocation)="applyLocationFilter($event)"></app-sort-panel>
+  <app-sort-panel
+    (mouseleave)="closePanel()"
+    *ngIf="isSortPanelOpen"
+    (close)="closeSortPanel()"
+    (sort)="sortRewards($event)"
+    (filterByPrice)="applyPriceFilter($event)"
+    (filterByLocation)="applyLocationFilter($event)"
+  ></app-sort-panel>
 
-  <app-alert-msgs *ngIf="!filteredRewards.length" [message]="alertMsg"></app-alert-msgs>
-  <button class="scroll-to-top-btn" [class.show]="showScrollToTop" (click)="scrollToTop()">
+  <app-alert-msgs *ngIf="!isLoading" [message]="alertMsg"></app-alert-msgs>
+  <button
+    class="scroll-to-top-btn"
+    [class.show]="showScrollToTop"
+    (click)="scrollToTop()"
+  >
     <mat-icon>arrow_upward</mat-icon>
   </button>
 </section>

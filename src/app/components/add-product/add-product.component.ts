@@ -112,7 +112,6 @@ export class AddProductComponent implements OnInit {
     this.productForm.get('userRole')?.valueChanges.subscribe((userRole) => {
       this.updateCategories(userRole);
     });
-    console.log(this.userService.getUserDetails().email, 'userDetails');
   }
 
   updateCategories(userRole: string): void {
@@ -143,18 +142,12 @@ export class AddProductComponent implements OnInit {
   onSubmit() {
     if (this.productForm.valid && this.selectedImages.length >= 3) {
       const userDetails = this.userService.getUserDetails();
-      console.log(userDetails, 'userDetails');
-      console.log(userDetails.email, 'userEmail'); // Added line to log user email
       const productData = {
         ...this.productForm.value,
         display_img_urls: this.selectedImages,
         email: userDetails.email, // Add email to product data
       };
 
-      // Log product data for debugging purposes
-      console.log(productData, 'productData');
-
-      // Create a FormData object to send all the data, including images
       let formData = new FormData();
       // Frontend formData append - make sure these field names match the ones expected by the BE
       formData.append('productName', productData.ProductName);
@@ -164,7 +157,7 @@ export class AddProductComponent implements OnInit {
       formData.append('quantity', productData.quantity.toString());
       formData.append('userRole', productData.userRole);
       formData.append('validUntil', productData.valid_until);
-      formData.append('email', productData.email); // Append email to formData
+      formData.append('productOwnerEmail', productData.email); // Append email to formData
      formData.append('city', productData.city);
      formData.append('productListedDate', productData.productListedDate);
       // Convert each base64 image string to a Blob and append it to formData
@@ -186,7 +179,6 @@ export class AddProductComponent implements OnInit {
 
       // Logging the form data (you can remove this once you're done testing)
       formData.forEach((value: any, key: string) => {
-        console.log(key, 'key', value, 'value');
       });
 
       // Assuming the method handles the API call

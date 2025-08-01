@@ -38,7 +38,15 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MyAccountComponent } from './components/my-account/my-account.component';
 import { HttpClientModule } from '@angular/common/http';
 import { PartnerBrandSliderComponent } from './components/partner-brand-slider/partner-brand-slider.component'; // Import HttpClientModule
-
+import { MatTabsModule } from '@angular/material/tabs';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { AuthGuard } from './guards/auth.guard'; // Import the AuthGuard
+import { StoreModule } from '@ngrx/store';
+import { productReducer, orderReducer } from './components/Store/productData.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { productDataEffects } from './components/Store/productData.effects';
+import { UserProductRatingComponent } from './components/user-rating/user-product-rating.component';
+import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,6 +61,7 @@ import { PartnerBrandSliderComponent } from './components/partner-brand-slider/p
     AddProductComponent,
     MyAccountComponent,
     PartnerBrandSliderComponent,
+    UserProductRatingComponent,
   ],
   imports: [
     BrowserModule,
@@ -83,9 +92,28 @@ import { PartnerBrandSliderComponent } from './components/partner-brand-slider/p
     MatSelectModule,
     MatOptionModule,
     MatButtonToggleModule,
-    HttpClientModule // Add HttpClientModule to imports
+    HttpClientModule,
+    MatTabsModule,
+    SocialLoginModule,
+    StoreModule.forRoot({ productData: productReducer, orderData: orderReducer }),
+    EffectsModule.forRoot([productDataEffects])
   ],
-  providers: [],
+  providers: [
+    AuthGuard,
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider('204670204818-b33g0rdegov9g9tae1j5c30ikdumi2hr.apps.googleusercontent.com')
+          }
+        ]
+      } as SocialAuthServiceConfig
+    }
+  ],
   bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule {}

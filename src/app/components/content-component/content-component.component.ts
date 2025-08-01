@@ -5,11 +5,16 @@ import {
   AfterViewInit,
   OnInit,
   OnDestroy,
+  ChangeDetectorRef,
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { debounceTime, fromEvent, Subscription } from 'rxjs';
 import { DataService } from 'src/app/service/data.service';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
+import { OrderService } from 'src/app/service/order.service';
+import { UserService } from 'src/app/service/user.service';
 import { Category_LIST } from 'src/mock-data';
 
 @Component({
@@ -17,8 +22,12 @@ import { Category_LIST } from 'src/mock-data';
   templateUrl: './content-component.component.html',
   styleUrls: ['./content-component.component.css'],
 })
-export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ContentComponentComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   alertMsg: string = 'Opps! No match found';
+  isMobileView: boolean = false;
+  showCategoryMenu: boolean = false;
   public totalPages: any;
   categories = Category_LIST;
   rewards: any[] = [];
@@ -30,25 +39,87 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   userRole: string = 'Bride';
   showScrollToTop: boolean = false;
   private scrollSubscription!: Subscription;
+  private orderSubscription!: Subscription;
   private pageSize: number = 10;
   private currentPage: number = 1;
   private loadingTimeout: any;
+  data:any;
   isDateToday: string = new Date().toISOString().split('T')[0];
+  productRating: any = 0;
+
+  productData$ = this.store.select('productData');
 
   constructor(
     public mycartService: MyCartServiceService,
     public router: Router,
-    public dataService: DataService
+    public dataService: DataService,
+    public orderService: OrderService,
+    public userService: UserService,
+    private store: Store<{ productData: any }>,
+    private cdr: ChangeDetectorRef // Inject ChangeDetectorRef
   ) {
-    this.dataService.getAllProductData();
+    this.store.dispatch({ type: 'LoadProductData' });
   }
 
   ngOnInit() {
-    this.isLoading = true;
-    this.mycartService.setIsAddNewProduct(false);
+    this.checkMobileView();
+    window.addEventListener('resize', this.checkMobileView.bind(this));
+  
 
-    this.dataService.products$.subscribe((response: any) => {
-      this.rewards = response.map((item: any) => ({
+ 
+
+ 
+    this.data =   {
+        "_id": "67b090e3747349507c359a00",
+        "productName": "Mens",
+        "productDescription": "NA",
+        "productRent": 1200,
+        "category": "Groom’s Suit",
+        "quantity": 1,
+        "userRole": "Groom",
+        "validUntil": "2026-02-15T00:00:00.000Z",
+        "productOwnerEmail": "abhishekpatel67@gmail.com",
+        "productListedDate": "2025-02-15T00:00:00.000Z",
+        "city": "Test",
+        "images": [
+            {
+                "_id": "67b090e3747349507c359a01",
+                "filename": "image0.jpg",
+                "url": "https://mys3rentbucket.s3.ap-south-1.amazonaws.com/1739624672473_image0.jpg"
+            },
+            {
+                "_id": "67b090e3747349507c359a02",
+                "filename": "image1.jpg",
+                "url": "https://mys3rentbucket.s3.ap-south-1.amazonaws.com/1739624672495_image1.jpg"
+            },
+            {
+                "_id": "67b090e3747349507c359a03",
+                "filename": "image2.jpg",
+                "url": "https://mys3rentbucket.s3.ap-south-1.amazonaws.com/1739624672498_image2.jpg"
+            }
+        ],
+        "__v": 0,
+        "ratings": [
+            {
+                "_id": "687bdb5525dd53570083dd1b",
+                "productId": "67b090e3747349507c359a00",
+                "rating": 4,
+                "createdAt": "2025-07-19T17:52:23.012Z",
+                "__v": 0
+            },
+            {
+                "_id": "687bde1725dd53570083dd20",
+                "productId": "67b090e3747349507c359a00",
+                "rating": 3,
+                "createdAt": "2025-07-19T18:04:07.692Z",
+                "__v": 0
+            }
+        ],
+        "userId": "67a7b26a1730b16b90c52300"
+    };
+    this.isLoading = true; // Set isLoading to true before data fetch
+    this.productData$.subscribe((data) => {
+     this.rewards = data.map((item: any) => ({
         pk: item._id,
         name: item.productName,
         Rent: item.productRent,
@@ -62,17 +133,38 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
         city: item.city || 'Unknown',
         low_quantity: item.lowQuantity || 5,
         buyers: item.buyers || 0,
+        ProductOwnerEmail: item.productOwnerEmail,
+        ProductRatings: item.ratings || [],
+        userId: item.userId || '',
+        userRatings: item.ratings || [],
+        totalUserRated: item.totalUserRated
+          ? item.totalUserRated
+          : item.ratings.length || 0,
+
       }));
       this.filteredRewards = [...this.rewards]; // Set filteredRewards to the fetched data
       this.updateRewardsAndCategories();
       this.filterRewardsByCategory('All');
-      this.isLoading = false;
+      this.isLoading = false; // Set isLoading to false after data is loaded
+      this.cdr.detectChanges(); // Trigger change detection
     });
+
+    this.mycartService.setIsAddNewProduct(false);
+    this.isLoading = true;
 
     window.addEventListener('scroll', this.onScroll.bind(this));
     this.loadMoreRewards();
+
+    this.orderService.receiveOrder().subscribe((data: any) => {
+      console.log(data, 'receive order content page'); // Store the message in Msg variable
+    });
   }
-  
+   checkMobileView() {
+    this.isMobileView = window.innerWidth <= 768;
+    if (!this.isMobileView) {
+      this.showCategoryMenu = false;
+    }
+  }
 
   ngAfterViewInit() {
     fromEvent(this.searchInput.nativeElement, 'input')
@@ -94,6 +186,7 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngOnDestroy() {
+    window.removeEventListener('resize', this.checkMobileView.bind(this));
     window.removeEventListener('scroll', this.onScroll.bind(this));
     if (this.scrollSubscription) {
       this.scrollSubscription.unsubscribe();
@@ -101,6 +194,11 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     if (this.loadingTimeout) {
       clearTimeout(this.loadingTimeout);
     }
+    // Unsubscribe from the 'orderReceived' event and disconnect the socket
+    if (this.orderSubscription) {
+      this.orderSubscription.unsubscribe();
+    }
+    this.orderService.disconnect();
   }
 
   onScroll() {
@@ -114,6 +212,12 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   getExpandedCategory() {
     return this.categories.find((category) => category.isExpanded);
   }
+   selectCategory(category: any) {
+    this.categories.forEach(cat => cat.isSelected = false);
+    category.isSelected = true;
+    this.filterRewardsByCategory(category.name);
+    this.showCategoryMenu = false;
+  }
 
   handleKeyPress(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
@@ -122,36 +226,17 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   search(): void {
-    const searchValue = this.searchInput.nativeElement.value.trim().toLowerCase();
+    const searchValue = this.searchInput.nativeElement.value
+      .trim()
+      .toLowerCase();
     this.searchValue = searchValue;
-    const matchedRewards = this.rewards.filter((reward) => {
-      return (
-        reward.category.toLocaleLowerCase().includes(searchValue) ||
-        reward.name.toLocaleLowerCase().includes(searchValue) ||
-        reward.city.toLocaleLowerCase().includes(searchValue)
-      );
-    }).filter((reward) => {
-      return reward.userRole === this.userRole || reward.userRole === 'Both';
-    });
-
-    if (matchedRewards.length > 0) {
-      this.filteredRewards = matchedRewards.slice(0, this.pageSize);
-      this.totalPages = Math.ceil(matchedRewards.length / this.pageSize);
-    } else {
-      this.filteredRewards = [];
-      this.alertMsg = 'Opps! No match found';
-    }
-    this.currentPage = 1;
+    this.filterRewards();
   }
 
   clear() {
     this.searchValue = '';
     this.searchInput.nativeElement.value = '';
-    this.filteredRewards = this.rewards.filter((reward) => {
-      return reward.userRole === this.userRole || reward.userRole === 'Both';
-    }).slice(0, this.pageSize);
-    this.currentPage = 1;
-    this.totalPages = Math.ceil(this.filteredRewards.length / this.pageSize);
+    this.filterRewards();
   }
 
   onPanelChange() {
@@ -162,30 +247,21 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   filterRewardsByCategory(categoryName: string) {
-    if (categoryName === 'All') {
-      this.filteredRewards = this.rewards.filter((reward) => {
-        return reward.userRole === this.userRole || reward.userRole === 'Both';
-      }).slice(0, this.pageSize);
-    } else {
-      const lowerCategoryName = categoryName.toLocaleLowerCase();
-      const matchedRewards = this.rewards.filter((reward) => {
-        return (
-          reward.category.toLocaleLowerCase().includes(lowerCategoryName) ||
-          reward.name.toLocaleLowerCase().includes(lowerCategoryName) ||
-          reward.city.toLocaleLowerCase().includes(lowerCategoryName)
-        );
-      }).filter((reward) => {
-        return reward.userRole === this.userRole || reward.userRole === 'Both';
-      });
-
-      if (matchedRewards.length > 0) {
-        this.filteredRewards = matchedRewards.slice(0, this.pageSize);
-        this.totalPages = Math.ceil(matchedRewards.length / this.pageSize);
-      } else {
-        this.filteredRewards = [];
-        this.alertMsg = 'Opps! No match found';
-      }
-    }
+    this.filteredRewards = this.rewards
+      .filter((reward) => {
+        const matchesCategory =
+          categoryName === 'All' ||
+          reward.category
+            .toLocaleLowerCase()
+            .includes(categoryName.toLocaleLowerCase());
+        const matchesSearch =
+          reward.name.toLocaleLowerCase().includes(this.searchValue) ||
+          reward.city.toLocaleLowerCase().includes(this.searchValue);
+        const matchesUserRole =
+          reward.userRole === this.userRole || reward.userRole === 'Both';
+        return matchesCategory && matchesSearch && matchesUserRole;
+      })
+      .slice(0, this.pageSize);
     this.currentPage = 1;
   }
 
@@ -218,33 +294,40 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   addToCart(pk: number) {
-    const reward = this.rewards.find(reward => reward.pk === pk);
+    const reward = this.rewards.find((reward) => reward.pk === pk);
     if (reward) {
       this.mycartService.addToCart(reward);
     }
   }
+  addToFavorite(reward: any) {
+    this.mycartService.addToFavorites(reward);
+  
+  }
 
   showLoadingSpinner() {
     this.isLoading = true;
-    // this.loadingTimeout = setTimeout(() => {
-    //   this.isLoading = false;
-    // }, 2000); // Show spinner for 2 seconds
   }
 
   loadMoreRewards() {
+    this.isLoading = true; // Show loader before loading more rewards
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = this.currentPage * this.pageSize;
-    const newRewards = this.rewards.filter((reward) => {
-      return (
-        (reward.userRole === this.userRole || reward.userRole === 'Both') &&
-        (reward.category.toLocaleLowerCase().includes(this.searchValue) ||
-        reward.name.toLocaleLowerCase().includes(this.searchValue) ||
-        reward.city.toLocaleLowerCase().includes(this.searchValue))
-      );
-    }).slice(startIndex, endIndex);
-    this.filteredRewards = [...new Set([...this.filteredRewards, ...newRewards])];
+    const newRewards = this.rewards
+      .filter((reward) => {
+        const matchesSearch =
+          reward.name.toLocaleLowerCase().includes(this.searchValue) ||
+          reward.city.toLocaleLowerCase().includes(this.searchValue);
+        const matchesUserRole =
+          reward.userRole === this.userRole || reward.userRole === 'Both';
+        return matchesSearch && matchesUserRole;
+      })
+      .slice(startIndex, endIndex);
+    this.filteredRewards = [
+      ...new Set([...this.filteredRewards, ...newRewards]),
+    ];
     this.currentPage++;
-    this.isLoading = false;
+    this.isLoading = false; // Hide loader after rewards are loaded
+    this.cdr.detectChanges(); // Trigger change detection
   }
 
   productDetails(primaryKey: number) {
@@ -278,36 +361,51 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   updateRewardsAndCategories() {
-    if (this.userRole === 'Bride') {
-      this.filteredRewards = this.rewards.filter(
-        (reward) => reward.userRole === 'Bride' || reward.userRole === 'Both'
-      );
-      this.categories = Category_LIST.filter(
-        (cat) => cat.useRole === 'Bride' || cat.useRole === 'Both'
-      );
-    } else if (this.userRole === 'Groom') {
-      this.filteredRewards = this.rewards.filter(
-        (reward) => reward.userRole === 'Groom' || reward.userRole === 'Both'
-      );
-      this.categories = Category_LIST.filter(
-        (cat) => cat.useRole === 'Groom' || cat.useRole === 'Both'
-      );
-    }
+    this.filteredRewards = this.rewards
+      .filter((reward) => {
+        return reward.userRole === this.userRole || reward.userRole === 'Both';
+      })
+      .slice(0, this.pageSize);
+    this.categories = Category_LIST.filter((cat) => {
+      return cat.useRole === this.userRole || cat.useRole === 'Both';
+    });
     this.filterRewardsByCategory('All');
     this.currentPage = 1;
     this.showLoadingSpinner();
     this.loadMoreRewards();
   }
 
-  applyPriceFilter(priceRange: { min: number, max: number }) {
-    this.filteredRewards = this.rewards.filter(reward => {
+  applyPriceFilter(priceRange: { min: number; max: number }) {
+    this.filteredRewards = this.rewards.filter((reward) => {
       return reward.Rent >= priceRange.min && reward.Rent <= priceRange.max;
     });
   }
 
   applyLocationFilter(location: string) {
-    this.filteredRewards = this.rewards.filter(reward => {
-      return reward.city.toLocaleLowerCase().includes(location.toLocaleLowerCase());
+    this.filteredRewards = this.rewards.filter((reward) => {
+      return reward.city
+        .toLocaleLowerCase()
+        .includes(location.toLocaleLowerCase());
     });
+  }
+
+  private filterRewards() {
+    this.filteredRewards = this.rewards
+      .filter((reward) => {
+        const matchesSearch =
+          reward.name.toLocaleLowerCase().includes(this.searchValue) ||
+          reward.city.toLocaleLowerCase().includes(this.searchValue);
+        const matchesUserRole =
+          reward.userRole === this.userRole || reward.userRole === 'Both';
+        return matchesSearch && matchesUserRole;
+      })
+      .slice(0, this.pageSize);
+    this.currentPage = 1;
+  }
+  onRatingChange(newRating: number, reward: any) {
+    
+    reward.rating = newRating;
+    // Optionally, send the new rating to the backend here
+     this.userService.updateRating(reward.pk, newRating,reward.userId).subscribe(res=> console.log(res,"response"));
   }
 }

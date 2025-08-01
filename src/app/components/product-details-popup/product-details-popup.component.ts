@@ -3,34 +3,32 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { Subscription } from 'rxjs';
-import { DataService } from 'src/app/service/data.service';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-product-details-popup',
   templateUrl: './product-details-popup.component.html',
   styleUrls: ['./product-details-popup.component.css'],
 })
-export class ProductDetailsPopupComponent implements OnInit, OnDestroy { 
+export class ProductDetailsPopupComponent implements OnInit, OnDestroy {
   productDetails: any;
   isAddNewProduct: boolean = false;
   subscription: Subscription = new Subscription();
 
   constructor(
     public mycartService: MyCartServiceService,
-    public dataservice: DataService,
     public readonly router: Router,
     public dialogRef: MatDialogRef<ProductDetailsPopupComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private store: Store<{ productData: any[] }>
   ) {
     this.mycartService.isAddNewProduct$.subscribe((res) => {
       this.isAddNewProduct = res;
     });
-
-    console.log(this.data.primaryKey, "PK");
   }
 
   ngOnInit(): void {
-    this.subscription = this.dataservice.products$.subscribe((res) => {
+    this.subscription = this.store.select('productData').subscribe((res) => {
       const products = res.map((item: any) => ({
         pk: item._id,
         name: item.productName,
@@ -46,7 +44,12 @@ export class ProductDetailsPopupComponent implements OnInit, OnDestroy {
         low_quantity: item.lowQuantity || 5,
         buyers: item.buyers || 0,
       }));
-      this.productDetails = products.find((product: any) => product.pk === this.data.primaryKey);
+      this.productDetails = products.find(
+        (product: any) => product.pk === this.data.primaryKey
+      );
+      if (!products.length) {
+        this.productDetails = this.data.response.product;
+      }
     });
   }
 
@@ -59,14 +62,12 @@ export class ProductDetailsPopupComponent implements OnInit, OnDestroy {
   }
 
   addToCart() {
-    this.subscription = this.mycartService.isAddNewProduct$.subscribe(
-      (res) => {
-        this.mycartService.showMessage('Product listed Successfully');
-        this.dialogRef.close();
-        this.router.navigate(['/content']);
-        this.subscription.unsubscribe();
-      }
-    );
+    this.subscription = this.mycartService.isAddNewProduct$.subscribe((res) => {
+      this.mycartService.showMessage('Product listed Successfully');
+      this.dialogRef.close();
+      this.router.navigate(['/content']);
+      this.subscription.unsubscribe();
+    });
 
     if (this.productDetails && this.productDetails.pk) {
       if (this.mycartService.itemExistsInCart(this.productDetails.pk)) {
@@ -91,7 +92,7 @@ export class ProductDetailsPopupComponent implements OnInit, OnDestroy {
     const product = this.getProductDetails();
     if (product) {
       product.currentImageIndex =
-        (product.currentImageIndex - 1 + product.display_img_urls.length) % 
+        (product.currentImageIndex - 1 + product.display_img_urls.length) %
         product.display_img_urls.length;
     }
   }
