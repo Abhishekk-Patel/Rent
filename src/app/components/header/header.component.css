@@ -6,49 +6,49 @@
   background: #fdfaf5;
   padding: 16px 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-  .logo-section {
-    display: flex;
-    align-items: center;
+.header-toolbar .logo-section {
+  display: flex;
+  align-items: center;
+}
 
-    .company-logo {
-      height: 36px;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-  }
+.header-toolbar .logo-section .company-logo {
+  height: 36px;
+  cursor: pointer;
+  border-radius: 5px;
+}
 
-  .brand-info {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-left: 12px;
-    color: brown;
-  }
+.header-toolbar .brand-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 12px;
+  color: brown;
+}
 
-  .spacer {
-    flex: 1 1 auto;
-  }
+.header-toolbar .spacer {
+  flex: 1 1 auto;
+}
 
-  .icon-section {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
+.header-toolbar .icon-section {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
-    button {
-      color: #830e0e;
-      margin-left: 6px;
+.header-toolbar .icon-section button {
+  color: #830e0e;
+  margin-left: 6px;
+}
 
-      .mat-badge-content {
-        top: 1px;
-      }
-    }
+.header-toolbar .icon-section button .mat-badge-content {
+  top: 1px;
+}
 
-    .blink {
-      animation: blinker 5.5s linear infinite;
-    }
-  }
+.header-toolbar .icon-section .blink {
+  animation: blinker 5.5s linear infinite;
 }
 
 @keyframes blinker {
@@ -63,19 +63,18 @@
   align-items: center;
   padding: 10px 20px;
   background-color: red;
-
-  .logo {
-    height: 40px;
-  }
-
-  .icons img {
-    margin-left: 15px;
-    height: 30px;
-    cursor: pointer;
-  }
 }
 
-/* New header-left styles */
+.header .logo {
+  height: 40px;
+}
+
+.header .icons img {
+  margin-left: 15px;
+  height: 30px;
+  cursor: pointer;
+}
+
 .header-left {
   display: flex;
   align-items: center;
@@ -100,7 +99,6 @@
     margin-left: 0;
     align-items: center;
     margin-top: 4px;
-    align-items: center;
     margin: 0;
     width: 100%;
     text-align: center;
@@ -158,8 +156,7 @@
     flex-direction: column;
     align-items: stretch;
     padding: 6px 2px;
-        color: brown;
-        
+    color: brown;
   }
 
   .header-left {
@@ -202,7 +199,6 @@
   .product-name {
     font-size: 1.3rem !important;
     margin-top: -35px ;
-
   }
 
   .mobile-menu-btn {
@@ -216,13 +212,9 @@
     top: 48px;
     min-width: 140px;
     padding: 6px 2px;
-    top: 48px;
-        min-width: 140px;
-        padding: 6px 2px;
-        display: flex
-;
-        justify-content: center;
-        align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 
@@ -230,7 +222,6 @@
   .brand-info .product-name {
     font-size: 1rem !important;
     color: brown;
-
   }
 
   .icon-section {
