@@ -1,5 +1,3 @@
-
-
 <app-partner-brand-slider *ngIf="!searchValue"></app-partner-brand-slider>
 
 <section class="content">
@@ -73,36 +71,34 @@
     <div class="rewards">
       <div class="rewards-header">
         <div class="search-section stylish-search-section">
-  <div class="search-bar">
-    <input
-      type="text"
-      #searchInput
-      (input)="search()"
-      (keypress)="handleKeyPress($event)"
-      placeholder="Search by Location, Category, etc."
-      [(ngModel)]="searchValue"
-      class="search-input"
-    />
+          <div class="search-bar">
+            <input
+              type="text"
+              #searchInput
+              (input)="search()"
+              (keypress)="handleKeyPress($event)"
+              placeholder="Search by Location, Category, etc."
+              [(ngModel)]="searchValue"
+              class="search-input"
+            />
 
-    <button class="search-btn" (click)="search()">
-      <mat-icon>search</mat-icon>
-    </button>
-  </div>
-  <div class="filters" *ngIf="searchValue">
-    <span>Applied Filters:</span>
-    <button mat-button class="filter">{{ searchValue }}</button>
-    <button mat-button class="filter clearFilterBtn" (click)="clear()">
-      clear
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
-</div>
-
+            <button class="search-btn" (click)="search()">
+              <mat-icon>search</mat-icon>
+            </button>
+          </div>
+          <div class="filters" *ngIf="searchValue">
+            <span>Applied Filters:</span>
+            <button mat-button class="filter">{{ searchValue }}</button>
+            <button mat-button class="filter clearFilterBtn" (click)="clear()">
+              clear
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
         <button
-          class="sort-btn"
+          class="sort-btn mobile-sort-btn"
           *ngIf="filteredRewards.length != 1"
           (click)="openSortPanel()"
-          style=""
         >
           <mat-icon style="vertical-align: middle;">sort</mat-icon>
           <span>Filter</span>

@@ -17,6 +17,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   orderReceived = '';
 
   isOwner: Boolean = false;
+  showMobileMenu: boolean = false; // Added for mobile menu toggle
 
   constructor(
     public userService: UserService,

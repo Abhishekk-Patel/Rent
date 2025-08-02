@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { UserService } from 'src/app/service/user.service';
 import { GoogleLoginProvider, SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
+import { HttpClient } from '@angular/common/http';
 
 declare let google: any;
 
@@ -34,7 +35,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
     public myCartSercvice: MyCartServiceService,
     private fb: FormBuilder,
     private userService: UserService,
-    private authService: SocialAuthService
+    private authService: SocialAuthService,
+    private http: HttpClient,
+
   ) {}
 
   ngOnInit() {
@@ -109,8 +112,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
       (response: any) => {
         this.isLoading = false;
         if (response === true) {
+          this.user = this.userService.getUserDetails();
+          this.loginError = '';
           this.isLoggedIn = true;
           this.showLogin = false;
+          this.loggedIn = true;
         } else if (response && response.error) {
           this.loginError = response.error;
         } else {
@@ -218,16 +224,28 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   handleCredentialResponse(response: any): void {
-    // Clear previous login error
-    this.loginError = '';
-    // Set login state and store the JWT token
-    this.isLoggedIn = true;
-    this.showLogin = false;
-    this.loggedIn = true;
-    // Optionally, decode the JWT or send it to your backend for verification
-    // Example: localStorage.setItem('google_id_token', response.credential);
-    // For now, just log the token
-
-    console.log('Google JWT ID token:', response.credential);
+    this.isLoading = true;
+    // Send the token to your backend
+    this.http.post('http://localhost:3000/auth/google/token', { token: response.credential })
+      .subscribe(
+        (backendResponse: any) => {
+          // Use UserService to handle Google login backend response
+          const loginSuccess = this.userService.loginWithGoogleBackendResponse(backendResponse);
+          console.log(loginSuccess, 'loginsuccess');
+          this.isLoading = false;
+          if (loginSuccess) {
+            this.user = this.userService.getUserDetails();
+            this.loginError = '';
+            this.isLoggedIn = true;
+            this.showLogin = false;
+            this.loggedIn = true;
+          }
+        },
+        (error) => {
+          this.isLoading = false;
+          this.loginError = 'Google login failed';
+          console.error('Backend login error:', error);
+        }
+      );
   }
 }

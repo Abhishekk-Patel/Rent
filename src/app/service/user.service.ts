@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   private user: any = null;
@@ -15,7 +15,7 @@ export class UserService {
   //  private loginApiUrl = 'http://localhost:3000/users/login';    // local url
   private signUpApiUrl = 'https://rent-be.onrender.com/users/register';
   //       signUpApiUrl = 'http://localhost:3000/users/register';   // local url
-url ='https://rent-be.onrender.com';
+  url = 'https://rent-be.onrender.com';
   constructor(private http: HttpClient) {
     this.loadUserDetails();
     this.loadUserHistory(); // Fix: Load user history in the constructor
@@ -24,7 +24,7 @@ url ='https://rent-be.onrender.com';
   login(loginForm: FormGroup): Observable<boolean> {
     if (loginForm.valid) {
       return this.http.post<any>(this.loginApiUrl, loginForm.value).pipe(
-        map(response => {
+        map((response) => {
           if (response && response.User) {
             this.user = response.User;
             this.saveUserDetails();
@@ -34,13 +34,13 @@ url ='https://rent-be.onrender.com';
         })
       );
     }
-    return new Observable(observer => observer.next(false));
+    return new Observable((observer) => observer.next(false));
   }
 
   signUp(signUpForm: FormGroup): Observable<boolean> {
     if (signUpForm.valid) {
       return this.http.post<any>(this.signUpApiUrl, signUpForm.value).pipe(
-        map(response => {
+        map((response) => {
           if (response && response.User) {
             this.user = response.User;
             this.saveUserDetails();
@@ -50,7 +50,7 @@ url ='https://rent-be.onrender.com';
         })
       );
     }
-    return new Observable(observer => observer.next(false));
+    return new Observable((observer) => observer.next(false));
   }
 
   getUserDetails() {
@@ -87,9 +87,30 @@ url ='https://rent-be.onrender.com';
       this.userHistory = JSON.parse(history);
     }
   }
-  updateRating(productId: string, rating: number,userId:number): Observable<any> {
-
+  updateRating(
+    productId: string,
+    rating: number,
+    userId: number
+  ): Observable<any> {
     const url = `${this.url}/productRating`;
-    return this.http.post<any>(url, { productId, rating,userId });
+    return this.http.post<any>(url, { productId, rating, userId });
+  }
+  /**
+   * Store user info after successful login (Google or email/password)
+   */
+  handleLoginSuccess(user: any) {
+    this.user = user;
+    this.saveUserDetails();
+  }
+
+  /**
+   * Handle Google login backend response
+   */
+  loginWithGoogleBackendResponse(backendResponse: any): boolean {
+    if (backendResponse && backendResponse.user) {
+      this.handleLoginSuccess(backendResponse.user);
+      return true;
+    }
+    return false;
   }
 }

@@ -1,41 +1,47 @@
 .header-toolbar {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   background: #fdfaf5;
-  padding: 20px;
-
+  padding: 16px 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-
 
   .logo-section {
     display: flex;
     align-items: center;
 
     .company-logo {
-      border-radius: 1px solid white;
-      height: 40px;
+      height: 36px;
       cursor: pointer;
       border-radius: 5px;
     }
   }
 
+  .brand-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 12px;
+    color: brown;
+  }
+
   .spacer {
-    flex: 1;
+    flex: 1 1 auto;
   }
 
   .icon-section {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
+    flex-wrap: wrap;
 
-    :is(button) {
-      color: #830E0E;
-      margin-left: 10px;
+    button {
+      color: #830e0e;
+      margin-left: 6px;
 
       .mat-badge-content {
         top: 1px;
-
       }
     }
 
@@ -69,13 +75,179 @@
   }
 }
 
-@media (max-width: 768px) {
-  .header-toolbar .icon-section .blink {
-    font-size: 12px;
-    padding: 5px 10px;
+/* New header-left styles */
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive styles */
+@media (max-width: 900px) {
+  .header-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 4px;
   }
 
-  .header-toolbar .icon-section .blink .rent-text {
-    display: none;
+  .header-left {
+    width: 100%;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .brand-info {
+    margin-left: 0;
+    align-items: center;
+    margin-top: 4px;
+    align-items: center;
+    margin: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .logo-section {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .icon-section {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex !important;
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    z-index: 1001;
+    background: beige;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+  }
+
+  .mobile-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    position: absolute;
+    right: 10px;
+    top: 56px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    padding: 10px 8px;
+    z-index: 1002;
+    min-width: 180px;
+  }
+
+  .mobile-menu button {
+    margin: 6px 0;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 6px 2px;
+        color: brown;
+        
+  }
+
+  .header-left {
+    width: 100%;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .logo-section {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .brand-info {
+    align-items: center;
+    margin: 0;
+    font-size: 1.2rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .icon-section {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 6px;
+    width: 100%;
+  }
+
+  .icon-section button {
+    margin-left: 0;
+    font-size: 18px;
+  }
+
+  .company-logo {
+    height: 28px;
+  }
+
+  .product-name {
+    font-size: 1.3rem !important;
+    margin-top: -35px ;
+
+  }
+
+  .mobile-menu-btn {
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .mobile-menu {
+    top: 48px;
+    min-width: 140px;
+    padding: 6px 2px;
+    top: 48px;
+        min-width: 140px;
+        padding: 6px 2px;
+        display: flex
+;
+        justify-content: center;
+        align-items: center;
+  }
+}
+
+@media (max-width: 400px) {
+  .brand-info .product-name {
+    font-size: 1rem !important;
+    color: brown;
+
+  }
+
+  .icon-section {
+    font-size: 14px;
+    flex-wrap: wrap;
+  }
+
+  .icon-section button {
+    min-width: 36px;
+    min-height: 36px;
+    padding: 4px;
+  }
+
+  .mobile-menu-btn {
+    width: 32px;
+    height: 32px;
+    top: 4px;
+    right: 4px;
   }
 }

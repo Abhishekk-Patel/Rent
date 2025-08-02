@@ -46,7 +46,7 @@ export class MyCartServiceService {
     }
     // Normalize item for backend contract
     const productToAdd: any = {
-      userId: userId,
+      userId: userId || this.userService.getUserDetails().googleId,
       pk: item.pk || item._id,
       quantity: item.quantity && item.quantity > 0 ? item.quantity : 1,
       productName: item.productName || item.name,
@@ -84,7 +84,7 @@ export class MyCartServiceService {
     }));
   }
   fetchCartItems(): void {
-    const userId = this.userService.getUserDetails().userId;
+    const userId = this.userService.getUserDetails().userId || this.userService.getUserDetails().googleId;
     this.httpClient
       .get<any>(`${this.url}/api/cart/${userId}`)
       .subscribe(
@@ -118,7 +118,7 @@ export class MyCartServiceService {
   }
 
   removeFromCart(item: any): void {
-    const userId = this.userService.getUserDetails().userId;
+    const userId = this.userService.getUserDetails().userId || this.userService.getUserDetails().googleId;
     const pk = item.pk || item.product?.pk;
   
     this.httpClient
