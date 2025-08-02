@@ -1,5 +1,6 @@
 {
   "name": "Rent",
+  "homepage": "https://abhishekk-patel.github.io/Rent/",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
