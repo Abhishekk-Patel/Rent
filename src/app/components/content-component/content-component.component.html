@@ -2,9 +2,45 @@
 
 <section class="content">
   <div class="layout">
-    <div class="categories">
-      <div class="categories-header">
-        <h3>Categories</h3>
+    <!-- Mobile Top Bar: Filter | Search | Hamburger (categories+toggle) -->
+    <div class="mobile-top-bar" *ngIf="isMobileView">
+      <button
+        class="sort-btn mobile-sort-btn"
+        (click)="openSortPanel()"
+        aria-label="Open filters"
+        style="display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;"
+      >
+      <span class="sort-text" style="font-size: 10px;">Filter</span>
+        <mat-icon style="vertical-align: middle">sort</mat-icon>
+      </button>
+      <div class="mobile-search-bar">
+        <input
+          type="text"
+          #searchInput
+          (input)="search()"
+          (keypress)="handleKeyPress($event)"
+          placeholder="Search by Location, Category, etc."
+          [(ngModel)]="searchValue"
+          class="search-input"
+        />
+        <button class="search-btn" (click)="search()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
+      <button
+        class="hamburger-btn"
+        (click)="showCategoryMenu = !showCategoryMenu"
+        aria-label="Toggle categories"
+      >
+        <mat-icon>{{ showCategoryMenu ? "close" : "menu" }}</mat-icon>
+      </button>
+    </div>
+    <!-- Hamburger menu content: toggle + categories, only on mobile -->
+    <div class="mobile-category-menu" *ngIf="isMobileView && showCategoryMenu">
+      <div class="mobile-menu-inner">
         <mat-button-toggle-group
           [(ngModel)]="userRole"
           (change)="onUserRoleChange($event)"
@@ -13,46 +49,12 @@
           <mat-button-toggle value="Bride">Bride</mat-button-toggle>
           <mat-button-toggle value="Groom">Groom</mat-button-toggle>
         </mat-button-toggle-group>
-        <!-- Hamburger icon for mobile/tablet -->
-        <button class="hamburger-btn" (click)="showCategoryMenu = !showCategoryMenu" aria-label="Toggle categories" *ngIf="isMobileView">
-          <mat-icon>{{ showCategoryMenu ? 'close' : 'menu' }}</mat-icon>
-        </button>
-      </div>
-      <!-- Desktop view: show categories normally -->
-      <mat-accordion *ngIf="!isMobileView">
-        <mat-expansion-panel
-          class="category-item"
-          *ngFor="let category of categories; let i = index"
-          [(expanded)]="category.isExpanded"
-          (opened)="onPanelChange()"
-          (closed)="onPanelChange()"
-        >
-          <mat-expansion-panel-header>
-            <mat-panel-description>
-              <mat-icon
-                class="status-icon"
-                [ngClass]="{
-                  selected: category.isSelected,
-                  unselected: !category.isSelected,
-                  expanded: category.isExpanded
-                }"
-                [style.color]="category.isExpanded ? 'green' : '#830E0E'"
-              >
-                {{
-                  category.isSelected ? "check_circle" : "check_circle_outline"
-                }}
-              </mat-icon>
-              <mat-panel-title class="cat-title">
-                {{ category.name }}
-              </mat-panel-title>
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-        </mat-expansion-panel>
-      </mat-accordion>
-      <!-- Mobile/tablet view: hamburger menu -->
-      <div class="mobile-category-menu" *ngIf="isMobileView && showCategoryMenu">
         <ul class="category-list">
-          <li class="category-item" *ngFor="let category of categories; let i = index" (click)="selectCategory(category)">
+          <li
+            class="category-item"
+            *ngFor="let category of categories; let i = index"
+            (click)="selectCategory(category)"
+          >
             <mat-icon
               class="status-icon"
               [ngClass]="{
@@ -61,16 +63,71 @@
               }"
               [style.color]="category.isSelected ? 'green' : '#830E0E'"
             >
-              {{ category.isSelected ? "check_circle" : "check_circle_outline" }}
+              {{
+                category.isSelected ? "check_circle" : "check_circle_outline"
+              }}
             </mat-icon>
             <span class="cat-title">{{ category.name }}</span>
           </li>
         </ul>
       </div>
     </div>
+    <!-- Desktop/tablet: keep old layout -->
+    <div class="filter-bar-row" *ngIf="!isMobileView">
+      <div class="categories" style="min-width:260px; max-width:320px; background:#fdfaf5; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); padding:18px 18px 12px 18px; margin-right:24px;">
+        <div class="categories-header" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+          <span style="font-size:20px; font-weight:600; color:#830E0E; letter-spacing:1px;">Categories</span>
+          <mat-button-toggle-group
+            [(ngModel)]="userRole"
+            (change)="onUserRoleChange($event)"
+            class="user-role-toggle"
+            style="margin-left:12px;"
+          >
+            <mat-button-toggle value="Bride">Bride</mat-button-toggle>
+            <mat-button-toggle value="Groom">Groom</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+        <mat-accordion *ngIf="!isMobileView">
+          <mat-expansion-panel
+            class="category-item"
+            *ngFor="let category of categories; let i = index"
+            [(expanded)]="category.isExpanded"
+            (opened)="onPanelChange()"
+            (closed)="onPanelChange()"
+            style="border-radius:10px; margin-bottom:8px; box-shadow:0 1px 4px rgba(0,0,0,0.04); border:1px solid #f0f0f0;"
+          >
+            <mat-expansion-panel-header>
+              <mat-panel-description style="display:flex; align-items:center; gap:10px;">
+                <mat-icon
+                  class="status-icon"
+                  [ngClass]="{
+                    selected: category.isSelected,
+                    unselected: !category.isSelected,
+                    expanded: category.isExpanded
+                  }"
+                  [style.color]="category.isExpanded ? 'green' : '#830E0E'"
+                  style="font-size:22px;"
+                >
+                  {{
+                    category.isSelected ? "check_circle" : "check_circle_outline"
+                  }}
+                </mat-icon>
+                <mat-panel-title class="cat-title" style="font-size:16px; font-weight:500; color:#333;">
+                  {{ category.name }}
+                </mat-panel-title>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </div>
+
     <div class="rewards">
       <div class="rewards-header">
-        <div class="search-section stylish-search-section">
+        <div
+          *ngIf="!isMobileView"
+          class="search-section stylish-search-section"
+        >
           <div class="search-bar">
             <input
               type="text"
@@ -97,10 +154,10 @@
         </div>
         <button
           class="sort-btn mobile-sort-btn"
-          *ngIf="filteredRewards.length != 1"
+          *ngIf="filteredRewards.length != 1 && !isMobileView"
           (click)="openSortPanel()"
         >
-          <mat-icon style="vertical-align: middle;">sort</mat-icon>
+          <mat-icon style="vertical-align: middle">sort</mat-icon>
           <span>Filter</span>
         </button>
       </div>

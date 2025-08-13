@@ -34,7 +34,7 @@ export class ContentComponentComponent
   filteredRewards: any[] = [];
   isSortPanelOpen = false;
   searchValue = '';
-  @ViewChild('searchInput', { static: true }) searchInput!: ElementRef;
+  @ViewChild('searchInput', { static: false }) searchInput?: ElementRef;
   isLoading: boolean = false;
   userRole: string = 'Bride';
   showScrollToTop: boolean = false;
@@ -167,13 +167,16 @@ export class ContentComponentComponent
   }
 
   ngAfterViewInit() {
-    fromEvent(this.searchInput.nativeElement, 'input')
-      .pipe(debounceTime(300))
-      .subscribe(() => {
-        const searchValue = this.searchInput.nativeElement.value.trim();
-        this.searchValue = searchValue;
-        this.filterRewardsByCategory(searchValue || 'All');
-      });
+
+    if (this.searchInput && this.searchInput.nativeElement) {
+      fromEvent(this.searchInput.nativeElement, 'input')
+        .pipe(debounceTime(300))
+        .subscribe(() => {
+          const searchValue = this.searchInput!.nativeElement.value.trim();
+          this.searchValue = searchValue;
+          this.filterRewardsByCategory(searchValue || 'All');
+        });
+    }
 
     this.scrollSubscription = fromEvent(window, 'scroll')
       .pipe(debounceTime(300))
@@ -225,17 +228,26 @@ export class ContentComponentComponent
     }
   }
 
+
   search(): void {
-    const searchValue = this.searchInput.nativeElement.value
-      .trim()
-      .toLowerCase();
-    this.searchValue = searchValue;
+    // Use ngModel value if available, fallback to input if present
+    let searchValue = this.searchValue || '';
+    if (this.searchInput && this.searchInput.nativeElement) {
+      searchValue = this.searchInput.nativeElement.value.trim().toLowerCase();
+      this.searchValue = searchValue;
+    } else if (searchValue) {
+      this.searchValue = searchValue.trim().toLowerCase();
+    } else {
+      this.searchValue = '';
+    }
     this.filterRewards();
   }
 
   clear() {
     this.searchValue = '';
-    this.searchInput.nativeElement.value = '';
+    if (this.searchInput && this.searchInput.nativeElement) {
+      this.searchInput.nativeElement.value = '';
+    }
     this.filterRewards();
   }
 
