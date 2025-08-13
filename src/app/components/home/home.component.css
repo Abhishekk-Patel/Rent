@@ -1,3 +1,29 @@
+/* Ensure Google sign-in button is visible and centered on all devices */
+.google-signin-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 12px 0;
+}
+
+#buttonDiv {
+  min-width: 200px;
+  min-height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .google-signin-container {
+    margin: 10px 0;
+  }
+  #buttonDiv {
+    min-width: 180px;
+    min-height: 40px;
+  }
+}
 /* Base container styling */
 .my-container {
   display: flex;

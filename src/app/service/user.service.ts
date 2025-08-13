@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -11,6 +11,9 @@ export class UserService {
   private user: any = null;
   private userHistory: any[] = [];
 
+  private isLoggedInSubject = new BehaviorSubject<boolean>(!!this.getUserFromStorage());
+  isLoggedIn$ = this.isLoggedInSubject.asObservable();
+
   private loginApiUrl = 'https://rent-be.onrender.com/users/login';
   //  private loginApiUrl = 'http://localhost:3000/users/login';    // local url
   private signUpApiUrl = 'https://rent-be.onrender.com/users/register';
@@ -19,6 +22,7 @@ export class UserService {
   constructor(private http: HttpClient) {
     this.loadUserDetails();
     this.loadUserHistory(); // Fix: Load user history in the constructor
+    this.isLoggedInSubject.next(!!this.user);
   }
 
   login(loginForm: FormGroup): Observable<boolean> {
@@ -28,12 +32,15 @@ export class UserService {
           if (response && response.User) {
             this.user = response.User;
             this.saveUserDetails();
+            this.isLoggedInSubject.next(true);
             return true;
           }
+          this.isLoggedInSubject.next(false);
           return false;
         })
       );
     }
+    this.isLoggedInSubject.next(false);
     return new Observable((observer) => observer.next(false));
   }
 
@@ -44,12 +51,15 @@ export class UserService {
           if (response && response.User) {
             this.user = response.User;
             this.saveUserDetails();
+            this.isLoggedInSubject.next(true);
             return true;
           }
+          this.isLoggedInSubject.next(false);
           return false;
         })
       );
     }
+    this.isLoggedInSubject.next(false);
     return new Observable((observer) => observer.next(false));
   }
 
@@ -101,6 +111,7 @@ export class UserService {
   handleLoginSuccess(user: any) {
     this.user = user;
     this.saveUserDetails();
+    this.isLoggedInSubject.next(true);
   }
 
   /**
@@ -112,5 +123,10 @@ export class UserService {
       return true;
     }
     return false;
+  }
+
+  private getUserFromStorage() {
+    const user = localStorage.getItem('userDetails');
+    return user ? JSON.parse(user) : null;
   }
 }
