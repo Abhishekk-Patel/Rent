@@ -240,5 +240,22 @@
     height: 32px;
     top: 4px;
     right: 4px;
-  }
+}
+  ::ng-deep .mat-badge-medium .mat-badge-content,
+  ::ng-deep .mat-badge-content {
+    width: 15px !important;
+    height: 15px !important;
+    line-height: 15px !important;
+    font-size: 11px !important;
+    vertical-align: middle !important;
+    padding: 0 !important;
+    text-align: center !important;
+    border-radius: 50% !important;
+    box-sizing: border-box !important;
+    right: unset !important;
+    top: unset !important;
+    left: unset !important;
+    bottom: unset !important;
+    transform: none !important;
+  }  
 }

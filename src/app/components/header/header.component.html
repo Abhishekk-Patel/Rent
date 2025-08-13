@@ -2,7 +2,11 @@
   <!-- Left Section: Logo and Brand (centered on mobile) -->
   <div class="header-left">
     <div class="logo-section" (click)="this.router.navigate(['content'])">
-      <img src="./assets/RentLogo.jpg" alt="Company Logo" class="company-logo" />
+      <img
+        src="./assets/RentLogo.jpg"
+        alt="Company Logo"
+        class="company-logo"
+      />
     </div>
     <div class="brand-info">
       <span class="product-name">RentiT</span>
@@ -15,13 +19,36 @@
 
   <!-- Right Section: Icons -->
   <div class="icon-section" *ngIf="!showMobileMenu">
-    <button mat-icon-button aria-label="Language" matTooltip="{{countryCode}}" (click)="openLanguageDialog()">
+    <button
+      mat-icon-button
+      aria-label="Language"
+      matTooltip="{{ countryCode }}"
+      (click)="openLanguageDialog()"
+    >
       <mat-icon>language</mat-icon>
     </button>
-    <button mat-icon-button aria-label="Notifications" *ngIf="orderReceived && this.isOwner" matTooltip="{{orderReceived}}" [matBadge]="!isAddNewProduct ? 1 : 0" matBadgePosition="above after" matBadgeColor="accent">
+    <button
+      mat-icon-button
+      aria-label="Notifications"
+      *ngIf="orderReceived && this.isOwner"
+      matTooltip="{{ orderReceived }}"
+      [matBadge]="!isAddNewProduct ? 1 : 0"
+      matBadgePosition="above after"
+      matBadgeColor="accent"
+    >
       <mat-icon>notifications</mat-icon>
     </button>
-    <button *ngIf="!isAddNewProduct" [disabled]="cartService.getCartValue() === 0" mat-icon-button class="cart" aria-label="Cart" matBadge="{{cartService.getCartValue()}}" matBadgePosition="above after" matBadgeColor="accent" (click)="openMyCard()">
+    <button
+      *ngIf="!isAddNewProduct"
+      [disabled]="cartService.getCartValue() === 0"
+      mat-icon-button
+      class="cart"
+      aria-label="Cart"
+      matBadge="{{ cartService.getCartValue() }}"
+      matBadgePosition="above after"
+      matBadgeColor="accent"
+      (click)="openMyCard()"
+    >
       <mat-icon>shopping_cart</mat-icon>
     </button>
     <button mat-icon-button aria-label="Dark Mode" (click)="toggleDarkMode()">
@@ -29,39 +56,95 @@
     </button>
     <div *ngIf="!isAddNewProduct">
       <mat-menu #userMenu="matMenu">
-        <button mat-menu-item (click)="this.router.navigate(['my-account'])">Account</button>
+        <button mat-menu-item (click)="this.router.navigate(['my-account'])">
+          Account
+        </button>
         <button mat-menu-item>Settings</button>
-        <button mat-menu-item (click)="this.router.navigate([''])">Logout</button>
+        <button mat-menu-item (click)="this.router.navigate([''])">
+          Logout
+        </button>
       </mat-menu>
-      <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Profile">
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="userMenu"
+        aria-label="Profile"
+      >
         <mat-icon>account_circle</mat-icon>
       </button>
     </div>
   </div>
   <!-- Hamburger for mobile -->
-  <button mat-icon-button class="mobile-menu-btn" (click)="showMobileMenu = !showMobileMenu" aria-label="Menu" style="display: none;">
+  <button
+    mat-icon-button
+    class="mobile-menu-btn"
+    (click)="showMobileMenu = !showMobileMenu"
+    aria-label="Menu"
+    style="display: none"
+  >
     <mat-icon>menu</mat-icon>
   </button>
   <div class="mobile-menu" *ngIf="showMobileMenu">
-    <button mat-icon-button aria-label="Language" matTooltip="{{countryCode}}" (click)="openLanguageDialog(); showMobileMenu = false">
+    <button
+      mat-icon-button
+      aria-label="Language"
+      matTooltip="{{ countryCode }}"
+      (click)="openLanguageDialog(); showMobileMenu = false"
+    >
       <mat-icon>language</mat-icon>
     </button>
-    <button mat-icon-button aria-label="Notifications" *ngIf="orderReceived && this.isOwner" matTooltip="{{orderReceived}}" [matBadge]="!isAddNewProduct ? 1 : 0" matBadgePosition="above after" matBadgeColor="accent" (click)="showMobileMenu = false">
+    <button
+      mat-icon-button
+      aria-label="Notifications"
+      *ngIf="orderReceived && this.isOwner"
+      matTooltip="{{ orderReceived }}"
+      [matBadge]="!isAddNewProduct ? 1 : 0"
+      matBadgePosition="above after"
+      matBadgeColor="accent"
+      (click)="showMobileMenu = false"
+    >
       <mat-icon>notifications</mat-icon>
     </button>
-    <button *ngIf="!isAddNewProduct" [disabled]="cartService.getCartValue() === 0" mat-icon-button class="cart" aria-label="Cart" matBadge="{{cartService.getCartValue()}}" matBadgePosition="above after" matBadgeColor="accent" (click)="openMyCard(); showMobileMenu = false">
+    <button
+      *ngIf="!isAddNewProduct"
+      class="cart"
+      [disabled]="cartService.getCartValue() === 0"
+      mat-icon-button
+      aria-label="Cart"
+      matBadge="{{ cartService.getCartValue() }}"
+      matBadgePosition="above after"
+      matBadgeColor="accent"
+      (click)="openMyCard(); showMobileMenu = false"
+    >
       <mat-icon>shopping_cart</mat-icon>
     </button>
-    <button mat-icon-button aria-label="Dark Mode" (click)="toggleDarkMode(); showMobileMenu = false">
+    <button
+      mat-icon-button
+      aria-label="Dark Mode"
+      (click)="toggleDarkMode(); showMobileMenu = false"
+    >
       <mat-icon>brightness_4</mat-icon>
     </button>
     <div *ngIf="!isAddNewProduct">
       <mat-menu #userMenuMobile="matMenu">
-        <button mat-menu-item (click)="this.router.navigate(['my-account']); showMobileMenu = false">Account</button>
+        <button
+          mat-menu-item
+          (click)="this.router.navigate(['my-account']); showMobileMenu = false"
+        >
+          Account
+        </button>
         <button mat-menu-item>Settings</button>
-        <button mat-menu-item (click)="this.router.navigate(['']); showMobileMenu = false">Logout</button>
+        <button
+          mat-menu-item
+          (click)="this.router.navigate(['']); showMobileMenu = false"
+        >
+          Logout
+        </button>
       </mat-menu>
-      <button mat-icon-button [matMenuTriggerFor]="userMenuMobile" aria-label="Profile">
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="userMenuMobile"
+        aria-label="Profile"
+      >
         <mat-icon>account_circle</mat-icon>
       </button>
     </div>
