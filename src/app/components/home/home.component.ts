@@ -42,7 +42,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]], // Updated to use email
+      email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
 
@@ -58,6 +58,36 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.user = user;
       this.loggedIn = !!user;
     });
+  }
+
+  // ngAfterViewInit handled below, only one implementation needed
+
+  ngAfterViewChecked(): void {
+    if (this.showLogin) {
+      this.renderGoogleButton();
+    }
+  }
+
+  renderGoogleButton(): void {
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      const buttonDiv = document.getElementById('buttonDiv');
+      if (buttonDiv && buttonDiv.childElementCount === 0) {
+        google.accounts.id.initialize({
+          client_id: '204670204818-b33g0rdegov9g9tae1j5c30ikdumi2hr.apps.googleusercontent.com',
+          callback: (response: any) => this.handleCredentialResponse(response)
+        });
+        google.accounts.id.renderButton(
+          buttonDiv,
+          {
+            theme: 'filled_blue',
+            size: 'large',
+            shape: 'pill',
+            text: 'signin_with'
+          }
+        );
+        google.accounts.id.prompt();
+      }
+    }
   }
   signInWithGoogle(): void {
     this.authService.signIn(GoogleLoginProvider.PROVIDER_ID);
@@ -98,6 +128,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   toggleLogin() {
     this.showLogin = !this.showLogin;
     this.showSignUp = false;
+    setTimeout(() => this.renderGoogleButton(), 0);
   }
 
   toggleSignUp() {

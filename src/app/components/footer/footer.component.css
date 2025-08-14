@@ -8,8 +8,9 @@ background-position: center; */
   justify-content: space-between;
   align-items: center;
   padding: 20px;
-  background: #c3541c;
-  color: #fff;
+  background: bisque;
+  color: #000000;
+  box-shadow: 0px -4px 8px rgba(0, 0, 0, 0.1);
   /* border-top: 5px solid #fff; */
   font-family: 'Arial', sans-serif;
 }
@@ -42,7 +43,7 @@ background-position: center; */
 
 .footer nav a {
   margin: 5px 0;
-  color: #fff;
+  color: #000000;
   text-decoration: none;
   transition: color 0.3s;
 }
