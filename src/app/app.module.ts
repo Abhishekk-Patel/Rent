@@ -16,7 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { SortPanelComponent } from './components/sort-panel/sort-panel.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatBadgeModule } from '@angular/material/badge';
-import { AlertMsgsComponent } from './components/alert-msgs/alert-msgs.component';
+// import { AlertMsgsComponent } from './components/alert-msgs/alert-msgs.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatMenuModule } from '@angular/material/menu';
@@ -47,6 +47,8 @@ import { EffectsModule } from '@ngrx/effects';
 import { productDataEffects } from './components/Store/productData.effects';
 import { UserProductRatingComponent } from './components/user-rating/user-product-rating.component';
 import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
+import { AddProductIfSearchEmptyComponent } from './components/content-component/add-product-if-search-empty/add-product-if-search-empty';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -54,7 +56,6 @@ import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from 
     FooterComponent,
     ContentComponentComponent,
     SortPanelComponent,
-    AlertMsgsComponent,
     MyCartComponent,
     ProductDetailsPopupComponent,
     HomeComponent,
@@ -62,6 +63,7 @@ import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from 
     MyAccountComponent,
     PartnerBrandSliderComponent,
     UserProductRatingComponent,
+    AddProductIfSearchEmptyComponent
   ],
   imports: [
     BrowserModule,

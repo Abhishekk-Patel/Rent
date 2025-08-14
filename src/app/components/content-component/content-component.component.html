@@ -1,4 +1,4 @@
-<app-partner-brand-slider *ngIf="!searchValue"></app-partner-brand-slider>
+<app-partner-brand-slider></app-partner-brand-slider>
 
 <section class="content">
   <div class="layout">
@@ -8,12 +8,14 @@
         class="sort-btn mobile-sort-btn"
         (click)="openSortPanel()"
         aria-label="Open filters"
-        style="display: flex;
-  flex-direction: column;
-  align-content: center;
-  justify-content: center;"
+        style="
+          display: flex;
+          flex-direction: column;
+          align-content: center;
+          justify-content: center;
+        "
       >
-      <span class="sort-text" style="font-size: 10px;">Filter</span>
+        <span class="sort-text" style="font-size: 10px">Filter</span>
         <mat-icon style="vertical-align: middle">sort</mat-icon>
       </button>
       <div class="mobile-search-bar">
@@ -74,14 +76,41 @@
     </div>
     <!-- Desktop/tablet: keep old layout -->
     <div class="filter-bar-row" *ngIf="!isMobileView">
-      <div class="categories" style="min-width:260px; max-width:320px; background:#fdfaf5; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); padding:18px 18px 12px 18px; margin-right:24px;">
-        <div class="categories-header" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-          <span style="font-size:20px; font-weight:600; color:#830E0E; letter-spacing:1px;">Categories</span>
+      <div
+        class="categories"
+        style="
+          min-width: 260px;
+          max-width: 320px;
+          background: #fdfaf5;
+          border-radius: 16px;
+          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+          padding: 18px 18px 12px 18px;
+          margin-right: 24px;
+        "
+      >
+        <div
+          class="categories-header"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+          "
+        >
+          <span
+            style="
+              font-size: 20px;
+              font-weight: 600;
+              color: #830e0e;
+              letter-spacing: 1px;
+            "
+            >Categories</span
+          >
           <mat-button-toggle-group
             [(ngModel)]="userRole"
             (change)="onUserRoleChange($event)"
             class="user-role-toggle"
-            style="margin-left:12px;"
+            style="margin-left: 12px"
           >
             <mat-button-toggle value="Bride">Bride</mat-button-toggle>
             <mat-button-toggle value="Groom">Groom</mat-button-toggle>
@@ -94,10 +123,17 @@
             [(expanded)]="category.isExpanded"
             (opened)="onPanelChange()"
             (closed)="onPanelChange()"
-            style="border-radius:10px; margin-bottom:8px; box-shadow:0 1px 4px rgba(0,0,0,0.04); border:1px solid #f0f0f0;"
+            style="
+              border-radius: 10px;
+              margin-bottom: 8px;
+              box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+              border: 1px solid #f0f0f0;
+            "
           >
             <mat-expansion-panel-header>
-              <mat-panel-description style="display:flex; align-items:center; gap:10px;">
+              <mat-panel-description
+                style="display: flex; align-items: center; gap: 10px"
+              >
                 <mat-icon
                   class="status-icon"
                   [ngClass]="{
@@ -106,13 +142,18 @@
                     expanded: category.isExpanded
                   }"
                   [style.color]="category.isExpanded ? 'green' : '#830E0E'"
-                  style="font-size:22px;"
+                  style="font-size: 22px"
                 >
                   {{
-                    category.isSelected ? "check_circle" : "check_circle_outline"
+                    category.isSelected
+                      ? "check_circle"
+                      : "check_circle_outline"
                   }}
                 </mat-icon>
-                <mat-panel-title class="cat-title" style="font-size:16px; font-weight:500; color:#333;">
+                <mat-panel-title
+                  class="cat-title"
+                  style="font-size: 16px; font-weight: 500; color: #333"
+                >
                   {{ category.name }}
                 </mat-panel-title>
               </mat-panel-description>
@@ -244,6 +285,8 @@
             </button>
           </div>
         </div>
+
+        <app-add-product-if-search-empty  style="width: 100%;" *ngIf="searchValue" (addProduct)="onAddProduct()"></app-add-product-if-search-empty>
       </div>
       <div *ngIf="isLoading" class="skeleton-container">
         <div
@@ -263,7 +306,6 @@
     (filterByLocation)="applyLocationFilter($event)"
   ></app-sort-panel>
 
-  <app-alert-msgs *ngIf="!isLoading" [message]="alertMsg"></app-alert-msgs>
   <button
     class="scroll-to-top-btn"
     [class.show]="showScrollToTop"

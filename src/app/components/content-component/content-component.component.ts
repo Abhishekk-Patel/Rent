@@ -1,3 +1,5 @@
+// ...existing code...
+
 import {
   Component,
   ElementRef,
@@ -25,11 +27,15 @@ import { Category_LIST } from 'src/mock-data';
 export class ContentComponentComponent
   implements OnInit, AfterViewInit, OnDestroy
 {
-  alertMsg: string = 'Opps! No match found';
+  alertMsg: string = 'No matches found';
   isMobileView: boolean = false;
   showCategoryMenu: boolean = false;
   public totalPages: any;
   categories = Category_LIST;
+  
+  onAddProduct() {
+    this.router.navigate(['/add-product']);
+  }
   rewards: any[] = [];
   filteredRewards: any[] = [];
   isSortPanelOpen = false;
@@ -119,7 +125,7 @@ export class ContentComponentComponent
     };
     this.isLoading = true; // Set isLoading to true before data fetch
     this.productData$.subscribe((data) => {
-     this.rewards = data.map((item: any) => ({
+      this.rewards = data.map((item: any) => ({
         pk: item._id,
         name: item.productName,
         Rent: item.productRent,
@@ -140,7 +146,6 @@ export class ContentComponentComponent
         totalUserRated: item.totalUserRated
           ? item.totalUserRated
           : item.ratings.length || 0,
-
       }));
       this.filteredRewards = [...this.rewards]; // Set filteredRewards to the fetched data
       this.updateRewardsAndCategories();
@@ -275,6 +280,12 @@ export class ContentComponentComponent
       })
       .slice(0, this.pageSize);
     this.currentPage = 1;
+    // Show alert only if user has performed a search or filter (not on initial load)
+    if (this.searchValue || categoryName !== 'All') {
+      if (!this.filteredRewards.length) {
+        this.mycartService.showMessage(this.alertMsg);
+      }
+    }
   }
 
   openSortPanel() {
@@ -413,6 +424,10 @@ export class ContentComponentComponent
       })
       .slice(0, this.pageSize);
     this.currentPage = 1;
+    // Show alert only if user has performed a search
+    if (this.searchValue && !this.filteredRewards.length) {
+      this.mycartService.showMessage(this.alertMsg);
+    }
   }
   onRatingChange(newRating: number, reward: any) {
     
