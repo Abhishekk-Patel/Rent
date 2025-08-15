@@ -20,7 +20,7 @@ export class OrderService {
       return;
     }
     // Use the correct socket URL
-    this.socket = io('http://localhost:4000', {
+    this.socket = io('https://rent-be.onrender.com', {
       query: { email: productOwnerEmail },
     });
   }
@@ -86,7 +86,7 @@ orderError(): Observable<any> {
   // Fetch your orders with error handling
   getYourOrders(userEmail: string): Observable<any[]> {
     return this.http
-      .get(`http://localhost:3000/orders/fetchOrders/${userEmail}`)
+      .get(`https://rent-be.onrender.com/orders/fetchOrders/${userEmail}`)
       .pipe(
         map((response: any) => response),
         catchError((error) => {
@@ -98,7 +98,7 @@ orderError(): Observable<any> {
 
   // Fetch orders using a different method (just for consistency)
   fetchOrders(userEmail: string): Observable<any> {
-    return this.http.get(`http://localhost:3000/orders/fetchOrders/${userEmail}`).pipe(
+    return this.http.get(`https://rent-be.onrender.com/orders/fetchOrders/${userEmail}`).pipe(
       catchError((error) => {
         console.error('Error fetching orders:', error);
         throw error; // Rethrow error or handle it as needed

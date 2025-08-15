@@ -100,7 +100,11 @@ export class MyCartComponent implements OnInit, OnDestroy {
 
         // If the order was placed by this user (customer), clear cart and show message
         if (order.customer && order.customer.email === this.user) {
-          this.myCartService.clearCart();
+          order.product.forEach((item: any) => {
+            console.log('Removing item from cart:', item);
+            this.myCartService.removeFromCart(item);
+          });
+          this.cartItems = []; // Clear local cart items
           this.closeCartModel();
           this.myCartService.showMessage(order.message);
 
