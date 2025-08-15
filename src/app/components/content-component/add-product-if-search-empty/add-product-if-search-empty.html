@@ -1,10 +1,14 @@
 <div class="no-search-found-container">
-  <div class="no-search-icon">
-    <mat-icon>search_off</mat-icon>
+  <div class="no-search-icon" >
+    <mat-icon *ngIf="!isCartOpen; else noSearchIcon">search_off</mat-icon>
+    <ng-template #noSearchIcon>
+    <span style="font-size: 40px;" class="fancy-icon">🛒</span>
+  </ng-template>
   </div>
+  
   <div class="no-search-text">
-    <h2>No Results Found</h2>
-    <p>We couldn't find any products matching your search.</p>
+    <h2>{{heading}}</h2>
+    <p>{{subHeading}}</p>
   </div>
   <button class="cta-btn add-product-btn" (click)="addNewProduct()">
     <span>Add a Product</span>

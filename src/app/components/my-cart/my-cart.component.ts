@@ -6,6 +6,7 @@ import { OrderService } from 'src/app/service/order.service';
 import { interval, Subscription } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { UserService } from 'src/app/service/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-my-cart',
@@ -41,7 +42,8 @@ export class MyCartComponent implements OnInit, OnDestroy {
     private readonly myCartService: MyCartServiceService,
     private readonly dataService: DataService,
     private readonly orderService: OrderService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+       public router: Router,
   ) {
     this.productFormGroup = this.fb.group({});
 
@@ -130,7 +132,10 @@ export class MyCartComponent implements OnInit, OnDestroy {
     this.selectedHeader = header;
     this.showStepper = false; // Reset stepper view when switching
   }
-
+ onAddProduct() {
+  this.myCartService.closeCartModel(); // Close the cart model if it's open
+    this.router.navigate(['/add-product']);
+  }
   removeFromCart(item: any, index: number): void {
     item.removing = true; // Add the removing class to trigger the animation
     setTimeout(() => {

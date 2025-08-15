@@ -40,7 +40,6 @@
     </button>
     <button
       *ngIf="!isAddNewProduct"
-      [disabled]="cartService.getCartValue() === 0"
       mat-icon-button
       class="cart"
       aria-label="Cart"
