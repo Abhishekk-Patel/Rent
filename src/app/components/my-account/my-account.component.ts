@@ -20,7 +20,11 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   yourOrders: any[] = [];
   orderSubscription: Subscription | null = null;
 
+  isLoading: boolean = true;
+
   getOrderData$ = this.store.select('orderData');
+
+
 
   constructor(
     private userService: UserService,
@@ -38,24 +42,16 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.getOrderData$.subscribe((res) => {
-      console.log(res, 'orderData');
-      if (res) {
-        this.receivedOrders = res;
-      }
-    });
-
     // Get user details when the component initializes
     this.user = this.userService.getUserDetails();
-   
 
-    // Check if the user is available and fetch user history
-    if (this.user && this.user.email) {
-      this.getUserHistoryByEmail(this.user.email);
-    }
+    // Simulate loading for demo; in real app, set isLoading = false after data loads
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 1200);
 
-    this.loadReceivedOrders();
-    this.loadYourOrders();
+    // Load data for the default tab (History)
+    this.onTabChange({ index: 0 });
   }
 
   ngOnDestroy(): void {
@@ -65,6 +61,24 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     }
     // this.orderService.disconnect();
   }
+  onTabChange(event: any): void {
+    // event.index gives the tab index (0 = History, 1 = Received Orders, 2 = Your Orders)
+    const tabNames = ['history', 'received', 'your'];
+    const selectedTab = tabNames[event.index];
+    console.log('Selected tab:', selectedTab);
+
+    if (!this.user || !this.user.email) {
+      return;
+    }
+
+    if (selectedTab === 'history') {
+      this.getUserHistoryByEmail(this.user.email);
+    } else if (selectedTab === 'received') {
+      this.loadReceivedOrders();
+    } else if (selectedTab === 'your') {
+      this.loadYourOrders();
+    }
+}
 
   // Get user history by email
   getUserHistoryByEmail(email: string): void {
@@ -72,6 +86,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
       (response) => {
         if (response && Array.isArray(response)) {
           this.userHistory = response;
+          this.isLoading = false;
         } else {
           this.userHistory = []; // If no history is returned, reset the array
         }
