@@ -160,9 +160,9 @@ export class ContentComponentComponent
     window.addEventListener('scroll', this.onScroll.bind(this));
     this.loadMoreRewards();
 
-    this.orderService.receiveOrder().subscribe((data: any) => {
-      console.log(data, 'receive order content page'); // Store the message in Msg variable
-    });
+    // this.orderService.receiveOrder().subscribe((data: any) => {
+    //   console.log(data, 'receive order content page'); // Store the message in Msg variable
+    // });
   }
    checkMobileView() {
     this.isMobileView = window.innerWidth <= 768;
@@ -203,10 +203,10 @@ export class ContentComponentComponent
       clearTimeout(this.loadingTimeout);
     }
     // Unsubscribe from the 'orderReceived' event and disconnect the socket
-    if (this.orderSubscription) {
-      this.orderSubscription.unsubscribe();
-    }
-    this.orderService.disconnect();
+    // if (this.orderSubscription) {
+    //   this.orderSubscription.unsubscribe();
+    // }
+    // this.orderService.disconnect();
   }
 
   onScroll() {

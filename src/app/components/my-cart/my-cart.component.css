@@ -88,6 +88,7 @@ mat-card-title {
   padding: 15px;
   background-color: #f9f9f9;
   border-radius: 8px;
+  overflow-y: auto;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -209,6 +210,7 @@ mat-card-title {
   width: 600px;
   max-width: calc(100% - 320px);
   max-height: 500px;
+  min-width: fit-content;
   /* Set a fixed height for the content */
   overflow-y: auto;
   /* Enable vertical scrolling if content exceeds height */
@@ -258,8 +260,8 @@ mat-card-title {
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
+  /* margin-top: 20px; */
 }
 
 mat-horizontal-stepper {

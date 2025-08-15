@@ -20,6 +20,7 @@ import { UserService } from 'src/app/service/user.service';
   ],
 })
 export class MyCartComponent implements OnInit, OnDestroy {
+  
   cartItems: any[] = [];
   favoriteItems: any[] = []; // List of favorite items
   suggestedProducts: any[] = []; // List of suggested products
@@ -30,6 +31,10 @@ export class MyCartComponent implements OnInit, OnDestroy {
   paymentFormGroup: FormGroup;
   currentSuggestionIndex: number = 0; // Track the current suggestion index
   private sliderSubscription!: Subscription; // Subscription for the automatic slider
+  private orderSubscription!: Subscription; // Subscription for order updates
+  isOwner: Boolean = false;
+  user: string = ''; // User email for socket connection
+
 
   constructor(
     private readonly fb: FormBuilder,
@@ -64,17 +69,57 @@ export class MyCartComponent implements OnInit, OnDestroy {
     this.myCartService.fetchCartItems();
     this.myCartService.cartItems$.subscribe((items) => {
       this.cartItems = items;
+      console.log('Cart items updated:', this.cartItems);
       this.generateSuggestions(); // Generate suggestions whenever cart items change
     });
     this.favoriteItems = this.myCartService.getFavoriteItems(); // Fetch favorite items
     this.generateSuggestions(); // Generate suggestions on initialization
     this.startAutoSlider(); // Start the automatic slider
+     this.user = this.userService.getUserDetails().email;
+    console.log('Connecting to socket with user:', this.user);
+    this.orderService.connectToSocket(this.user);
+
+    this.orderSubscription = this.orderService
+      .receiveOrder()
+      .subscribe((order) => {
+        console.log('Order received:', order);
+
+        const productEmails = order.product.map(
+          (res: any) =>res.productOwnerEmail
+        );
+
+        // Check if the current user matches any product owner email
+        if (productEmails.includes(this.user)) {
+          this.isOwner = true;
+          this.myCartService.showMessage(order.message);
+         
+        } else {
+          this.isOwner = false; // Set to false if no match
+          this.myCartService.showMessage('No new orders');
+        }
+
+        // If the order was placed by this user (customer), clear cart and show message
+        if (order.customer && order.customer.email === this.user) {
+          this.myCartService.clearCart();
+          this.closeCartModel();
+          this.myCartService.showMessage(order.message);
+
+        }
+      });
+
+
+      this.orderService.orderError().subscribe((error) => {
+        this.myCartService.showMessage(error.message); // or handle as needed
+        console.error('Order error:', error);
+      });
   }
 
   ngOnDestroy(): void {
     if (this.sliderSubscription) {
       this.sliderSubscription.unsubscribe(); // Unsubscribe from the slider on destroy
     }
+    this.orderSubscription.unsubscribe(); // Unsubscribe from the order updates
+    this.orderService.disconnect(); // Clean up socket connection
   }
 
   selectHeader(header: string): void {
@@ -97,16 +142,24 @@ export class MyCartComponent implements OnInit, OnDestroy {
 
   placeOrder(): void {
     this.showStepper = true; 
+    this.confirmOrder();
   }
 
   closeCartModel(){
     this.myCartService.closeCartModel(); // Call the service to close the cart model
   }
   confirmOrder(): void {
+     const userId = this.userService.getUserDetails().userId || this.userService.getUserDetails().googleId;
     if (this.deliveryFormGroup.valid) {
-      const orderData = [[...this.cartItems], [this.deliveryFormGroup.value]];
+      const orderData = {
+        product: [...this.cartItems],
+        customer: this.deliveryFormGroup.value,
+        userId: userId
+      };
+
       this.orderService.sendOrder(orderData);
-      this.myCartService.showMessage('Order placed successfully');
+      // this.myCartService.showMessage('Order placed successfully');
+     
       this.showStepper = false; // Return to cart after placing order
     } else {
       this.myCartService.showMessage('Error! Please fill all the details');

@@ -13,6 +13,25 @@ import { UserService } from './user.service';
   providedIn: 'root',
 })
 export class MyCartServiceService {
+  /**
+   * Clears the cart for the current user (both backend and local state)
+   */
+  clearCart(): void {
+    const userId = this.userService.getUserDetails().userId || this.userService.getUserDetails().googleId;
+    this.httpClient
+      .delete<any>(`${this.url}/api/cart/clear`, { body: { userId } })
+      .subscribe(
+        (response) => {
+          this.cartItems.next([]);
+          this.myCartValue.set(0);
+          this.showMessage('Cart cleared');
+        },
+        (error) => {
+          this.showMessage('Error clearing cart');
+          console.error('Error clearing cart:', error);
+        }
+      );
+  }
   private readonly cartItems = new BehaviorSubject<any[]>([]);
   private readonly favoriteItems = new BehaviorSubject<any[]>([]); // Add favorite items BehaviorSubject
   cartItems$ = this.cartItems.asObservable();

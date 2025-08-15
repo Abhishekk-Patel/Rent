@@ -35,24 +35,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     const user = this.userService.getUserDetails().email;
 
-    this.orderService.connectToSocket(user);
+    // this.orderService.connectToSocket(user);
 
-    this.orderSubscription = this.orderService
-      .receiveOrder()
-      .subscribe((order) => {
-        const productEmails = order.product.map(
-          (res: any) => res.ProductOwnerEmail
-        );
+    // this.orderSubscription = this.orderService
+    //   .receiveOrder()
+    //   .subscribe((order) => {
+    //     const productEmails = order.product.map(
+    //       (res: any) => res.ProductOwnerEmail
+    //     );
 
-        // Check if the current user matches any product owner email
-        if (productEmails.includes(user)) {
-          this.isOwner = true;
-          this.orderReceived = order.message; // Set the order message
-        } else {
-          this.isOwner = false; // Set to false if no match
-          this.orderReceived = ''; // Optionally clear the orderReceived message
-        }
-      });
+    //     // Check if the current user matches any product owner email
+    //     if (productEmails.includes(user)) {
+    //       this.isOwner = true;
+    //       this.orderReceived = order.message; // Set the order message
+    //     } else {
+    //       this.isOwner = false; // Set to false if no match
+    //       this.orderReceived = ''; // Optionally clear the orderReceived message
+    //     }
+    //   });
   }
 
   toggleDarkMode() {
@@ -89,6 +89,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.orderSubscription.unsubscribe();
+    // this.orderSubscription.unsubscribe();
   }
 }

@@ -7,7 +7,7 @@
 
 <div class="cart-container">
   <!-- Sidebar: Cart and Favorites -->
-  <div class="sidebar">
+  <div class="sidebar"  *ngIf="!showStepper">
     <mat-card class="sidebar-card" (click)="selectHeader('Cart')">
       <div class="sidebar-content">
         <mat-icon color="primary">check_circle</mat-icon>
@@ -21,7 +21,7 @@
       </div>
     </mat-card>
 
-    <mat-card class="suggestions" *ngIf="suggestedProducts.length > 0"
+    <mat-card class="suggestions" *ngIf="(suggestedProducts.length > 0) || !showStepper"
       (mouseenter)="pauseAutoSlider()" (mouseleave)="resumeAutoSlider()">
       <!-- Title & Navigation Icons -->
       <div class="suggestions-header">
@@ -118,7 +118,7 @@
             <div *ngFor="let item of cartItems" class="cart-item">
               <img [src]="item.display_img_urls[0]" alt="{{ item.productName }}" class="product-image">
               <div class="product-details">
-                <p><strong>Name:</strong> {{ item.productName }}</p>
+                <p><strong>Product Name:</strong> {{ item.productName }}</p>
                 <p><strong>Rent:</strong> {{ item.productRent | currency:'INR' }}</p>
               </div>
             </div>
@@ -165,7 +165,7 @@
             <p><strong>Rental Period:</strong> {{ deliveryFormGroup.get('rentalPeriod.start')?.value | date }} - {{
               deliveryFormGroup.get('rentalPeriod.end')?.value | date }}</p>
             <button mat-button matStepperPrevious>Back</button>
-            <button mat-button (click)="placeOrder()">Place Order</button>
+            <button mat-button (click)="placeOrder()">Confirm Order</button>
           </mat-step>
         </mat-horizontal-stepper>
       </div>
