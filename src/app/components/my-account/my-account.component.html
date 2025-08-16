@@ -8,19 +8,39 @@
       <div class="skeleton skeleton-line short"></div>
     </div>
     <ng-template #userDetailsBlock>
-      <div class="user-details">
-        <h2>User Details</h2>
-        <div class="detail">
-          <label>Username:</label>
-          <span>{{ user?.username }}</span>
+      <div class="user-details redesigned-user-details">
+        <div class="profile-picture-only">
+          <img [src]="user?.profilePicture || this.userService.getUserDetails()?.profilePicture || 'assets/default-profile.png'" alt="Profile Picture" class="profile-picture-img-large">
         </div>
-        <div class="detail">
-          <label>Email:</label>
-          <span>{{ user?.email }}</span>
-        </div>
-        <div class="detail">
-          <label>Mobile Number:</label>
-          <span>{{ user?.mobileNumber }}</span>
+        <div class="user-info-centered">
+          <div class="user-header-row">
+            <h2>{{ userEditMode ? 'Edit Details' : user?.username }}</h2>
+            <button *ngIf="!userEditMode" mat-icon-button class="edit-user-btn" (click)="startEditUser()" title="Edit Details">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+          <form *ngIf="userEditMode" (ngSubmit)="saveUserDetails()" class="edit-user-form">
+            <div class="edit-field">
+              <mat-icon>person</mat-icon>
+              <input [(ngModel)]="editUser.username" name="username" required placeholder="Username" />
+            </div>
+            <div class="edit-field">
+              <mat-icon>email</mat-icon>
+              <input [(ngModel)]="editUser.email" name="email" required placeholder="Email" disabled="true" style="cursor: not-allowed;"/>
+            </div>
+            <div class="edit-field">
+              <mat-icon>phone</mat-icon>
+              <input [(ngModel)]="editUser.mobileNumber" name="mobileNumber" required placeholder="Mobile" />
+            </div>
+            <div class="edit-actions">
+              <button mat-icon-button type="submit" title="Save"><mat-icon>check</mat-icon></button>
+              <button mat-icon-button type="button" (click)="cancelEditUser()" title="Cancel"><mat-icon>close</mat-icon></button>
+            </div>
+          </form>
+          <ng-container *ngIf="!userEditMode">
+            <div class="detail"><label>Email:</label> <span>{{ user?.email }}</span></div>
+            <div class="detail"><label>Mobile:</label> <span>{{ user?.mobileNumber }}</span></div>
+          </ng-container>
         </div>
       </div>
     </ng-template>
@@ -54,14 +74,26 @@
               <div class="item-details">
                 <img [src]="item.images[0]?.url" alt="{{ item.productName }}" class="product-image">
                 <div class="item-info">
-                  <h3><strong>Product Name:</strong> {{ item.productName }}</h3>
-                  <p><strong>Product Description:</strong>{{ item.productDescription }}</p>
-                  <p><strong>Price:</strong> {{ item.productRent }}</p>
-                  <p><strong>Product Listed Date:</strong> {{ item.productListedDate ? (item.productListedDate | date:'short') : 'NA' }}</p>
-                  <div class="action-buttons">
-                    <button (click)="editHistoryItem(item)" class="edit-btn">Edit</button>
-                    <button (click)="deleteHistoryItem(item)" class="delete-btn">Delete</button>
-                  </div>
+                  <ng-container *ngIf="item.editMode; else viewMode">
+                    <h3><strong>Product Name:</strong> <input [(ngModel)]="item.productName" /></h3>
+                    <p><strong>Product Description:</strong> <input [(ngModel)]="item.productDescription" /></p>
+                    <p><strong>Price:</strong> <input type="number" [(ngModel)]="item.productRent" /></p>
+                    <p><strong>Product Listed Date:</strong> <input type="date" [(ngModel)]="item.productListedDate" disabled="true" style="cursor: not-allowed;"/></p>
+                    <div class="action-buttons">
+                      <button (click)="this.onEditProduct(item._id, item);" class="save-btn">Save</button>
+                      <button (click)="item.editMode = false" class="cancel-btn">Cancel</button>
+                    </div>
+                  </ng-container>
+                  <ng-template #viewMode>
+                    <h3><strong>Product Name:</strong> {{ item.productName }}</h3>
+                    <p><strong>Product Description:</strong>{{ item.productDescription }}</p>
+                    <p><strong>Price:</strong> {{ item.productRent }}</p>
+                    <p><strong>Product Listed Date:</strong> {{ item.productListedDate ? (item.productListedDate | date:'short') : 'NA' }}</p>
+                    <div class="action-buttons">
+                      <button (click)="item.editMode = true" class="edit-btn">Edit</button>
+                      <button (click)="deleteHistoryItem(item)" class="delete-btn">Delete</button>
+                    </div>
+                  </ng-template>
                 </div>
               </div>
             </div>

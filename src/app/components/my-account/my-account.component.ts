@@ -14,20 +14,18 @@ import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
   styleUrls: ['./my-account.component.css'],
 })
 export class MyAccountComponent implements OnInit, OnDestroy {
+  userEditMode = false;
+  editUser: any = {};
   user: any;
   userHistory: any[] = [];
   receivedOrders: any[] = [];
   yourOrders: any[] = [];
   orderSubscription: Subscription | null = null;
-
   isLoading: boolean = true;
-
   getOrderData$ = this.store.select('orderData');
 
-
-
   constructor(
-    private userService: UserService,
+    public userService: UserService,
     public router: Router,
     public dataService: DataService,
     private orderService: OrderService,
@@ -41,9 +39,40 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Start editing user details
+  startEditUser() {
+    this.editUser = { ...this.user };
+    this.userEditMode = true;
+  }
+
+  // Save user details (simulate update, in real app call service)
+  saveUserDetails() {
+    this.user = { ...this.editUser };
+    console.log(this.user,"edited user deatils")
+    this.userEditMode = false;
+    this.userService.editUser((this.user._id || this.user.userId), this.user).subscribe(
+      (response: any) => {
+        this.userService.saveUserDetails(response.User)
+        this.myCartService.showMessage(response.message);
+      },
+      (error) => {
+        console.error('Error updating user details:', error);
+      }
+    );
+  
+    // Optionally, update in userService or backend here
+  }
+
+  // Cancel editing
+  cancelEditUser() {
+    this.userEditMode = false;
+  }
+
+
   ngOnInit(): void {
     // Get user details when the component initializes
     this.user = this.userService.getUserDetails();
+    console.log('User details:', this.user);
 
     // Simulate loading for demo; in real app, set isLoading = false after data loads
     setTimeout(() => {
@@ -79,6 +108,22 @@ export class MyAccountComponent implements OnInit, OnDestroy {
       this.loadYourOrders();
     }
 }
+
+onEditProduct(productId: string, updatedData: any) {
+    console.log('Editing product with ID:', productId, 'and data:', updatedData);
+    this.dataService.editProduct(productId, updatedData).subscribe(
+      (response: any) => {
+        this.myCartService.showMessage(response.message);
+        // Close edit mode after successful save
+        if (updatedData && typeof updatedData === 'object') {
+          updatedData.editMode = false;
+        }
+      },
+      (error) => {
+        console.error('Update failed:', error);
+      }
+    );
+  }
 
   // Get user history by email
   getUserHistoryByEmail(email: string): void {
@@ -161,10 +206,10 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     }
   }
 
-  editHistoryItem(item: any): void {
-    // Navigate to the edit page with the item details
-    // this.router.navigate(['/edit-product', item.pk]);
-  }
+  // editHistoryItem(item: any): void {
+  //   console.log('Editing item:', item);
+  //  this.onEditProduct(item._id, item);
+  // }
 
   deleteHistoryItem(item: any): void {
     // Remove the item from the user history

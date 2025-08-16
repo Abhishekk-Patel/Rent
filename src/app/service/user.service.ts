@@ -8,17 +8,19 @@ import { map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class UserService {
-  private user: any = null;
+  public user: any = null;
   private userHistory: any[] = [];
+  public googleProfilePicture: string = '';
 
   private isLoggedInSubject = new BehaviorSubject<boolean>(!!this.getUserFromStorage());
   isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
-  private loginApiUrl = 'https://rent-be.onrender.com/users/login';
-  //  private loginApiUrl = 'http://localhost:3000/users/login';    // local url
-  private signUpApiUrl = 'https://rent-be.onrender.com/users/register';
-  //       signUpApiUrl = 'http://localhost:3000/users/register';   // local url
-  url = 'https://rent-be.onrender.com';
+  //private loginApiUrl = 'https://rent-be.onrender.com/users/login';
+    private loginApiUrl = 'http://localhost:3000/users/login';    // local url
+  //private signUpApiUrl = 'https://rent-be.onrender.com/users/register';
+         signUpApiUrl = 'http://localhost:3000/users/register';   // local url
+ // url = 'https://rent-be.onrender.com';
+  url = 'http://localhost:3000';
   constructor(private http: HttpClient) {
     this.loadUserDetails();
     this.loadUserHistory(); // Fix: Load user history in the constructor
@@ -76,9 +78,14 @@ export class UserService {
     this.saveUserHistory();
   }
 
-  private saveUserDetails() {
-    localStorage.setItem('userDetails', JSON.stringify(this.user));
+   saveUserDetails(user?: any ) {
+    console.log('Saving user details:', user);
+    localStorage.setItem('userDetails', JSON.stringify(user || this.user));
   }
+
+  editUser(userId: string, userData: any) {
+  return this.http.put(`http://localhost:3000/users/edit/${userId}`, userData);
+}
 
   private loadUserDetails() {
     const user = localStorage.getItem('userDetails');

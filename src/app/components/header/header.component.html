@@ -68,7 +68,12 @@
         [matMenuTriggerFor]="userMenu"
         aria-label="Profile"
       >
-        <mat-icon>account_circle</mat-icon>
+        <ng-container *ngIf="this.userService.getUserDetails().profilePicture; else defaultProfilePicture">
+          <img [src]="this.userService.getUserDetails().profilePicture" alt="" class="profile-picture" />
+        </ng-container>
+        <ng-template #defaultProfilePicture>
+          <mat-icon>account_circle</mat-icon>
+        </ng-template>
       </button>
     </div>
   </div>

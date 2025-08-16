@@ -255,16 +255,16 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   handleCredentialResponse(response: any): void {
+    console.log(response,'response login ')
     this.isLoading = true;
     // Send the token to your backend
     // https://rent-be.onrender.com/
     //'http://localhost:3000
-    this.http.post('https://rent-be.onrender.com/auth/google/token', { token: response.credential })
+    this.http.post('http://localhost:3000/auth/google/token', { token: response.credential })
       .subscribe(
         (backendResponse: any) => {
           // Use UserService to handle Google login backend response
           const loginSuccess = this.userService.loginWithGoogleBackendResponse(backendResponse);
-          console.log(loginSuccess, 'loginsuccess');
           this.isLoading = false;
           if (loginSuccess) {
             this.user = this.userService.getUserDetails();
