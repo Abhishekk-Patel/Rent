@@ -79,6 +79,14 @@
       <ng-container *ngIf="messages.length > 0; else noMessages">
         <div *ngFor="let msg of messages" class="chat-message" [ngClass]="msg.senderId === currentUserId ? 'self' : 'user'">
           <span class="message-text">{{ msg.text }}</span>
+          <ng-container *ngIf="msg.attachmentUrl">
+            <div *ngIf="msg.attachmentType === 'image'">
+              <img [src]="msg.attachmentUrl" alt="attachment" style="max-width:120px; max-height:120px; margin:6px 0; border-radius:8px; border:1px solid #eee;" />
+            </div>
+            <div *ngIf="msg.attachmentType === 'file'">
+              <a [href]="msg.attachmentUrl" target="_blank" style="color:#1976d2; text-decoration:underline;">Download Attachment</a>
+            </div>
+          </ng-container>
           <span class="message-time">{{ msg.time }}</span>
         </div>
       </ng-container>
@@ -86,7 +94,27 @@
         <div style="text-align:center; color:#888; padding: 32px 0; font-size:1.1rem;">No messages yet</div>
       </ng-template>
     </div>
-    <div class="chat-input">
+    <div class="chat-input" style="display: flex; align-items: center; gap: 8px;">
+      <!-- Emoji picker toggle -->
+      <button type="button" class="emoji-btn" (click)="showEmojiPicker = !showEmojiPicker" [disabled]="!selectedChat" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">😊</button>
+      <!-- Emoji picker (simple) -->
+      <div *ngIf="showEmojiPicker" class="emoji-picker-popup" style="position:absolute; bottom:48px; left:16px; background:#fff; border:1px solid #ccc; border-radius:8px; padding:8px; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.12);">
+        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('😀')">😀</span>
+        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('😂')">😂</span>
+        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('😍')">😍</span>
+        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('👍')">👍</span>
+        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('🙏')">🙏</span>
+        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('🎉')">🎉</span>
+        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('❤️')">❤️</span>
+        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('😎')">😎</span>
+        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('😢')">😢</span>
+        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('🤔')">🤔</span>
+      </div>
+      <!-- File attachment input -->
+      <label style="margin:0; cursor:pointer;">
+        <input type="file" (change)="onFileSelected($event)" style="display:none;" [disabled]="!selectedChat" />
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" style="vertical-align:middle;"><path d="M16.5 13.5V7a4.5 4.5 0 0 0-9 0v10a4.5 4.5 0 0 0 9 0V9.5" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="17.5" r="1.5" fill="#888"/></svg>
+      </label>
       <input
         type="text"
         placeholder="Type your message..."
@@ -94,6 +122,7 @@
         (keydown)="onInputKeydown($event)"
         aria-label="Type your message"
         [disabled]="!selectedChat"
+        style="flex:1; min-width:0;"
       />
       <button class="send-btn" aria-label="Send" (click)="sendMessage()" [disabled]="!selectedChat">
         <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
