@@ -1,4 +1,3 @@
-
 import {
   Component,
   ElementRef,
@@ -14,13 +13,14 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { io, Socket } from 'socket.io-client';
 import { UserService } from '../service/user.service';
 import { DataService } from '../service/data.service';
-// import { NotificationService } from '../service/notification.service';
-
+import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 interface ChatSummary {
   productId: string;
   ownerId: string;
   buyerId?: string;
   ownerName?: string;
+  ownerEmail?: string;
+  avatarUrl?: string;
   productName?: string;
   productImage?: string;
   lastMessage?: string;
@@ -47,6 +47,22 @@ interface ChatMessage {
   styleUrls: ['./unified-chat.component.css'],
 })
 export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
+  // Right-side profile panel state
+  selectedProfile: ChatSummary | null = null;
+  // Default avatar image (can be replaced with a real asset)
+  defaultAvatar =
+    'https://ui-avatars.com/api/?name=User&background=1976d2&color=fff&size=64';
+  // Track which chat's popover is open
+  popoverChat: ChatSummary | null = null;
+  // Open the right-side profile panel
+  openProfilePanel(chat: ChatSummary) {
+    this.selectedProfile = chat;
+  }
+
+  // Close the right-side profile panel
+  closeProfilePanel() {
+    this.selectedProfile = null;
+  }
   isChatListLoading = false;
   isMessagesLoading = false;
   socket!: Socket;
@@ -78,6 +94,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     public userService: UserService,
     public dataService: DataService,
+    public myCartService: MyCartServiceService,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private http: HttpClient
   ) {}
@@ -168,7 +185,14 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
         setTimeout(() => this.scrollToBottom(), 0);
       } else {
         // Message for another chat: set hasNewMessage on that chat
-        const chat = this.chatList.find(c => this.getChatId(c.ownerId, c.buyerId || this.buyerId, c.productId) === incomingChatId);
+        const chat = this.chatList.find(
+          (c) =>
+            this.getChatId(
+              c.ownerId,
+              c.buyerId || this.buyerId,
+              c.productId
+            ) === incomingChatId
+        );
         if (chat) {
           chat.hasNewMessage = true;
         }
@@ -182,7 +206,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.onlineUsers.has(userId);
   }
 
-   // Helper to check if a chat is selected (compare by IDs, not object reference)
+  // Helper to check if a chat is selected (compare by IDs, not object reference)
   isSelectedChat(chat: ChatSummary): boolean {
     if (!this.selectedChat) return false;
     return (
@@ -212,25 +236,26 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .subscribe({
         next: (list) => {
-            // console.log(list,"list")
-                 
+          // console.log(list,"list")
 
-            // const productIds = list.map(chat => chat.productId);
-            // this.dataService.getProductById(productIds as any).subscribe((products) => {
-            //     console.log(products, "products 123");
-            // });
-            // // Example: fetch product for the first chat in the list (if any)
-            // if (list.length > 0) {
-            //   this.dataService.getProductById(list[0].productId).subscribe((product) => {
-            //     console.log(product,"product")
-            //   });
-            // }
-
+          // const productIds = list.map(chat => chat.productId);
+          // this.dataService.getProductById(productIds as any).subscribe((products) => {
+          //     console.log(products, "products 123");
+          // });
+          // // Example: fetch product for the first chat in the list (if any)
+          // if (list.length > 0) {
+          //   this.dataService.getProductById(list[0].productId).subscribe((product) => {
+          //     console.log(product,"product")
+          //   });
+          // }
 
           this.chatList = list.map((chat) => ({
             ...chat,
             googleId: this.currentUserId,
             ownerId: chat.ownerId,
+            // Example: fallback avatar/email logic, replace with real data if available
+            avatarUrl: chat.avatarUrl || (chat as any).ownerAvatar || '',
+            ownerEmail: chat.ownerEmail || (chat as any).email || '',
           }));
           if (this.chatList.length) {
             const firstChat = this.chatList[0];
@@ -260,7 +285,10 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Find chat with exact productId, ownerId, buyerId
     let foundChat = this.chatList.find(
-      c => c.productId === chat.productId && c.ownerId === chat.ownerId && c.buyerId === (chat.buyerId || this.buyerId)
+      (c) =>
+        c.productId === chat.productId &&
+        c.ownerId === chat.ownerId &&
+        c.buyerId === (chat.buyerId || this.buyerId)
     );
 
     if (!foundChat) {
@@ -287,7 +315,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       ownerId: foundChat.ownerId,
     };
     // Clear new message indicator for all matching chats when chat is opened
-    this.chatList.forEach(c => {
+    this.chatList.forEach((c) => {
       if (
         c.productId === foundChat!.productId &&
         c.ownerId === foundChat!.ownerId &&
@@ -376,9 +404,13 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       const formData = new FormData();
       formData.append('file', this.selectedFile);
       try {
-        const uploadRes: any = await this.http.post(`${environment.apiBaseUrl}/api/upload`, formData).toPromise();
+        const uploadRes: any = await this.http
+          .post(`${environment.apiBaseUrl}/api/upload`, formData)
+          .toPromise();
         attachmentUrl = uploadRes.url;
-        attachmentType = this.selectedFile.type.startsWith('image') ? 'image' : 'file';
+        attachmentType = this.selectedFile.type.startsWith('image')
+          ? 'image'
+          : 'file';
       } catch (e) {
         // Handle upload error
         attachmentUrl = '';
@@ -400,7 +432,10 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     const lastMsg = this.messages[this.messages.length - 1];
     const isDuplicate =
-      lastMsg && lastMsg.text === text && lastMsg.senderId === senderId && (!attachmentUrl || lastMsg.attachmentUrl === attachmentUrl);
+      lastMsg &&
+      lastMsg.text === text &&
+      lastMsg.senderId === senderId &&
+      (!attachmentUrl || lastMsg.attachmentUrl === attachmentUrl);
     if (!isDuplicate) {
       this.messages.push({
         text,
@@ -421,7 +456,6 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.newMessage = '';
     this.selectedFile = null;
   }
-  
 
   // Helper to generate chatId from sorted user ids + product id
   getChatId(ownerId: string, buyerId: string, productId: string): string {
@@ -446,4 +480,3 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.socket?.disconnect();
   }
 }
-

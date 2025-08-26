@@ -1,119 +1,132 @@
-<div class="unified-chat-container">
-  <!-- Progress bar for chat list loading -->
-  <mat-progress-bar *ngIf="isChatListLoading" mode="determinate" color="primary" [value]="100" style="position: absolute; top: 0; left: 0; width: 100%; z-index: 10;"></mat-progress-bar>
-  <div class="chat-list-container">
-    <h3 class="chat-list-title">Chats</h3>
-    <div *ngIf="chatList.length === 0" class="chat-list-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 0 24px 0;">
-      <div style="margin-bottom: 14px;">
+<div class="unified-chat-advanced">
+  <button class="chat-close-btn" (click)="this.myCartService.closeCartModel()" aria-label="Close chat">
+    <mat-icon>home</mat-icon>
+  </button>
+  <aside class="chat-list-container">
+    <header class="chat-list-header">
+      <h3 class="chat-list-title">Chats</h3>
+    </header>
+    <div *ngIf="chatList.length === 0" class="chat-list-empty">
+      <div class="chat-list-empty-icon">
         <svg width="48" height="48" fill="none" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="10" fill="#f3f3f3"/>
           <path d="M8 10h8M8 14h4" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/>
           <ellipse cx="12" cy="18" rx="3" ry="1" fill="#eee"/>
         </svg>
       </div>
-      <div style="font-size: 1.1rem; font-weight: 600; color: #444; margin-bottom: 4px;">No Chats Yet</div>
-      <div style="font-size: 0.97rem; color: #888;">You have no conversations yet.</div>
+      <div class="chat-list-empty-title">No Chats Yet</div>
+      <div class="chat-list-empty-desc">You have no conversations yet.</div>
     </div>
-  <div *ngFor="let chat of chatList" class="chat-list-item" [class.selected]="isSelectedChat(chat)" (click)="selectChat(chat)">
-    <div class="chat-list-img-wrapper" style="position:relative;">
-      <img [src]="chat.productImage" alt="Product" class="chat-list-img" />
-      <span *ngIf="chat.hasNewMessage" class="chat-new-indicator"></span>
-      <!-- Online/offline status dot for owner -->
-      <span
-        class="chat-list-status-dot"
-        [ngClass]="isUserOnline(chat.ownerId) ? 'online' : 'offline'"
-        title="{{ isUserOnline(chat.ownerId) ? 'Online' : 'Offline' }}"
-      ></span>
-    </div>
-    <div class="chat-list-info">
-      <div class="chat-list-product">{{ chat.productName }}</div>
-      <div class="chat-list-owner">
-        with {{ chat.ownerName }}
-        <span *ngIf="isUserOnline(chat.ownerId)" class="chat-list-status-text online">●</span>
-        <span *ngIf="!isUserOnline(chat.ownerId)" class="chat-list-status-text offline">●</span>
-      </div>
-      <div class="chat-list-last">{{ chat.lastMessage }}</div>
-    </div>
-    <div class="chat-list-time">{{ chat.lastTime }}</div>
-  </div>
-  </div>
-  <div class="chat-dialog-container" *ngIf="selectedChat; else noChatSelected">
-    <!-- Progress bar for messages loading -->
-    <mat-progress-bar *ngIf="isMessagesLoading" mode="determinate" color="accent" [value]="100" style="position: absolute; top: 0; left: 0; width: 100%; z-index: 10;"></mat-progress-bar>
-    <div class="chat-dialog-header">
-      <img [src]="selectedChat.productImage" alt="Product" class="chat-dialog-img" />
-      <div class="chat-dialog-info">
-        <div class="chat-dialog-product">{{ selectedChat.productName }}</div>
-        <div class="chat-dialog-owner">with {{ selectedChat.ownerName }}</div>
-      </div>
-    </div>
-    <div class="chat-messages" #messagesContainer>
-      <ng-container *ngIf="messages.length > 0; else noMessages">
-        <div *ngFor="let msg of messages" class="chat-message" [ngClass]="msg.senderId === currentUserId ? 'self' : 'user'">
-          <span class="message-text">{{ msg.text }}</span>
-          <ng-container *ngIf="msg.attachmentUrl">
-            <div *ngIf="msg.attachmentType === 'image'">
-              <img [src]="msg.attachmentUrl" alt="attachment" style="max-width:120px; max-height:120px; margin:6px 0; border-radius:8px; border:1px solid #eee;" />
+    <div class="chat-list-scroll">
+      <ng-container *ngFor="let chat of chatList">
+        <div class="chat-list-item" [class.selected]="isSelectedChat(chat)" (click)="selectChat(chat)">
+          <div class="chat-list-img-wrapper">
+            <img [src]="chat.avatarUrl || defaultAvatar" alt="User Avatar" class="chat-user-avatar" (click)="openProfilePanel(chat); $event.stopPropagation()" tabindex="0" />
+            <img [src]="chat.productImage" alt="Product" class="chat-list-img" />
+            <span *ngIf="chat.hasNewMessage" class="chat-new-indicator"></span>
+            <span class="chat-list-status-dot" [ngClass]="isUserOnline(chat.ownerId) ? 'online' : 'offline'" title="{{ isUserOnline(chat.ownerId) ? 'Online' : 'Offline' }}"></span>
+          </div>
+          <div class="chat-list-info">
+            <div class="chat-list-product">{{ chat.productName }}</div>
+            <div class="chat-list-owner">
+              with {{ chat.ownerName }}
+              <span *ngIf="isUserOnline(chat.ownerId)" class="chat-list-status-text online">●</span>
+              <span *ngIf="!isUserOnline(chat.ownerId)" class="chat-list-status-text offline">●</span>
             </div>
-            <div *ngIf="msg.attachmentType === 'file'">
-              <a [href]="msg.attachmentUrl" target="_blank" style="color:#1976d2; text-decoration:underline;">Download Attachment</a>
-            </div>
-          </ng-container>
-          <span class="message-time">{{ msg.time }}</span>
+            <div class="chat-list-last">{{ chat.lastMessage }}</div>
+          </div>
+          <div class="chat-list-time">{{ chat.lastTime }}</div>
         </div>
       </ng-container>
-      <ng-template #noMessages>
-        <div style="text-align:center; color:#888; padding: 32px 0; font-size:1.1rem;">No messages yet</div>
-      </ng-template>
     </div>
-    <div class="chat-input" style="display: flex; align-items: center; gap: 8px;">
-      <!-- Emoji picker toggle -->
-      <button type="button" class="emoji-btn" (click)="showEmojiPicker = !showEmojiPicker" [disabled]="!selectedChat" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">😊</button>
-      <!-- Emoji picker (simple) -->
-      <div *ngIf="showEmojiPicker" class="emoji-picker-popup" style="position:absolute; bottom:48px; left:16px; background:#fff; border:1px solid #ccc; border-radius:8px; padding:8px; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.12);">
-        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('😀')">😀</span>
-        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('😂')">😂</span>
-        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('😍')">😍</span>
-        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('👍')">👍</span>
-        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('🙏')">🙏</span>
-        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('🎉')">🎉</span>
-        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('❤️')">❤️</span>
-        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('😎')">😎</span>
-        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('😢')">😢</span>
-        <span style="font-size:1.5rem; cursor:pointer;" (click)="addEmoji('🤔')">🤔</span>
+  </aside>
+  <main class="chat-main-panel" [class.with-profile-panel]="selectedProfile">
+    <section *ngIf="selectedChat; else noChatSelected" class="chat-dialog-container">
+      <header class="chat-dialog-header">
+        <img [src]="selectedChat.productImage" alt="Product" class="chat-dialog-img" />
+        <div class="chat-dialog-info">
+          <div class="chat-dialog-product">{{ selectedChat.productName }}</div>
+          <div class="chat-dialog-owner">with {{ selectedChat.ownerName }}</div>
+        </div>
+      </header>
+      <mat-progress-bar *ngIf="isMessagesLoading" mode="determinate" color="accent" [value]="100" class="chat-progress-bar"></mat-progress-bar>
+      <div class="chat-messages" #messagesContainer>
+        <ng-container *ngIf="messages.length > 0; else noMessages">
+          <div *ngFor="let msg of messages" class="chat-message" [ngClass]="msg.senderId === currentUserId ? 'self' : 'user'">
+            <span class="message-text">{{ msg.text }}</span>
+            <ng-container *ngIf="msg.attachmentUrl">
+              <div *ngIf="msg.attachmentType === 'image'">
+                <img [src]="msg.attachmentUrl" alt="attachment" class="chat-attachment-img" />
+              </div>
+              <div *ngIf="msg.attachmentType === 'file'">
+                <a [href]="msg.attachmentUrl" target="_blank" class="chat-attachment-link">Download Attachment</a>
+              </div>
+            </ng-container>
+            <span class="message-time">{{ msg.time }}</span>
+          </div>
+        </ng-container>
+        <ng-template #noMessages>
+          <div class="chat-no-messages">No messages yet</div>
+        </ng-template>
       </div>
-      <!-- File attachment input -->
-      <label style="margin:0; cursor:pointer;">
-        <input type="file" (change)="onFileSelected($event)" style="display:none;" [disabled]="!selectedChat" />
-        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" style="vertical-align:middle;"><path d="M16.5 13.5V7a4.5 4.5 0 0 0-9 0v10a4.5 4.5 0 0 0 9 0V9.5" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="17.5" r="1.5" fill="#888"/></svg>
-      </label>
-      <input
-        type="text"
-        placeholder="Type your message..."
-        [(ngModel)]="newMessage"
-        (keydown)="onInputKeydown($event)"
-        aria-label="Type your message"
-        [disabled]="!selectedChat"
-        style="flex:1; min-width:0;"
-      />
-      <button class="send-btn" aria-label="Send" (click)="sendMessage()" [disabled]="!selectedChat">
-        <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-          <path d="M2 21l21-9-21-9v7l15 2-15 2v7z" fill="currentColor"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-  <ng-template #noChatSelected>
-    <div class="chat-dialog-container chat-dialog-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 350px;">
-      <div style="margin-bottom: 18px;">
-        <svg width="64" height="64" fill="none" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10" fill="#f3f3f3"/>
-          <path d="M7 10h10M7 14h6" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/>
-          <ellipse cx="12" cy="17" rx="4" ry="1.5" fill="#eee"/>
-        </svg>
+      <footer class="chat-input-bar">
+        <button type="button" class="emoji-btn" (click)="showEmojiPicker = !showEmojiPicker" [disabled]="!selectedChat" aria-label="Emoji">😊</button>
+        <div *ngIf="showEmojiPicker" class="emoji-picker-popup">
+          <span (click)="addEmoji('😀')">😀</span>
+          <span (click)="addEmoji('😂')">😂</span>
+          <span (click)="addEmoji('😍')">😍</span>
+          <span (click)="addEmoji('👍')">👍</span>
+          <span (click)="addEmoji('🙏')">🙏</span>
+          <span (click)="addEmoji('🎉')">🎉</span>
+          <span (click)="addEmoji('❤️')">❤️</span>
+          <span (click)="addEmoji('😎')">😎</span>
+          <span (click)="addEmoji('😢')">😢</span>
+          <span (click)="addEmoji('🤔')">🤔</span>
+        </div>
+        <label class="chat-attach-label">
+          <input type="file" (change)="onFileSelected($event)" [disabled]="!selectedChat" />
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path d="M16.5 13.5V7a4.5 4.5 0 0 0-9 0v10a4.5 4.5 0 0 0 9 0V9.5" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="17.5" r="1.5" fill="#888"/></svg>
+        </label>
+        <input type="text" placeholder="Type your message..." [(ngModel)]="newMessage" (keydown)="onInputKeydown($event)" aria-label="Type your message" [disabled]="!selectedChat" class="chat-input-text" />
+        <button class="send-btn" aria-label="Send" (click)="sendMessage()" [disabled]="!selectedChat">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+            <path d="M2 21l21-9-21-9v7l15 2-15 2v7z" fill="currentColor"/>
+          </svg>
+        </button>
+      </footer>
+    </section>
+    <ng-template #noChatSelected>
+      <section class="chat-dialog-container chat-dialog-empty">
+        <div class="chat-empty-icon">
+          <svg width="64" height="64" fill="none" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" fill="#f3f3f3"/>
+            <path d="M7 10h10M7 14h6" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/>
+            <ellipse cx="12" cy="17" rx="4" ry="1.5" fill="#eee"/>
+          </svg>
+        </div>
+        <div class="chat-empty-title">No Chat Selected</div>
+        <div class="chat-empty-desc">Select a chat from the list to start messaging.</div>
+      </section>
+    </ng-template>
+  </main>
+  <aside *ngIf="selectedProfile" class="profile-side-panel open">
+    <button class="profile-panel-close" (click)="closeProfilePanel()" aria-label="Close profile">&times;</button>
+    <div class="profile-panel-header">
+      <img [src]="selectedProfile.avatarUrl || defaultAvatar" alt="User Avatar" class="profile-panel-avatar" />
+      <div class="profile-panel-name">{{ selectedProfile.ownerName }}</div>
+      <div class="profile-panel-status">
+        <span [ngClass]="isUserOnline(selectedProfile.ownerId) ? 'online' : 'offline'" class="profile-panel-status-dot"></span>
+        {{ isUserOnline(selectedProfile.ownerId) ? 'Online' : 'Offline' }}
       </div>
-      <div style="font-size: 1.3rem; font-weight: 600; color: #444; margin-bottom: 6px;">No Chat Selected</div>
-      <div style="font-size: 1rem; color: #888;">Select a chat from the list to start messaging.</div>
     </div>
-  </ng-template>
+    <div class="profile-panel-details">
+      <div class="profile-panel-email"><b>Email:</b> {{ selectedProfile.ownerEmail }}</div>
+      <div *ngIf="selectedProfile.productName"><b>Product:</b> {{ selectedProfile.productName }}</div>
+      <div *ngIf="selectedProfile.productImage">
+        <img [src]="selectedProfile.productImage" alt="Product" class="profile-panel-product-img" />
+      </div>
+      <!-- Add more user/product details here as needed -->
+    </div>
+  </aside>
 </div>
+

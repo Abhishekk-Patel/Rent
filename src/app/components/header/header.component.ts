@@ -48,10 +48,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
 openMessageDialog() {
   this.notificationService.clear();
   this.dialog.open(UnifiedChatComponent, {
-    position: { right: '0' },
-    width: '900px',
+    position: { top: '0', left: '0' },
+    width: '100vw',
     height: '100vh',
-    panelClass: 'chat-dialog-panel',
+    maxWidth: '100vw',
+    maxHeight: '100vh',
+    panelClass: 'chat-dialog-fullscreen',
     autoFocus: false
   });
 }
