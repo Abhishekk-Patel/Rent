@@ -36,6 +36,8 @@ interface ChatMessage {
   receiverId: string;
   productId: string;
   chatId: string;
+  attachmentUrl?: string; // For file/image attachments
+  attachmentType?: string; // e.g. 'image', 'file', etc.
 }
 
 @Component({
@@ -52,6 +54,21 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedChat: ChatSummary | null = null;
   messages: ChatMessage[] = [];
   newMessage = '';
+  selectedFile: File | null = null;
+  showEmojiPicker = false;
+  // Handle file input change
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+    }
+  }
+
+  // Handle emoji selection
+  addEmoji(emoji: string) {
+    this.newMessage += emoji;
+    this.showEmojiPicker = false;
+  }
   buyerId = '';
   onlineUsers: Set<string> = new Set(); // Track online user IDs
 
@@ -320,9 +337,9 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
         },
       });
   }
-  sendMessage() {
+  async sendMessage() {
     const text = this.newMessage.trim();
-    if (!this.selectedChat || !text) {
+    if (!this.selectedChat || (!text && !this.selectedFile)) {
       return;
     }
     const { ownerId, buyerId, productId } = this.selectedChat;
@@ -341,7 +358,25 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       this.selectedChat.buyerId,
       productId
     );
-    const msgPayload = {
+
+    let attachmentUrl = '';
+    let attachmentType = '';
+    if (this.selectedFile) {
+      // Upload file to server (implement /api/upload endpoint in BE)
+      const formData = new FormData();
+      formData.append('file', this.selectedFile);
+      try {
+        const uploadRes: any = await this.http.post(`${environment.apiBaseUrl}/api/upload`, formData).toPromise();
+        attachmentUrl = uploadRes.url;
+        attachmentType = this.selectedFile.type.startsWith('image') ? 'image' : 'file';
+      } catch (e) {
+        // Handle upload error
+        attachmentUrl = '';
+        attachmentType = '';
+      }
+    }
+
+    const msgPayload: any = {
       chatId,
       senderId,
       senderGoogleId: this.currentUserId,
@@ -350,10 +385,12 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       productId,
       message: text,
       timestamp: Date.now(),
+      attachmentUrl,
+      attachmentType,
     };
     const lastMsg = this.messages[this.messages.length - 1];
     const isDuplicate =
-      lastMsg && lastMsg.text === text && lastMsg.senderId === senderId;
+      lastMsg && lastMsg.text === text && lastMsg.senderId === senderId && (!attachmentUrl || lastMsg.attachmentUrl === attachmentUrl);
     if (!isDuplicate) {
       this.messages.push({
         text,
@@ -365,11 +402,14 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
         receiverId,
         productId,
         chatId,
+        attachmentUrl,
+        attachmentType,
       });
       setTimeout(() => this.scrollToBottom(), 0);
     }
     this.socket.emit('chatMessage', msgPayload);
     this.newMessage = '';
+    this.selectedFile = null;
   }
   
 
