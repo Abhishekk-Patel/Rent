@@ -1,7 +1,7 @@
 <mat-toolbar color="primary" class="header-toolbar">
   <!-- Left Section: Logo and Brand (centered on mobile) -->
   <div class="header-left">
-    <div class="logo-section" (click)="this.router.navigate(['content'])">
+  <div class="logo-section" (click)="router.navigate(['content'])">
       <img
         src="./assets/RentLogo.jpg"
         alt="Company Logo"
@@ -9,7 +9,7 @@
       />
     </div>
     <div class="brand-info">
-      <span class="product-name">RentiT</span>
+      <span class="product-name">RentiT<span style="font-size: 12px;"> (Beta)</span></span>
       <!-- <span class="tagline">Your wardrobe, on demand</span> -->
     </div>
   </div>
@@ -27,10 +27,17 @@
     >
       <mat-icon>language</mat-icon>
     </button>
+    <button  mat-icon-button
+      aria-label="message"
+      (click)="openMessageDialog()"
+    >
+      <mat-icon> message</mat-icon>
+    </button>
+
     <button
       mat-icon-button
       aria-label="Notifications"
-      *ngIf="orderReceived && this.isOwner"
+      *ngIf="orderReceived && this.isOwner || true"
       matTooltip="{{ orderReceived }}"
       [matBadge]="!isAddNewProduct ? 1 : 0"
       matBadgePosition="above after"
@@ -55,11 +62,11 @@
     </button>
     <div *ngIf="!isAddNewProduct">
       <mat-menu #userMenu="matMenu">
-        <button mat-menu-item (click)="this.router.navigate(['my-account'])">
+  <button mat-menu-item (click)="router.navigate(['my-account'])">
           Account
         </button>
         <button mat-menu-item>Settings</button>
-        <button mat-menu-item (click)="this.router.navigate([''])">
+  <button mat-menu-item (click)="router.navigate([''])">
           Logout
         </button>
       </mat-menu>
@@ -68,8 +75,8 @@
         [matMenuTriggerFor]="userMenu"
         aria-label="Profile"
       >
-        <ng-container *ngIf="this.userService.getUserDetails().profilePicture; else defaultProfilePicture">
-          <img [src]="this.userService.getUserDetails().profilePicture" alt="" class="profile-picture" />
+        <ng-container *ngIf="userService.getUserDetails().profilePicture; else defaultProfilePicture">
+          <img [src]="userService.getUserDetails().profilePicture" alt="" class="profile-picture" />
         </ng-container>
         <ng-template #defaultProfilePicture>
           <mat-icon>account_circle</mat-icon>
@@ -95,6 +102,12 @@
       (click)="openLanguageDialog(); showMobileMenu = false"
     >
       <mat-icon>language</mat-icon>
+    </button>
+    <button  mat-icon-button
+      aria-label="message"
+      (click)="openMessageDialog()"
+    >
+      <mat-icon> message</mat-icon>
     </button>
     <button
       mat-icon-button
@@ -132,14 +145,14 @@
       <mat-menu #userMenuMobile="matMenu">
         <button
           mat-menu-item
-          (click)="this.router.navigate(['my-account']); showMobileMenu = false"
+          (click)="router.navigate(['my-account']); showMobileMenu = false"
         >
           Account
         </button>
         <button mat-menu-item>Settings</button>
         <button
           mat-menu-item
-          (click)="this.router.navigate(['']); showMobileMenu = false"
+          (click)="router.navigate(['']); showMobileMenu = false"
         >
           Logout
         </button>

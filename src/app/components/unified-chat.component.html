@@ -1,0 +1,68 @@
+<div class="unified-chat-container">
+  <div class="chat-list-container">
+    <h3 class="chat-list-title">Chats</h3>
+    <div *ngIf="chatList.length === 0" class="chat-list-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 0 24px 0;">
+      <div style="margin-bottom: 14px;">
+        <svg width="48" height="48" fill="none" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" fill="#f3f3f3"/>
+          <path d="M8 10h8M8 14h4" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/>
+          <ellipse cx="12" cy="18" rx="3" ry="1" fill="#eee"/>
+        </svg>
+      </div>
+      <div style="font-size: 1.1rem; font-weight: 600; color: #444; margin-bottom: 4px;">No Chats Yet</div>
+      <div style="font-size: 0.97rem; color: #888;">You have no conversations yet.</div>
+    </div>
+    <div *ngFor="let chat of chatList" class="chat-list-item" [class.selected]="chat === selectedChat" (click)="selectChat(chat)">
+      <img [src]="chat.productImage" alt="Product" class="chat-list-img" />
+      <div class="chat-list-info">
+        <div class="chat-list-product">{{ chat.productName }}</div>
+        <div class="chat-list-owner">with {{ chat.ownerName }}</div>
+        <div class="chat-list-last">{{ chat.lastMessage }}</div>
+      </div>
+      <div class="chat-list-time">{{ chat.lastTime }}</div>
+    </div>
+  </div>
+  <div class="chat-dialog-container" *ngIf="selectedChat; else noChatSelected">
+    <div class="chat-dialog-header">
+      <img [src]="selectedChat.productImage" alt="Product" class="chat-dialog-img" />
+      <div class="chat-dialog-info">
+        <div class="chat-dialog-product">{{ selectedChat.productName }}</div>
+        <div class="chat-dialog-owner">with {{ selectedChat.ownerName }}</div>
+      </div>
+    </div>
+    <div class="chat-messages" #messagesContainer>
+      <div *ngFor="let msg of messages" class="chat-message" [ngClass]="msg.senderId === currentUserId ? 'self' : 'user'">
+        <span class="message-text">{{ msg.text }}</span>
+        <span class="message-time">{{ msg.time }}</span>
+      </div>
+    </div>
+    <div class="chat-input">
+      <input
+        type="text"
+        placeholder="Type your message..."
+        [(ngModel)]="newMessage"
+        (keydown)="onInputKeydown($event)"
+        aria-label="Type your message"
+        [disabled]="!selectedChat"
+      />
+      <button class="send-btn" aria-label="Send" (click)="sendMessage()" [disabled]="!selectedChat">
+        <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+          <path d="M2 21l21-9-21-9v7l15 2-15 2v7z" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <ng-template #noChatSelected>
+    <div class="chat-dialog-container chat-dialog-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 350px;">
+      <div style="margin-bottom: 18px;">
+        <svg width="64" height="64" fill="none" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" fill="#f3f3f3"/>
+          <path d="M7 10h10M7 14h6" stroke="#bbb" stroke-width="1.5" stroke-linecap="round"/>
+          <ellipse cx="12" cy="17" rx="4" ry="1.5" fill="#eee"/>
+        </svg>
+      </div>
+      <div style="font-size: 1.3rem; font-weight: 600; color: #444; margin-bottom: 6px;">No Chat Selected</div>
+      <div style="font-size: 1rem; color: #888;">Select a chat from the list to start messaging.</div>
+    </div>
+  </ng-template>
+</div>

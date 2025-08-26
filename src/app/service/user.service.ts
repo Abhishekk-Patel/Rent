@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 import { FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -15,12 +16,12 @@ export class UserService {
   private isLoggedInSubject = new BehaviorSubject<boolean>(!!this.getUserFromStorage());
   isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
-  //private loginApiUrl = 'https://rent-be.onrender.com/users/login';
-    private loginApiUrl = 'http://localhost:3000/users/login';    // local url
-  //private signUpApiUrl = 'https://rent-be.onrender.com/users/register';
-         signUpApiUrl = 'http://localhost:3000/users/register';   // local url
- // url = 'https://rent-be.onrender.com';
-  url = 'http://localhost:3000';
+  // Use localhost by default, switch to apiBaseUrl for production or as needed
+  private baseUrl = environment.apiBaseUrl;
+  // private baseUrl = environment.apiBaseUrl; // Uncomment to use hosted
+  private loginApiUrl = this.baseUrl + '/users/login';
+  signUpApiUrl = this.baseUrl + '/users/register';
+  url = this.baseUrl;
   constructor(private http: HttpClient) {
     this.loadUserDetails();
     this.loadUserHistory(); // Fix: Load user history in the constructor
@@ -32,6 +33,8 @@ export class UserService {
       return this.http.post<any>(this.loginApiUrl, loginForm.value).pipe(
         map((response) => {
           if (response && response.User) {
+          localStorage.setItem('userToken', response.token);
+
             this.user = response.User;
             this.saveUserDetails();
             this.isLoggedInSubject.next(true);
@@ -51,6 +54,8 @@ export class UserService {
       return this.http.post<any>(this.signUpApiUrl, signUpForm.value).pipe(
         map((response) => {
           if (response && response.User) {
+      localStorage.setItem('userToken',response.token);
+
             this.user = response.User;
             this.saveUserDetails();
             this.isLoggedInSubject.next(true);
@@ -84,8 +89,8 @@ export class UserService {
   }
 
   editUser(userId: string, userData: any) {
-  return this.http.put(`http://localhost:3000/users/edit/${userId}`, userData);
-}
+    return this.http.put(`${this.url}/users/edit/${userId}`, userData);
+  }
 
   private loadUserDetails() {
     const user = localStorage.getItem('userDetails');
@@ -126,6 +131,8 @@ export class UserService {
    */
   loginWithGoogleBackendResponse(backendResponse: any): boolean {
     if (backendResponse && backendResponse.user) {
+      localStorage.setItem('userDetails', JSON.stringify(backendResponse.user));
+      localStorage.setItem('userToken', backendResponse.token);
       this.handleLoginSuccess(backendResponse.user);
       return true;
     }

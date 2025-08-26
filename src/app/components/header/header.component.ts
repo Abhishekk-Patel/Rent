@@ -1,4 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { UnifiedChatComponent } from '../unified-chat.component';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
@@ -23,7 +25,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     public userService: UserService,
     public cartService: MyCartServiceService,
     public readonly router: Router,
-    public orderService: OrderService
+    public orderService: OrderService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -54,7 +57,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     //     }
     //   });
   }
-
+openMessageDialog() {
+  this.dialog.open(UnifiedChatComponent, {
+    position: { right: '0' },
+    width: '900px',
+    height: '100vh',
+    panelClass: 'chat-dialog-panel',
+    autoFocus: false
+  });
+}
   toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
   }

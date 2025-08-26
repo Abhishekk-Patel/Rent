@@ -1,4 +1,4 @@
-// ...existing code...
+
 
 import {
   Component,
@@ -18,6 +18,8 @@ import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { OrderService } from 'src/app/service/order.service';
 import { UserService } from 'src/app/service/user.service';
 import { Category_LIST } from 'src/mock-data';
+import { UnifiedChatComponent } from '../unified-chat.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-content-component',
@@ -62,7 +64,9 @@ export class ContentComponentComponent
     public orderService: OrderService,
     public userService: UserService,
     private store: Store<{ productData: any }>,
-    private cdr: ChangeDetectorRef // Inject ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private dialog: MatDialog
+    
   ) {
     this.store.dispatch({ type: 'LoadProductData' });
   }
@@ -434,5 +438,16 @@ export class ContentComponentComponent
     reward.rating = newRating;
     // Optionally, send the new rating to the backend here
      this.userService.updateRating(reward.pk, newRating,reward.userId).subscribe(res=> console.log(res,"response"));
+  }
+
+  openMessageDialog(product: any) {
+    this.dialog.open(UnifiedChatComponent, {
+      position: { right: '0' },
+      width: '900px',
+      height: '100vh',
+      panelClass: 'chat-dialog-panel',
+      autoFocus: false,
+      data: { product }
+    });
   }
 }

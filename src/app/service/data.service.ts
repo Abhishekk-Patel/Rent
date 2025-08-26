@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
@@ -7,8 +8,8 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class DataService {
-  //private apiUrl = 'https://rent-be.onrender.com'; // Web service URL
- private apiUrl = 'http://localhost:3000'
+  // Use a single base URL for all API calls
+  private apiUrl = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) {}
 

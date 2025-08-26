@@ -1,3 +1,65 @@
+  <!-- Track Order Modal -->
+  <div class="track-order-modal" *ngIf="showTrackOrderModal">
+    <div class="track-order-modal-content">
+      <button class="close-modal-btn" (click)="closeTrackOrderModal()" title="Close">
+        <mat-icon>close</mat-icon>
+      </button>
+      <h2>Track Order</h2>
+      <div class="modern-track-status">
+        <mat-horizontal-stepper [selectedIndex]="getOrderStepIndex(trackOrderData)" class="modern-stepper" labelPosition="bottom">
+          <mat-step [completed]="trackOrderData.status !== 'Order Placed'">
+            <ng-template matStepLabel>Order Placed</ng-template>
+            <div class="step-content">
+              <mat-icon color="primary">shopping_cart</mat-icon>
+              <span>Your order has been placed.</span>
+            </div>
+          </mat-step>
+          <mat-step [completed]="trackOrderData.status === 'Order Seen' || trackOrderData.status === 'Order Accepted' || trackOrderData.status === 'Order Rejected'">
+            <ng-template matStepLabel>Order Seen by Owner</ng-template>
+            <div class="step-content">
+              <mat-icon color="accent">visibility</mat-icon>
+              <span>The owner has seen your order.</span>
+            </div>
+          </mat-step>
+          <mat-step [completed]="trackOrderData.status === 'Order Accepted' || trackOrderData.status === 'Order Rejected'">
+            <ng-template matStepLabel>Order Accepted/Rejected</ng-template>
+            <div class="step-content">
+              <mat-icon *ngIf="trackOrderData.status === 'Order Accepted'" color="primary">check_circle</mat-icon>
+              <mat-icon *ngIf="trackOrderData.status === 'Order Rejected'" color="warn">cancel</mat-icon>
+              <span *ngIf="trackOrderData.status === 'Order Accepted'">Your order was <b>accepted</b> by the owner.</span>
+              <span *ngIf="trackOrderData.status === 'Order Rejected'">Your order was <b>rejected</b> by the owner.</span>
+              <span *ngIf="trackOrderData.status !== 'Order Accepted' && trackOrderData.status !== 'Order Rejected'">Waiting for owner's response.</span>
+            </div>
+          </mat-step>
+        </mat-horizontal-stepper>
+      </div>
+      <!-- Order Details Section -->
+      <div class="track-order-details" *ngIf="trackOrderData">
+        <h3>Order Details</h3>
+        <div class="order-details-row">
+          <div class="order-detail-item">
+            <mat-icon color="primary">receipt_long</mat-icon>
+            <span><strong>Order ID:</strong> {{ trackOrderData.orderId || 'NA' }}</span>
+          </div>
+          <div class="order-detail-item">
+            <mat-icon color="accent">category</mat-icon>
+            <span><strong>Product:</strong> {{ trackOrderData.productName || trackOrderData.product?.name || 'NA' }}</span>
+          </div>
+        </div>
+        <div class="order-details-row">
+          <div class="order-detail-item">
+            <mat-icon color="primary">person</mat-icon>
+            <span><strong>Customer:</strong> {{ trackOrderData.customerName || trackOrderData.customer?.name || 'NA' }}</span>
+          </div>
+          <div class="order-detail-item">
+            <mat-icon color="accent">calendar_today</mat-icon>
+            <span><strong>Placed On:</strong> {{ trackOrderData.createdAt ? (trackOrderData.createdAt | date:'medium') : 'NA' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="track-order-modal-backdrop" (click)="closeTrackOrderModal()"></div>
+  </div>
 <div class="myaccount-container-top">
   <div class="account-container">
     <!-- Skeleton Loader for User Details -->
@@ -128,23 +190,41 @@
             <div *ngIf="receivedOrders.length === 0" class="no-records">
               No orders received
             </div>
-            <div class="order-item" *ngFor="let order of receivedOrders">
-              <div class="item-details" *ngFor="let product of order.product">
-                <img [src]="product.display_img_urls[0]" alt="{{ product.name }}" class="product-image">
-                <div class="item-info">
-                  <h3><strong>Product Name:</strong> {{ product.name }}</h3>
-                  <p><strong>Product Description:</strong> {{ product.description }}</p>
-                  <p><strong>Category:</strong> {{ product.category }}</p>
+              <div class="order-item" *ngFor="let order of receivedOrders">
+                <div class="item-details" *ngFor="let product of order.product">
+                  <img [src]="product.display_img_urls[0]" alt="{{ product.name }}" class="product-image">
+                  <div class="item-info">
+                    <h3><strong>Product Name:</strong> {{ product.name }}</h3>
+                    <p><strong>Product Description:</strong> {{ product.description }}</p>
+                    <p><strong>Category:</strong> {{ product.category }}</p>
+                  </div>
+                  <!-- Product Owner Details -->
+                  <div class="owner-details redesigned-owner-details">
+                    <h4>Product Owner Details</h4>
+                    <p><strong>Name:</strong> {{ product.productOwnerName || 'NA' }}</p>
+                    <p><strong>Email:</strong> {{ product.productOwnerEmail || 'NA' }}</p>
+                    <p><strong>Phone:</strong> {{ product.productOwnerMobile || 'NA' }}</p>
+                    <div class="feature-paid" *ngIf="product.featurePaid">
+                      <mat-icon class="feature-paid-icon">verified</mat-icon>
+                      <span>Feature Paid</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="customer-details">
+                  <h3>Customer Details</h3>
+                  <p><strong>Name:</strong> {{ order.customer?.[0]?.name || 'NA' }}</p>
+                  <p><strong>Email:</strong> {{ order.customer?.[0]?.email || 'NA' }}</p>
+                  <p><strong>Address:</strong> {{ order.customer?.[0]?.address || 'NA' }}</p>
+                  <p><strong>Phone:</strong> {{ order.customer?.[0]?.mobile || 'NA' }}</p>
+                </div>
+                <div class="order-actions">
+                  <button (click)="editReceivedOrder(order)" class="edit-btn">Edit Received Order</button>
+                  <button (click)="deleteReceivedOrder(order)" class="delete-btn">Delete Received Order</button>
+                  <button (click)="trackReceivedOrder(order)" class="track-btn redesigned-track-btn">
+                    <mat-icon class="track-icon">track_changes</mat-icon> Track Received Order
+                  </button>
                 </div>
               </div>
-              <div class="customer-details">
-                <h3>Customer Details</h3>
-                <p><strong>Name:</strong> John Doe</p>
-                <p><strong>Email:</strong> john.doeexample.com</p>
-                <p><strong>Address:</strong> 123 Main St, City, Country</p>
-                <p><strong>Phone:</strong> +1234567890</p>
-              </div>
-            </div>
           </div>
         </ng-template>
       </mat-tab>
@@ -176,25 +256,53 @@
             <div *ngIf="yourOrders.length === 0" class="no-records">
               No orders placed
             </div>
-            <div class="order-item" *ngFor="let order of yourOrders">
-              <div *ngFor="let product of order.product">
-                <div class="item-details">
-                  <img [src]="product.display_img_urls[0]" alt="{{ product.name }}" class="product-image">
-                  <div class="item-info">
-                    <h3><strong>Product Name:</strong> {{ product.name }}</h3>
-                    <p><strong>Product Description:</strong> {{ product.description }}</p>
-                    <p><strong>Category:</strong> {{ product.category }}</p>
+              <div class="order-item" *ngFor="let order of yourOrders">
+                <div *ngFor="let product of order.product">
+                  <div class="item-details">
+                    <img [src]="product.display_img_urls[0]" alt="{{ product.name }}" class="product-image">
+                    <div class="item-info">
+                      <h3><strong>Product Name:</strong> {{ product.name }}</h3>
+                      <p><strong>Product Description:</strong> {{ product.description }}</p>
+                      <p><strong>Category:</strong> {{ product.category }}</p>
+                    </div>
+                    <!-- Product Owner Details -->
+                    <div class="owner-details redesigned-owner-details">
+                      <h4>Product Owner Details</h4>
+                      <ng-container *ngIf="product.ownerDetailsPaid; else maskedDetails">
+                        <p><strong>Name:</strong> {{ product.productOwnerName || 'NA' }}</p>
+                        <p><strong>Email:</strong> {{ product.productOwnerEmail || 'NA' }}</p>
+                        <p><strong>Phone:</strong> {{ product.productOwnerMobile || 'NA' }}</p>
+                      </ng-container>
+                      <ng-template #maskedDetails>
+                        <p><strong>Name:</strong> xxxx</p>
+                        <p><strong>Email:</strong> xxxx@xxxx.com</p>
+                        <p><strong>Phone:</strong> xxxxxxxxxx</p>
+                        <button class="pay-to-view-btn" (click)="payToViewOwnerDetails(product)">
+                          <mat-icon class="pay-icon">lock</mat-icon> Pay to View Details
+                        </button>
+                      </ng-template>
+                      <div class="feature-paid" *ngIf="product.featurePaid">
+                        <mat-icon class="feature-paid-icon">verified</mat-icon>
+                        <span>Feature Paid</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
+                <div class="customer-details" *ngFor="let customer of order.customer">
+                  <h3>Customer Details</h3>
+                  <p><strong>Name:</strong> {{customer.name}}</p>
+                  <p><strong>Email:</strong> {{customer.email}}</p>
+                  <p><strong>Address:</strong> {{customer.address}}</p>
+                  <p><strong>Phone:</strong> {{customer.mobile}}</p>
+                </div>
+                <div class="order-actions">
+                  <button (click)="editYourOrder(order)" class="edit-btn">Edit Your Order</button>
+                  <button (click)="deleteYourOrder(order)" class="delete-btn">Delete Your Order</button>
+                  <button (click)="trackYourOrder(order)" class="track-btn redesigned-track-btn">
+                    <mat-icon class="track-icon">track_changes</mat-icon> Track Your Order
+                  </button>
+                </div>
               </div>
-              <div class="customer-details" *ngFor="let customer of order.customer">
-                <h3>Customer Details</h3>
-                <p><strong>Name:</strong> {{customer.name}}</p>
-                <p><strong>Email:</strong> {{customer.email}}</p>
-                <p><strong>Address:</strong> {{customer.address}}</p>
-                <p><strong>Phone:</strong> {{customer.mobile}}</p>
-              </div>
-            </div>
           </div>
         </ng-template>
       </mat-tab>

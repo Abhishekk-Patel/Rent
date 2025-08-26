@@ -14,6 +14,11 @@ import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
   styleUrls: ['./my-account.component.css'],
 })
 export class MyAccountComponent implements OnInit, OnDestroy {
+
+  // --- Track Order Modal State ---
+  showTrackOrderModal: boolean = false;
+  trackOrderData: any = null;
+
   userEditMode = false;
   editUser: any = {};
   user: any;
@@ -44,7 +49,13 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     this.editUser = { ...this.user };
     this.userEditMode = true;
   }
-
+ payToViewOwnerDetails(product: any) {
+    // In a real app, trigger payment flow here
+    // For demo, just unlock details
+   // product.ownerDetailsPaid = true;
+    this.myCartService.showMessage('This feature coming soon!');
+  }
+ 
   // Save user details (simulate update, in real app call service)
   saveUserDetails() {
     this.user = { ...this.editUser };
@@ -104,6 +115,23 @@ export class MyAccountComponent implements OnInit, OnDestroy {
       this.getUserHistoryByEmail(this.user.email);
     } else if (selectedTab === 'received') {
       this.loadReceivedOrders();
+      // Fetch and display received notifications
+      this.orderService.getReceivedOrder(this.user.email).subscribe(
+        (notifications) => {
+          if (Array.isArray(notifications)) {
+            this.receivedOrders = notifications;
+          } else if (notifications) {
+            this.receivedOrders = [notifications];
+          } else {
+            this.receivedOrders = [];
+          }
+          console.log('Received notifications:', this.receivedOrders);
+        },
+        (error) => {
+          console.error('Error fetching received notifications:', error);
+          this.receivedOrders = [];
+        }
+      );
     } else if (selectedTab === 'your') {
       this.loadYourOrders();
     }
@@ -232,4 +260,73 @@ onEditProduct(productId: string, updatedData: any) {
       entry.product.map((product: any) => product.productOwnerEmail)
     );
   };
+
+  
+  // --- Order Actions for Received Orders ---
+  editReceivedOrder(order: any): void {
+    // TODO: Implement edit logic for received order
+    this.myCartService.showMessage('Edit Received Order feature coming soon!');
+  }
+
+  deleteReceivedOrder(order: any): void {
+    // TODO: Implement delete logic for received order
+    this.myCartService.showMessage('Delete Received Order feature coming soon!');
+  }
+
+  trackReceivedOrder(order: any): void {
+    // Show tracking modal with real order details
+    this.trackOrderData = {
+      status: order.status || 'Order Placed',
+      orderId: order.orderId || order._id || 'NA',
+      productName: order.productName || (order.product && order.product[0]?.name) || 'NA',
+      customerName: order.customerName || (order.customer && order.customer[0]?.name) || 'NA',
+      createdAt: order.createdAt || null,
+      // Add more fields as needed
+    };
+    this.showTrackOrderModal = true;
+  }
+
+  // --- Order Actions for Your Orders ---
+  editYourOrder(order: any): void {
+    // TODO: Implement edit logic for your order
+    this.myCartService.showMessage('Edit Your Order feature coming soon!');
+  }
+
+  deleteYourOrder(order: any): void {
+    // TODO: Implement delete logic for your order
+    this.myCartService.showMessage('Delete Your Order feature coming soon!');
+  }
+
+  trackYourOrder(order: any): void {
+    // Show tracking modal with real order details
+    this.trackOrderData = {
+      status: order.status || 'Order Placed',
+      orderId: order.orderId || order._id || 'NA',
+      productName: order.productName || (order.product && order.product[0]?.name) || 'NA',
+      customerName: order.customerName || (order.customer && order.customer[0]?.name) || 'NA',
+      createdAt: order.createdAt || null,
+      // Add more fields as needed
+    };
+    this.showTrackOrderModal = true;
+  }
+
+  closeTrackOrderModal() {
+    this.showTrackOrderModal = false;
+    this.trackOrderData = null;
+  }
+  // Returns the step index for the order status stepper
+  getOrderStepIndex(order: any): number {
+    if (!order || !order.status) return 0;
+    switch (order.status) {
+      case 'Order Placed':
+        return 0;
+      case 'Order Seen':
+        return 1;
+      case 'Order Accepted':
+      case 'Order Rejected':
+        return 2;
+      default:
+        return 0;
+    }
+  }
 }

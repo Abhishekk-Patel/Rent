@@ -1,3 +1,4 @@
+import { environment } from '../../../environments/environment';
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
@@ -260,11 +261,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
     // Send the token to your backend
     // https://rent-be.onrender.com/
     //'http://localhost:3000
-    this.http.post('http://localhost:3000/auth/google/token', { token: response.credential })
+    this.http.post(environment.apiBaseUrl + '/auth/google/token', { token: response.credential })
       .subscribe(
         (backendResponse: any) => {
           // Use UserService to handle Google login backend response
           const loginSuccess = this.userService.loginWithGoogleBackendResponse(backendResponse);
+         
           this.isLoading = false;
           if (loginSuccess) {
             this.user = this.userService.getUserDetails();

@@ -1,3 +1,4 @@
+import { UnifiedChatComponent } from './components/unified-chat.component';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
@@ -63,7 +64,8 @@ import { AddProductIfSearchEmptyComponent } from './components/content-component
     MyAccountComponent,
     PartnerBrandSliderComponent,
     UserProductRatingComponent,
-    AddProductIfSearchEmptyComponent
+  AddProductIfSearchEmptyComponent,
+  UnifiedChatComponent
   ],
   imports: [
     BrowserModule,
@@ -98,7 +100,8 @@ import { AddProductIfSearchEmptyComponent } from './components/content-component
     MatTabsModule,
     SocialLoginModule,
     StoreModule.forRoot({ productData: productReducer, orderData: orderReducer }),
-    EffectsModule.forRoot([productDataEffects])
+  EffectsModule.forRoot([productDataEffects]),
+  // MatDialogModule already imported above
   ],
   providers: [
     AuthGuard,

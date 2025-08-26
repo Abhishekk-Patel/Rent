@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 import { io, Socket } from 'socket.io-client';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -20,7 +21,8 @@ export class OrderService {
       return;
     }
     // Use the correct socket URL
-    this.socket = io('https://rent-be.onrender.com', {
+    // Use localhost by default, switch to apiBaseUrl for production or as needed
+    this.socket = io(environment.apiBaseUrl, {
       query: { email: productOwnerEmail },
     });
   }
@@ -31,6 +33,10 @@ export class OrderService {
     this.socket.emit('placeOrder', orderData);
   }
 
+  // Fetch received notifications for a user by email
+  getReceivedOrder(email: string): Observable<any> {
+    return this.http.get<any>(`${environment.apiBaseUrl}/api/notifications/${email}`);
+  }
   // Listen for the 'orderReceived' event
   receiveOrder(): Observable<any> {
     return new Observable((observer) => {
@@ -38,20 +44,16 @@ export class OrderService {
         // Log and handle different messages for product owner and customer
         if (data && data.message === 'Order placed successfully') {
           this.myCartService.showMessage(data.message);
-
           console.log('Order placed successfully (customer):', data);
         } else if (data && data.message === 'New order received') {
           this.myCartService.showMessage(data.message);
-
           console.log('New order received (product owner):', data);
-        } else {
+        } else if (data && data.message) {
           this.myCartService.showMessage(data.message);
-
           console.log('orderReceived:', data);
         }
         observer.next(data); // Push data to the observer
       });
-
       // Cleanup on completion
       return () => {
         this.socket.off('orderReceived');
@@ -86,7 +88,7 @@ orderError(): Observable<any> {
   // Fetch your orders with error handling
   getYourOrders(userEmail: string): Observable<any[]> {
     return this.http
-      .get(`https://rent-be.onrender.com/orders/fetchOrders/${userEmail}`)
+      .get(`${environment.apiBaseUrl}/orders/fetchOrders/${userEmail}`)
       .pipe(
         map((response: any) => response),
         catchError((error) => {
@@ -98,7 +100,7 @@ orderError(): Observable<any> {
 
   // Fetch orders using a different method (just for consistency)
   fetchOrders(userEmail: string): Observable<any> {
-    return this.http.get(`https://rent-be.onrender.com/orders/fetchOrders/${userEmail}`).pipe(
+    return this.http.get(`${environment.apiBaseUrl}/orders/fetchOrders/${userEmail}`).pipe(
       catchError((error) => {
         console.error('Error fetching orders:', error);
         throw error; // Rethrow error or handle it as needed

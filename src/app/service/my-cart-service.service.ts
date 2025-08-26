@@ -1,5 +1,6 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MyCartComponent } from '../components/my-cart/my-cart.component';
@@ -8,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { UserService } from './user.service';
+import { EmailValidator } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root',
@@ -41,7 +43,8 @@ export class MyCartServiceService {
   public isAddNewProductSubject = new BehaviorSubject<boolean>(false);
   isAddNewProduct$ = this.isAddNewProductSubject.asObservable();
 
-  url ='https://rent-be.onrender.com';
+  // Use localhost by default, switch to apiBaseUrl for production or as needed
+  url = environment.apiBaseUrl;
 
   constructor(
     private readonly router: Router,
@@ -245,4 +248,6 @@ export class MyCartServiceService {
   getCartValue(): number {
     return this.myCartValue();
   }
+
+
 }
