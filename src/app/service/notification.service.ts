@@ -10,8 +10,11 @@ export class NotificationService {
   unreadMessages$ = this._unreadMessages.asObservable();
   private socket: Socket | null = null;
   private userId: string | null = null;
+  private messageAudio: HTMLAudioElement;
 
   constructor(private userService: UserService) {
+    this.messageAudio = new Audio('assets/message_tone.mp3');
+    this.messageAudio.load();
     this.initSocket();
   }
 
@@ -28,7 +31,17 @@ export class NotificationService {
     this.socket.on('newMessageNotification', (notif: any) => {
       console.log('[Global Socket] Received newMessageNotification:', notif);
       this.increment();
+      this.playMessageSound();
     });
+  }
+
+  private playMessageSound() {
+    try {
+      this.messageAudio.currentTime = 0;
+      this.messageAudio.play();
+    } catch (e) {
+      // Ignore play errors (e.g., user gesture required)
+    }
   }
 
   increment() {
