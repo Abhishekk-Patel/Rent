@@ -52,7 +52,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       email: ['', [Validators.required, Validators.email]],
       mobileNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
       password: ['', Validators.required],
-      confirmPassword: ['', Validators.required]
+      confirmPassword: ['', Validators.required],
     }, { validator: this.passwordMatchValidator });
 
     this.authService.authState.subscribe((user) => {
