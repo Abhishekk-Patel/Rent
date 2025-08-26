@@ -1,4 +1,6 @@
 <div class="unified-chat-container">
+  <!-- Progress bar for chat list loading -->
+  <mat-progress-bar *ngIf="isChatListLoading" mode="determinate" color="primary" [value]="100" style="position: absolute; top: 0; left: 0; width: 100%; z-index: 10;"></mat-progress-bar>
   <div class="chat-list-container">
     <h3 class="chat-list-title">Chats</h3>
     <div *ngIf="chatList.length === 0" class="chat-list-empty" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 0 24px 0;">
@@ -12,17 +14,22 @@
       <div style="font-size: 1.1rem; font-weight: 600; color: #444; margin-bottom: 4px;">No Chats Yet</div>
       <div style="font-size: 0.97rem; color: #888;">You have no conversations yet.</div>
     </div>
-    <div *ngFor="let chat of chatList" class="chat-list-item" [class.selected]="chat === selectedChat" (click)="selectChat(chat)">
+  <div *ngFor="let chat of chatList" class="chat-list-item" [class.selected]="chat === selectedChat" (click)="selectChat(chat)">
+    <div class="chat-list-img-wrapper" style="position:relative;">
       <img [src]="chat.productImage" alt="Product" class="chat-list-img" />
-      <div class="chat-list-info">
-        <div class="chat-list-product">{{ chat.productName }}</div>
-        <div class="chat-list-owner">with {{ chat.ownerName }}</div>
-        <div class="chat-list-last">{{ chat.lastMessage }}</div>
-      </div>
-      <div class="chat-list-time">{{ chat.lastTime }}</div>
+      <span *ngIf="chat.hasNewMessage" class="chat-new-indicator"></span>
     </div>
+    <div class="chat-list-info">
+      <div class="chat-list-product">{{ chat.productName }}</div>
+      <div class="chat-list-owner">with {{ chat.ownerName }}</div>
+      <div class="chat-list-last">{{ chat.lastMessage }}</div>
+    </div>
+    <div class="chat-list-time">{{ chat.lastTime }}</div>
+  </div>
   </div>
   <div class="chat-dialog-container" *ngIf="selectedChat; else noChatSelected">
+    <!-- Progress bar for messages loading -->
+    <mat-progress-bar *ngIf="isMessagesLoading" mode="determinate" color="accent" [value]="100" style="position: absolute; top: 0; left: 0; width: 100%; z-index: 10;"></mat-progress-bar>
     <div class="chat-dialog-header">
       <img [src]="selectedChat.productImage" alt="Product" class="chat-dialog-img" />
       <div class="chat-dialog-info">
@@ -31,10 +38,15 @@
       </div>
     </div>
     <div class="chat-messages" #messagesContainer>
-      <div *ngFor="let msg of messages" class="chat-message" [ngClass]="msg.senderId === currentUserId ? 'self' : 'user'">
-        <span class="message-text">{{ msg.text }}</span>
-        <span class="message-time">{{ msg.time }}</span>
-      </div>
+      <ng-container *ngIf="messages.length > 0; else noMessages">
+        <div *ngFor="let msg of messages" class="chat-message" [ngClass]="msg.senderId === currentUserId ? 'self' : 'user'">
+          <span class="message-text">{{ msg.text }}</span>
+          <span class="message-time">{{ msg.time }}</span>
+        </div>
+      </ng-container>
+      <ng-template #noMessages>
+        <div style="text-align:center; color:#888; padding: 32px 0; font-size:1.1rem;">No messages yet</div>
+      </ng-template>
     </div>
     <div class="chat-input">
       <input

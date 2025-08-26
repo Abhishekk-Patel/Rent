@@ -30,6 +30,9 @@
     <button  mat-icon-button
       aria-label="message"
       (click)="openMessageDialog()"
+      [matBadge]="unreadMessages"
+      matBadgeColor="warn"
+     
     >
       <mat-icon> message</mat-icon>
     </button>

@@ -31,7 +31,7 @@ export class DataService {
 
   // Get product by ID
   getProductById(id: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/products/${id}`);
+    return this.http.get<any>(`${this.apiUrl}/api/products/${id}`);
   }
 
   // Delete product by ID

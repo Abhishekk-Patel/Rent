@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NotificationService } from 'src/app/service/notification.service';
 import { MatDialog } from '@angular/material/dialog';
 import { UnifiedChatComponent } from '../unified-chat.component';
 import { Router } from '@angular/router';
@@ -13,6 +14,7 @@ import { UserService } from 'src/app/service/user.service';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  unreadMessages = 0;
   countryCode: string = '';
   isAddNewProduct: boolean = false;
   orderSubscription!: Subscription;
@@ -26,7 +28,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     public cartService: MyCartServiceService,
     public readonly router: Router,
     public orderService: OrderService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    public notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -36,28 +39,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.isAddNewProduct = res;
     });
 
-    const user = this.userService.getUserDetails().email;
-
-    // this.orderService.connectToSocket(user);
-
-    // this.orderSubscription = this.orderService
-    //   .receiveOrder()
-    //   .subscribe((order) => {
-    //     const productEmails = order.product.map(
-    //       (res: any) => res.ProductOwnerEmail
-    //     );
-
-    //     // Check if the current user matches any product owner email
-    //     if (productEmails.includes(user)) {
-    //       this.isOwner = true;
-    //       this.orderReceived = order.message; // Set the order message
-    //     } else {
-    //       this.isOwner = false; // Set to false if no match
-    //       this.orderReceived = ''; // Optionally clear the orderReceived message
-    //     }
-    //   });
+    // Subscribe to unread message count
+    this.notificationService.unreadMessages$.subscribe(count => {
+      this.unreadMessages = count;
+      console.log('[Header] Unread message badge count:', count);
+    });
   }
 openMessageDialog() {
+  this.notificationService.clear();
   this.dialog.open(UnifiedChatComponent, {
     position: { right: '0' },
     width: '900px',
