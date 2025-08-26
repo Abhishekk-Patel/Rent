@@ -14,7 +14,7 @@
       <div style="font-size: 1.1rem; font-weight: 600; color: #444; margin-bottom: 4px;">No Chats Yet</div>
       <div style="font-size: 0.97rem; color: #888;">You have no conversations yet.</div>
     </div>
-  <div *ngFor="let chat of chatList" class="chat-list-item" [class.selected]="chat === selectedChat" (click)="selectChat(chat)">
+  <div *ngFor="let chat of chatList" class="chat-list-item" [class.selected]="isSelectedChat(chat)" (click)="selectChat(chat)">
     <div class="chat-list-img-wrapper" style="position:relative;">
       <img [src]="chat.productImage" alt="Product" class="chat-list-img" />
       <span *ngIf="chat.hasNewMessage" class="chat-new-indicator"></span>
@@ -36,34 +36,6 @@
     </div>
     <div class="chat-list-time">{{ chat.lastTime }}</div>
   </div>
-<style>
-.chat-list-status-dot {
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  display: inline-block;
-}
-.chat-list-status-dot.online {
-  background: #4caf50;
-}
-.chat-list-status-dot.offline {
-  background: #aaa;
-}
-.chat-list-status-text {
-  font-size: 0.9em;
-  margin-left: 4px;
-}
-.chat-list-status-text.online {
-  color: #4caf50;
-}
-.chat-list-status-text.offline {
-  color: #aaa;
-}
-</style>
   </div>
   <div class="chat-dialog-container" *ngIf="selectedChat; else noChatSelected">
     <!-- Progress bar for messages loading -->

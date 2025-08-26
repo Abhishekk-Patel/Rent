@@ -1,3 +1,29 @@
+.chat-list-status-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  display: inline-block;
+}
+.chat-list-status-dot.online {
+  background: #4caf50;
+}
+.chat-list-status-dot.offline {
+  background: #aaa;
+}
+.chat-list-status-text {
+  font-size: 0.9em;
+  margin-left: 4px;
+}
+.chat-list-status-text.online {
+  color: #4caf50;
+}
+.chat-list-status-text.offline {
+  color: #aaa;
+}
 /* New message indicator dot for chat list */
 .chat-new-indicator {
   position: absolute;
@@ -59,7 +85,15 @@
   position: relative;
   border-radius: 0 18px 18px 0;
 }
-.chat-list-item.selected, .chat-list-item:hover {
+/* Only one .chat-list-item.selected and .chat-list-item:hover, placed after .chat-list-item for specificity */
+.chat-list-item.selected {
+  background: #e3f2fd !important;
+  border-left: 4px solid #1976d2 !important;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10) !important;
+  z-index: 2 !important;
+  transition: background 0.2s, border 0.2s !important;
+}
+.chat-list-item:hover {
   background: rgba(227,233,240,0.7);
   box-shadow: 0 2px 8px rgba(25, 118, 210, 0.07);
   z-index: 1;

@@ -1,3 +1,4 @@
+
 import {
   Component,
   ElementRef,
@@ -181,6 +182,15 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.onlineUsers.has(userId);
   }
 
+   // Helper to check if a chat is selected (compare by IDs, not object reference)
+  isSelectedChat(chat: ChatSummary): boolean {
+    if (!this.selectedChat) return false;
+    return (
+      chat.productId === this.selectedChat.productId &&
+      chat.ownerId === this.selectedChat.ownerId &&
+      (chat.buyerId || '') === (this.selectedChat.buyerId || '')
+    );
+  }
   // Join all chat rooms for this user
   joinAllChatRooms() {
     if (!this.chatList || this.chatList.length === 0) return;
