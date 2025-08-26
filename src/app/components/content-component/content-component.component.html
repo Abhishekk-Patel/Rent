@@ -280,10 +280,12 @@
               "
               (click)="addToCart(reward.pk)"
             >
-              <span class="cart-label">Add to Cart</span>
+              <span class="cart-label">Rent iT</span>
               <mat-icon class="cart-icon-inner">add_shopping_cart</mat-icon>
             </button>
-            <button mat-icon-button aria-label="message" (click)="openMessageDialog(reward)">
+            <button  [disabled]="
+                reward.quantity === 0 ||
+                reward.ProductOwnerEmail === userService.getUserDetails().email" mat-icon-button aria-label="message" (click)="openMessageDialog(reward)">
               <mat-icon>message</mat-icon>
             </button>
           </div>
