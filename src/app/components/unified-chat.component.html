@@ -18,14 +18,52 @@
     <div class="chat-list-img-wrapper" style="position:relative;">
       <img [src]="chat.productImage" alt="Product" class="chat-list-img" />
       <span *ngIf="chat.hasNewMessage" class="chat-new-indicator"></span>
+      <!-- Online/offline status dot for owner -->
+      <span
+        class="chat-list-status-dot"
+        [ngClass]="isUserOnline(chat.ownerId) ? 'online' : 'offline'"
+        title="{{ isUserOnline(chat.ownerId) ? 'Online' : 'Offline' }}"
+      ></span>
     </div>
     <div class="chat-list-info">
       <div class="chat-list-product">{{ chat.productName }}</div>
-      <div class="chat-list-owner">with {{ chat.ownerName }}</div>
+      <div class="chat-list-owner">
+        with {{ chat.ownerName }}
+        <span *ngIf="isUserOnline(chat.ownerId)" class="chat-list-status-text online">●</span>
+        <span *ngIf="!isUserOnline(chat.ownerId)" class="chat-list-status-text offline">●</span>
+      </div>
       <div class="chat-list-last">{{ chat.lastMessage }}</div>
     </div>
     <div class="chat-list-time">{{ chat.lastTime }}</div>
   </div>
+<style>
+.chat-list-status-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  display: inline-block;
+}
+.chat-list-status-dot.online {
+  background: #4caf50;
+}
+.chat-list-status-dot.offline {
+  background: #aaa;
+}
+.chat-list-status-text {
+  font-size: 0.9em;
+  margin-left: 4px;
+}
+.chat-list-status-text.online {
+  color: #4caf50;
+}
+.chat-list-status-text.offline {
+  color: #aaa;
+}
+</style>
   </div>
   <div class="chat-dialog-container" *ngIf="selectedChat; else noChatSelected">
     <!-- Progress bar for messages loading -->

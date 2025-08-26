@@ -26,7 +26,7 @@ interface ChatSummary {
   lastTime?: string;
   googleId: string;
   hasNewMessage?: boolean;
-  
+  isOnline?: boolean; // Optional: for future use if needed
 }
 
 interface ChatMessage {
@@ -53,6 +53,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   messages: ChatMessage[] = [];
   newMessage = '';
   buyerId = '';
+  onlineUsers: Set<string> = new Set(); // Track online user IDs
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
 
@@ -96,9 +97,24 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.socket.on('connect', () => {
       this.joinAllChatRooms();
+      // Request online users list after connecting
+      this.socket.emit('getOnlineUsers');
     });
 
     this.socket.on('disconnect', () => {});
+
+    // Listen for online users list from server
+    this.socket.on('onlineUsers', (userIds: string[]) => {
+      this.onlineUsers = new Set(userIds);
+    });
+
+    // Listen for user online/offline events
+    this.socket.on('userOnline', (userId: string) => {
+      this.onlineUsers.add(userId);
+    });
+    this.socket.on('userOffline', (userId: string) => {
+      this.onlineUsers.delete(userId);
+    });
 
     this.socket.off('chatMessage');
     this.socket.on('chatMessage', (msg: any) => {
@@ -142,6 +158,10 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.fetchChatList();
+  }
+  // Returns true if the user (owner or buyer) is online
+  isUserOnline(userId: string): boolean {
+    return this.onlineUsers.has(userId);
   }
 
   // Join all chat rooms for this user
@@ -215,6 +235,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     let foundChat = this.chatList.find(
       c => c.productId === chat.productId && c.ownerId === chat.ownerId && c.buyerId === (chat.buyerId || this.buyerId)
     );
+
     if (!foundChat) {
       foundChat = {
         ...chat,
@@ -228,31 +249,34 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
         this.chatList.unshift(foundChat);
       }
     }
-    if (foundChat) {
-      this.selectedChat = {
-        ...foundChat,
-        googleId: this.currentUserId,
-        ownerId: foundChat.ownerId,
-      };
-      // Clear new message indicator for all matching chats when chat is opened
-      this.chatList.forEach(c => {
-        if (
-          c.productId === foundChat!.productId &&
-          c.ownerId === foundChat!.ownerId &&
-          c.buyerId === foundChat!.buyerId
-        ) {
-          c.hasNewMessage = false;
-        }
-      });
-      if (isNewChat) {
-        this.messages = [];
-      }
-      this.loadMessages(
-        foundChat.productId,
-        foundChat.ownerId,
-        foundChat.buyerId || ''
-      );
+
+    // Only proceed if foundChat is defined
+    if (!foundChat) {
+      return;
     }
+    this.selectedChat = {
+      ...foundChat,
+      googleId: this.currentUserId,
+      ownerId: foundChat.ownerId,
+    };
+    // Clear new message indicator for all matching chats when chat is opened
+    this.chatList.forEach(c => {
+      if (
+        c.productId === foundChat!.productId &&
+        c.ownerId === foundChat!.ownerId &&
+        c.buyerId === foundChat!.buyerId
+      ) {
+        c.hasNewMessage = false;
+      }
+    });
+    if (isNewChat) {
+      this.messages = [];
+    }
+    this.loadMessages(
+      foundChat.productId,
+      foundChat.ownerId,
+      foundChat.buyerId || ''
+    );
   }
 
   loadMessages(productId: string, ownerId: string, buyerId: string) {
@@ -372,3 +396,4 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.socket?.disconnect();
   }
 }
+
