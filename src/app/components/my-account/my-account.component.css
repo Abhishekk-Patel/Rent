@@ -1,3 +1,97 @@
+/* Modern OTP Verification Styles */
+.modern-verify-btn {
+  background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.08rem;
+  box-shadow: 0 2px 8px rgba(67, 233, 123, 0.13);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.modern-verify-btn:hover {
+  background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
+  box-shadow: 0 4px 16px rgba(67, 233, 123, 0.18);
+}
+.modern-otp-block {
+  margin-top: 18px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(56, 249, 215, 0.07);
+  padding: 22px 18px 18px 18px;
+  max-width: 340px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.otp-title {
+  font-size: 1.08rem;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: #222;
+}
+.otp-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 10px;
+}
+.otp-mail-icon {
+  color: #38f9d7;
+  font-size: 1.3rem;
+}
+.modern-otp-input {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #b2f5ea;
+  font-size: 1.08rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.modern-otp-input:focus {
+  border: 1.5px solid #38f9d7;
+}
+.otp-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+.modern-submit-btn {
+  background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 6px 18px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.modern-submit-btn:hover {
+  background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
+}
+.modern-resend-btn {
+  background: #fff;
+  color: #38f9d7;
+  border: 1.5px solid #38f9d7;
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+.modern-resend-btn:hover {
+  background: #e0f7fa;
+  color: #222;
+}
+.modern-otp-error {
+  color: #e53935;
+  font-size: 0.98rem;
+  margin-top: 8px;
+  text-align: center;
+}
 .verify-btn-container {
   width: 100%;
   display: flex;

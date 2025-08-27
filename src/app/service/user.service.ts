@@ -9,6 +9,16 @@ import { map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class UserService {
+  // Send OTP to user's email
+  sendOtpToEmail(email: string): Observable<any> {
+    console.log("Sending OTP to email:", email);
+    return this.http.post<any>(`${this.url}/users/send-otp`, { email: email });
+  }
+
+  // Verify OTP for user's email
+  verifyOtp(email: string, otp: string): Observable<any> {
+    return this.http.post<any>(`${this.url}/users/verify-otp`, { email: email, otp: otp });
+  }
   public user: any = null;
   private userHistory: any[] = [];
   public googleProfilePicture: string = '';

@@ -14,26 +14,11 @@ import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
   styleUrls: ['./my-account.component.css'],
 })
 export class MyAccountComponent implements OnInit, OnDestroy {
-  // Trigger user verification (demo logic)
-  verifyUser() {
-    // In a real app, trigger verification flow (email, KYC, etc.)
-    // For demo, just set isVerified to true and show a message
-    this.user.isVerified = true;
-    this.userService.editUser((this.user._id || this.user.userId), { ...this.user, isVerified: true }).subscribe(
-      (response: any) => {
-        this.userService.saveUserDetails(response.User);
-        this.myCartService.showMessage('User verified successfully!');
-      },
-      (error) => {
-        this.myCartService.showMessage('Verification failed. Please try again.');
-      }
-    );
-  }
-
-  // --- Track Order Modal State ---
+  public showOtpInput = false;
+  public otp = '';
+  public otpError = '';
   showTrackOrderModal: boolean = false;
   trackOrderData: any = null;
-
   userEditMode = false;
   editUser: any = {};
   user: any;
@@ -52,7 +37,9 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     private myCartService: MyCartServiceService,
     private store: Store<{ orderData: any[] }>
   ) {
-    this.store.dispatch(LoadOrderData({ email: this.userService.getUserDetails().email }));
+    this.store.dispatch(
+      LoadOrderData({ email: this.userService.getUserDetails().email })
+    );
     // Ensure user is logged in, otherwise redirect to home
     if (!this.userService.getUserDetails()) {
       this.router.navigate(['']);
@@ -64,28 +51,30 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     this.editUser = { ...this.user };
     this.userEditMode = true;
   }
- payToViewOwnerDetails(product: any) {
+  payToViewOwnerDetails(product: any) {
     // In a real app, trigger payment flow here
     // For demo, just unlock details
-   // product.ownerDetailsPaid = true;
+    // product.ownerDetailsPaid = true;
     this.myCartService.showMessage('This feature coming soon!');
   }
- 
+
   // Save user details (simulate update, in real app call service)
   saveUserDetails() {
     this.user = { ...this.editUser };
-    console.log(this.user,"edited user deatils")
+    console.log(this.user, 'edited user deatils');
     this.userEditMode = false;
-    this.userService.editUser((this.user._id || this.user.userId), this.user).subscribe(
-      (response: any) => {
-        this.userService.saveUserDetails(response.User)
-        this.myCartService.showMessage(response.message);
-      },
-      (error) => {
-        console.error('Error updating user details:', error);
-      }
-    );
-  
+    this.userService
+      .editUser(this.user._id || this.user.userId, this.user)
+      .subscribe(
+        (response: any) => {
+          this.userService.saveUserDetails(response.User);
+          this.myCartService.showMessage(response.message);
+        },
+        (error) => {
+          console.error('Error updating user details:', error);
+        }
+      );
+
     // Optionally, update in userService or backend here
   }
 
@@ -93,7 +82,6 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   cancelEditUser() {
     this.userEditMode = false;
   }
-
 
   ngOnInit(): void {
     // Get user details when the component initializes
@@ -150,10 +138,15 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     } else if (selectedTab === 'your') {
       this.loadYourOrders();
     }
-}
+  }
 
-onEditProduct(productId: string, updatedData: any) {
-    console.log('Editing product with ID:', productId, 'and data:', updatedData);
+  onEditProduct(productId: string, updatedData: any) {
+    console.log(
+      'Editing product with ID:',
+      productId,
+      'and data:',
+      updatedData
+    );
     this.dataService.editProduct(productId, updatedData).subscribe(
       (response: any) => {
         this.myCartService.showMessage(response.message);
@@ -276,7 +269,6 @@ onEditProduct(productId: string, updatedData: any) {
     );
   };
 
-  
   // --- Order Actions for Received Orders ---
   editReceivedOrder(order: any): void {
     // TODO: Implement edit logic for received order
@@ -285,7 +277,9 @@ onEditProduct(productId: string, updatedData: any) {
 
   deleteReceivedOrder(order: any): void {
     // TODO: Implement delete logic for received order
-    this.myCartService.showMessage('Delete Received Order feature coming soon!');
+    this.myCartService.showMessage(
+      'Delete Received Order feature coming soon!'
+    );
   }
 
   trackReceivedOrder(order: any): void {
@@ -293,8 +287,12 @@ onEditProduct(productId: string, updatedData: any) {
     this.trackOrderData = {
       status: order.status || 'Order Placed',
       orderId: order.orderId || order._id || 'NA',
-      productName: order.productName || (order.product && order.product[0]?.name) || 'NA',
-      customerName: order.customerName || (order.customer && order.customer[0]?.name) || 'NA',
+      productName:
+        order.productName || (order.product && order.product[0]?.name) || 'NA',
+      customerName:
+        order.customerName ||
+        (order.customer && order.customer[0]?.name) ||
+        'NA',
       createdAt: order.createdAt || null,
       // Add more fields as needed
     };
@@ -317,8 +315,12 @@ onEditProduct(productId: string, updatedData: any) {
     this.trackOrderData = {
       status: order.status || 'Order Placed',
       orderId: order.orderId || order._id || 'NA',
-      productName: order.productName || (order.product && order.product[0]?.name) || 'NA',
-      customerName: order.customerName || (order.customer && order.customer[0]?.name) || 'NA',
+      productName:
+        order.productName || (order.product && order.product[0]?.name) || 'NA',
+      customerName:
+        order.customerName ||
+        (order.customer && order.customer[0]?.name) ||
+        'NA',
       createdAt: order.createdAt || null,
       // Add more fields as needed
     };
@@ -343,5 +345,53 @@ onEditProduct(productId: string, updatedData: any) {
       default:
         return 0;
     }
+  }
+  verifyUser() {
+    // Show OTP input UI
+    this.showOtpInput = true;
+    this.otpError = '';
+    // In a real app, trigger backend to send OTP to user's email here
+    this.userService.sendOtpToEmail(this.user.email).subscribe(
+      (res: any) => {
+        this.myCartService.showMessage('OTP sent to your email.');
+      },
+      (err: any) => {
+        this.myCartService.showMessage('Failed to send OTP.');
+      }
+    );
+  }
+
+  verifyOtpAndEditUser() {
+    if (!this.otp || this.otp.length < 4) {
+      this.otpError = 'Please enter a valid OTP.';
+      return;
+    }
+    this.userService.verifyOtp(this.user.email, this.otp).subscribe(
+      (res: any) => {
+        console.log(res, 'otp verification response');
+        if (res) {
+          this.user.isVerified = true;
+          this.showOtpInput = false;
+          this.userService.saveUserDetails(res.user);
+          console.log(this.showOtpInput, 'this.showOtpInput');
+        } else {
+          this.otpError = res.message || 'Invalid OTP.';
+        }
+      },
+      (err: any) => {
+        this.otpError = 'Invalid OTP or verification failed.';
+      }
+    );
+  }
+
+  resendOtp() {
+    this.userService.sendOtpToEmail(this.user.email).subscribe(
+      (res: any) => {
+        this.myCartService.showMessage('OTP resent to your email.');
+      },
+      (err: any) => {
+        this.myCartService.showMessage('Failed to resend OTP.');
+      }
+    );
   }
 }
