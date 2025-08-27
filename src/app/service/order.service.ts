@@ -22,7 +22,7 @@ export class OrderService {
     }
     // Use the correct socket URL
     // Use localhost by default, switch to apiBaseUrl for production or as needed
-    this.socket = io(environment.apiBaseUrl, {
+    this.socket = io(environment.socketUrl, {
       query: { email: productOwnerEmail },
     });
   }
