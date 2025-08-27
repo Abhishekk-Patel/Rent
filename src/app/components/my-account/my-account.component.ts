@@ -1,3 +1,5 @@
+  // For delete confirmation dialog
+
 import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/service/data.service';
@@ -14,6 +16,7 @@ import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
   styleUrls: ['./my-account.component.css'],
 })
 export class MyAccountComponent implements OnInit, OnDestroy {
+  public confirmDeleteItem: any = null;
   public showOtpInput = false;
   public otp = '';
   public otpError = '';
@@ -247,12 +250,22 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   //  this.onEditProduct(item._id, item);
   // }
 
-  deleteHistoryItem(item: any): void {
-    // Remove the item from the user history
+  // Show confirm dialog for delete
+  showDeleteConfirm(item: any) {
+    this.confirmDeleteItem = item;
+  }
+
+  // Cancel delete
+  cancelDelete() {
+    this.confirmDeleteItem = null;
+  }
+
+  // Confirm delete
+  confirmDeleteHistoryItem(item: any) {
     this.userHistory = this.userHistory.filter(
       (historyItem) => historyItem._id !== item._id
     );
-    // Optionally, call a service to delete the item from the backend
+    this.confirmDeleteItem = null;
     this.dataService.deleteProductById(item._id).subscribe(
       () => {
         this.myCartService.showMessage('Item deleted successfully');
