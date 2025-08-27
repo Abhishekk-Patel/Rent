@@ -14,6 +14,21 @@ import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
   styleUrls: ['./my-account.component.css'],
 })
 export class MyAccountComponent implements OnInit, OnDestroy {
+  // Trigger user verification (demo logic)
+  verifyUser() {
+    // In a real app, trigger verification flow (email, KYC, etc.)
+    // For demo, just set isVerified to true and show a message
+    this.user.isVerified = true;
+    this.userService.editUser((this.user._id || this.user.userId), { ...this.user, isVerified: true }).subscribe(
+      (response: any) => {
+        this.userService.saveUserDetails(response.User);
+        this.myCartService.showMessage('User verified successfully!');
+      },
+      (error) => {
+        this.myCartService.showMessage('Verification failed. Please try again.');
+      }
+    );
+  }
 
   // --- Track Order Modal State ---
   showTrackOrderModal: boolean = false;

@@ -71,8 +71,18 @@
     </div>
     <ng-template #userDetailsBlock>
       <div class="user-details redesigned-user-details">
-        <div class="profile-picture-only">
+        <div class="profile-picture-only profile-picture-verified-wrapper">
           <img [src]="user?.profilePicture || this.userService.getUserDetails()?.profilePicture || 'assets/default-profile.png'" alt="Profile Picture" class="profile-picture-img-large">
+          <ng-container *ngIf="user?.isVerified; else showVerifyBtn">
+            <mat-icon class="profile-verified-badge">verified</mat-icon>
+          </ng-container>
+          <ng-template #showVerifyBtn>
+            <div class="verify-btn-container">
+              <button class="pay-to-view-btn verify-btn-inline" (click)="verifyUser()">
+                <mat-icon class="pay-icon">verified_user</mat-icon> Verify Now
+              </button>
+            </div>
+          </ng-template>
         </div>
         <div class="user-info-centered">
           <div class="user-header-row">
