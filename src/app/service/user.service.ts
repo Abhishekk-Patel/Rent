@@ -94,7 +94,6 @@ export class UserService {
   }
 
    saveUserDetails(user?: any ) {
-    console.log('Saving user details:', user);
     localStorage.setItem('userDetails', JSON.stringify(user || this.user));
   }
 
