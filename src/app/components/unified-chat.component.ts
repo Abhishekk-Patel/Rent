@@ -1,4 +1,5 @@
 
+
 import {
   Component,
   ElementRef,
@@ -52,6 +53,10 @@ interface ChatMessage {
   styleUrls: ['./unified-chat.component.css'],
 })
 export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
+  // Expose isVideoCall for template compatibility
+  get isVideoCall() {
+    return this.callState.isVideoCall;
+  }
   // Call UI/logic state
   incomingCall: boolean = false;
   callFrom: string | null = null;
@@ -59,15 +64,24 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   callOffer: any = null;
   callOfferSender: string | null = null;
   callAudio: HTMLAudioElement | null = null; // For call.mp3 notification
-  // WebRTC call state
-  localStream: MediaStream | null = null;
-  remoteStream: MediaStream | null = null;
-  peerConnection: RTCPeerConnection | null = null;
+  // WebRTC call state (moved to CallState for CallService)
+  callState = {
+    peerConnection: null as RTCPeerConnection | null,
+    localStream: null as MediaStream | null,
+    remoteStream: null as MediaStream | null,
+    isVideoCall: false,
+    selectedChat: null as any,
+    localVideo: undefined as ElementRef | undefined,
+    remoteVideo: undefined as ElementRef | undefined,
+  };
   isCalling = false;
   isInCall = false;
-  isVideoCall = false;
-  @ViewChild('localVideo') localVideo!: ElementRef;
-  @ViewChild('remoteVideo') remoteVideo!: ElementRef;
+  @ViewChild('localVideo') set localVideoRef(ref: ElementRef) {
+    this.callState.localVideo = ref;
+  }
+  @ViewChild('remoteVideo') set remoteVideoRef(ref: ElementRef) {
+    this.callState.remoteVideo = ref;
+  }
   // Right-side profile panel state
   selectedProfile: ChatSummary | null = null;
   // Default avatar image (can be replaced with a real asset)
@@ -130,7 +144,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.isCalling) {
         this.isCalling = false;
         this.isInCall = false;
-        this.isVideoCall = false;
+        this.callState.isVideoCall = false;
         const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         this.sendSystemMessage(`Call rejected at ${timeStr}`, 'call-rejected');
         alert('Call was rejected');
@@ -256,9 +270,9 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   // --- WebRTC Voice/Video Call Methods ---
   startCall(isVideo: boolean) {
     console.log('[Call] startCall called', { isVideo, currentUserId: this.currentUserId, selectedChat: this.selectedChat });
-    this.isVideoCall = isVideo;
+  this.callState.isVideoCall = isVideo;
     this.isCalling = true;
-    console.log('[State] isVideoCall:', this.isVideoCall, 'isCalling:', this.isCalling);
+  console.log('[State] isVideoCall:', this.callState.isVideoCall, 'isCalling:', this.isCalling);
     // Allow both buyer and owner to start a call
     if (this.selectedChat) {
       this.socketService.emit('incoming_call', {
@@ -277,86 +291,27 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async initWebRTC(isCaller: boolean) {
-  const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
-  console.log('[WebRTC] initWebRTC', { isCaller, isVideoCall: this.isVideoCall, selectedChat: this.selectedChat });
-  this.peerConnection = new RTCPeerConnection(config);
-
-    this.peerConnection.onicecandidate = (event) => {
-      if (event.candidate && this.selectedChat) {
-        console.log('[WebRTC] onicecandidate:', event.candidate);
-        this.socketService.emit('webrtc_ice_candidate', {
-          candidate: event.candidate,
-          ownerId: this.selectedChat.ownerId,
-          buyerId: this.selectedChat.buyerId
-        });
-      }
-    };
-
-    this.peerConnection.ontrack = (event) => {
-      console.log('[WebRTC] ontrack:', event);
-      if (!this.remoteStream) {
-        this.remoteStream = new MediaStream();
-        setTimeout(() => {
-          if (this.remoteVideo)
-            this.remoteVideo.nativeElement.srcObject = this.remoteStream;
-        }, 0);
-      }
-      this.remoteStream.addTrack(event.track);
-      console.log('[WebRTC] remoteStream tracks:', this.remoteStream.getTracks());
-    };
-
-    try {
-      this.localStream = await navigator.mediaDevices.getUserMedia({
-        video: this.isVideoCall,
-        audio: true,
-      });
-      console.log('[WebRTC] got localStream', this.localStream);
-      this.localStream.getTracks().forEach((track) => {
-        this.peerConnection!.addTrack(track, this.localStream!);
-      });
-      setTimeout(() => {
-        if (this.localVideo)
-          this.localVideo.nativeElement.srcObject = this.localStream;
-      }, 0);
-    } catch (err) {
-      console.error('[WebRTC] Could not access camera/microphone', err);
-      alert('Could not access camera/microphone');
-      this.endCall();
-      return;
-    }
-
-    if (isCaller && this.selectedChat) {
-      const offer = await this.peerConnection.createOffer();
-      await this.peerConnection.setLocalDescription(offer);
-      console.log('[WebRTC] Sending offer', offer);
-      this.socketService.emit('webrtc_offer', {
-        offer,
-        isVideo: this.isVideoCall,
-        ownerId: this.selectedChat.ownerId,
-        buyerId: this.selectedChat.buyerId
-      });
-    }
+  // isVideoCall already set in startCall or acceptCall
+    this.callState.selectedChat = this.selectedChat;
+    await this.callService.initWebRTC(
+      this.callState,
+      isCaller,
+      this.socketService,
+      () => this.endCall()
+    );
   }
 
-  handleOffer(offer: any, from: string, isVideo: boolean) {
-    console.log('[WebRTC] handleOffer', { offer, from, isVideo });
-    this.isVideoCall = isVideo;
-    this.initWebRTC(false).then(async () => {
-      await this.peerConnection!.setRemoteDescription(new RTCSessionDescription(offer));
-      console.log('[WebRTC] setRemoteDescription(offer) done');
-      const answer = await this.peerConnection!.createAnswer();
-      await this.peerConnection!.setLocalDescription(answer);
-      console.log('[WebRTC] Sending answer', answer);
-      if (this.selectedChat) {
-        this.socketService.emit('webrtc_answer', {
-          answer,
-          ownerId: this.selectedChat.ownerId,
-          buyerId: this.selectedChat.buyerId
-        });
-      }
-      this.isInCall = true; // Only set after connection is ready
-      console.log('[State] isInCall:', this.isInCall);
-    });
+  async handleOffer(offer: any, from: string, isVideo: boolean) {
+  this.callState.isVideoCall = isVideo;
+    this.callState.selectedChat = this.selectedChat;
+    await this.callService.handleOffer(
+      this.callState,
+      offer,
+      isVideo,
+      this.socketService,
+      () => this.endCall()
+    );
+    this.isInCall = true;
   }
 
   // Accept incoming call (owner)
@@ -366,10 +321,10 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.incomingCall = false;
     this.isInCall = true; // Set immediately for UI
     this.isCalling = false;
-    this.isVideoCall = this.callType === 'video';
+  this.callState.isVideoCall = this.callType === 'video';
     // Stop call notification sound
   this.notificationService.stopCallSound();
-    console.log('[State] Accepting call. isVideoCall:', this.isVideoCall);
+  console.log('[State] Accepting call. isVideoCall:', this.callState.isVideoCall);
     // Notify initiator
     this.socketService.emit('call_accepted', {
       ownerId: this.selectedChat.ownerId,
@@ -412,18 +367,11 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async handleAnswer(answer: any) {
-    if (this.peerConnection && this.peerConnection.signalingState === 'have-local-offer') {
-      await this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-      console.log('[WebRTC] setRemoteDescription(answer) done');
-    } else {
-      // Optionally log or handle unexpected state
-      console.warn('Cannot set remote answer in state:', this.peerConnection?.signalingState);
-    }
+    await this.callService.handleAnswer(this.callState, answer);
   }
 
   async handleIceCandidate(candidate: any) {
-  await this.peerConnection!.addIceCandidate(new RTCIceCandidate(candidate));
-  console.log('[WebRTC] addIceCandidate done', candidate);
+    await this.callService.handleIceCandidate(this.callState, candidate);
   }
 
   endCall() {
@@ -437,39 +385,22 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sendSystemMessage(`Missed call at ${timeStr}`, 'missed-call');
     }
 
-    console.log('[Call] endCall called');
-    // Notify the other user
     if (this.selectedChat && (this.isInCall || this.isCalling)) {
       this.socketService.emit('call_ended', {
         ownerId: this.selectedChat.ownerId,
         buyerId: this.selectedChat.buyerId
       });
     }
-    // Reset all call-related state and UI for both caller and receiver
     this.incomingCall = false;
     this.isInCall = false;
     this.isCalling = false;
-    this.isVideoCall = false;
+  this.callState.isVideoCall = false;
     this.callType = null;
     this.callFrom = null;
     this.callOffer = null;
     this.callOfferSender = null;
     this.notificationService.stopCallSound();
-    if (this.peerConnection) {
-      this.peerConnection.close();
-      this.peerConnection = null;
-      console.log('[WebRTC] peerConnection closed');
-    }
-    if (this.localStream) {
-      this.localStream.getTracks().forEach((track) => track.stop());
-      this.localStream = null;
-      console.log('[WebRTC] localStream tracks stopped');
-    }
-    if (this.remoteStream) {
-      this.remoteStream.getTracks().forEach((track) => track.stop());
-      this.remoteStream = null;
-      console.log('[WebRTC] remoteStream tracks stopped');
-    }
+    this.callService.cleanupCall(this.callState);
   }
   sendSystemMessage(text: string, systemType: 'call-ended' | 'missed-call' | 'call-rejected') {
     if (!this.selectedChat) return;
