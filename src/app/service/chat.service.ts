@@ -33,6 +33,92 @@ export interface ChatMessage {
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
+  // Helper to generate chatId from sorted user ids + product id
+  getChatId(ownerId: string, buyerId: string, productId: string): string {
+    const [userA, userB] = [ownerId, buyerId].sort();
+    return `${userA}_${userB}_${productId}`;
+  }
+
+  // Send a chat message (with optional file upload)
+  async sendMessage(
+    http: HttpClient,
+    environment: any,
+    socketService: any,
+    selectedChat: any,
+    newMessage: string,
+    selectedFile: File | null,
+    currentUserId: string,
+    buyerId: string,
+    addMessageAndScroll: (msg: any) => void,
+    setNewMessage: (val: string) => void,
+    setSelectedFile: (val: File | null) => void
+  ) {
+    const text = newMessage.trim();
+    if (!selectedChat || (!text && !selectedFile)) {
+      return;
+    }
+    const { ownerId, buyerId: chatBuyerId, productId } = selectedChat;
+    selectedChat.googleId = currentUserId;
+    selectedChat.ownerId = ownerId;
+    selectedChat.buyerId = chatBuyerId || buyerId || currentUserId;
+
+    if (!ownerId || !selectedChat.buyerId) {
+      return;
+    }
+    const senderId = currentUserId;
+    const receiverId = senderId === ownerId ? selectedChat.buyerId : ownerId;
+    const chatId = this.getChatId(ownerId, selectedChat.buyerId, productId);
+
+    let attachmentUrl = '';
+    let attachmentType = '';
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      try {
+        const uploadRes: any = await http
+          .post(`${environment.apiBaseUrl}/api/upload`, formData)
+          .toPromise();
+        attachmentUrl = uploadRes.url;
+        attachmentType = selectedFile.type.startsWith('image')
+          ? 'image'
+          : 'file';
+      } catch (e) {
+        attachmentUrl = '';
+        attachmentType = '';
+      }
+    }
+
+    const msgPayload: any = {
+      chatId,
+      senderId,
+      senderGoogleId: currentUserId,
+      receiverId,
+      receiverGoogleId: receiverId,
+      productId,
+      message: text,
+      timestamp: Date.now(),
+      attachmentUrl,
+      attachmentType,
+    };
+    // Prevent duplicate messages
+    // (You may want to pass messages array if you want to check for duplicates, or handle this in the component)
+    addMessageAndScroll({
+      text,
+      time: new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+      senderId,
+      receiverId,
+      productId,
+      chatId,
+      attachmentUrl,
+      attachmentType,
+    });
+    socketService.emit('chatMessage', msgPayload);
+    setNewMessage('');
+    setSelectedFile(null);
+  }
   constructor(private http: HttpClient) {}
 
   fetchChatList(userId: string, token: string): Observable<ChatSummary[]> {

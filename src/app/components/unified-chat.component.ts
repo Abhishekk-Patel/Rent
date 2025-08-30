@@ -1,5 +1,6 @@
 
 
+
 import {
   Component,
   ElementRef,
@@ -53,6 +54,11 @@ interface ChatMessage {
   styleUrls: ['./unified-chat.component.css'],
 })
 export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
+  // Helper to add a message and scroll to bottom
+  addMessageAndScroll(msg: any) {
+    this.messages.push(msg);
+    setTimeout(() => this.scrollToBottom(), 0);
+  }
   // Expose isVideoCall for template compatibility
   get isVideoCall() {
     return this.callState.isVideoCall;
@@ -211,7 +217,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('[SocketService] chatMessage:', msg);
     if (!this.selectedChat) return;
     const incomingChatId = msg.chatId;
-    const selectedChatId = this.getChatId(
+    const selectedChatId = this.chatService.getChatId(
       this.selectedChat.ownerId,
       this.selectedChat.buyerId || this.buyerId,
       this.selectedChat.productId
@@ -226,7 +232,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       ) {
         return;
       }
-      this.messages.push({
+      this.addMessageAndScroll({
         text: msg.message,
         time: new Date(msg.timestamp || Date.now()).toLocaleTimeString([], {
           hour: '2-digit',
@@ -237,11 +243,10 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
         productId: msg.productId,
         chatId: msg.chatId,
       });
-      setTimeout(() => this.scrollToBottom(), 0);
     } else {
       const chat = this.chatList.find(
         (c) =>
-          this.getChatId(
+          this.chatService.getChatId(
             c.ownerId,
             c.buyerId || this.buyerId,
             c.productId
@@ -410,7 +415,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     const senderId: string = this.currentUserId;
     const receiverId: string = senderId === ownerId ? buyerId : ownerId;
     if (!ownerId || !buyerId || !productId || !receiverId) return;
-    const chatId: string = this.getChatId(ownerId, buyerId, productId);
+  const chatId: string = this.chatService.getChatId(ownerId, buyerId, productId);
     const msgPayload: any = {
       chatId,
       senderId,
@@ -420,7 +425,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       timestamp: Date.now(),
       systemType: systemType,
     };
-    this.messages.push({
+    this.addMessageAndScroll({
       text,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       senderId,
@@ -429,8 +434,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       chatId,
       systemType: systemType,
     });
-  this.socketService.emit('chatMessage', msgPayload);
-    setTimeout(() => this.scrollToBottom(), 0);
+    this.socketService.emit('chatMessage', msgPayload);
   }
 
   
@@ -453,7 +457,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.chatList || this.chatList.length === 0) return;
     for (const chat of this.chatList) {
       if (!chat.buyerId) continue;
-      const chatId = this.getChatId(chat.ownerId, chat.buyerId, chat.productId);
+  const chatId = this.chatService.getChatId(chat.ownerId, chat.buyerId, chat.productId);
   this.socketService.emit('joinRoom', { chatId });
     }
   }
@@ -571,7 +575,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
             senderId: m.senderId,
             receiverId: m.receiverId,
             productId: m.productId,
-            chatId: this.getChatId(m.senderId, m.receiverId, m.productId),
+            chatId: this.chatService.getChatId(m.senderId, m.receiverId, m.productId),
           }));
         }
         setTimeout(() => this.scrollToBottom(), 0);
@@ -584,92 +588,21 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   async sendMessage() {
-    const text = this.newMessage.trim();
-    if (!this.selectedChat || (!text && !this.selectedFile)) {
-      return;
-    }
-    const { ownerId, buyerId, productId } = this.selectedChat;
-    this.selectedChat.googleId = this.currentUserId;
-    this.selectedChat.ownerId = ownerId;
-    this.selectedChat.buyerId = buyerId || this.buyerId || this.currentUserId;
-
-    if (!ownerId || !this.selectedChat.buyerId) {
-      return;
-    }
-    const senderId = this.currentUserId;
-    const receiverId =
-      senderId === ownerId ? this.selectedChat.buyerId : ownerId;
-    const chatId = this.getChatId(
-      ownerId,
-      this.selectedChat.buyerId,
-      productId
+    await this.chatService.sendMessage(
+      this.http,
+      environment,
+      this.socketService,
+      this.selectedChat,
+      this.newMessage,
+      this.selectedFile,
+      this.currentUserId,
+      this.buyerId,
+      this.addMessageAndScroll.bind(this),
+      (val: string) => { this.newMessage = val; },
+      (val: File | null) => { this.selectedFile = val; }
     );
-
-    let attachmentUrl = '';
-    let attachmentType = '';
-    if (this.selectedFile) {
-      // Upload file to server (implement /api/upload endpoint in BE)
-      const formData = new FormData();
-      formData.append('file', this.selectedFile);
-      try {
-        const uploadRes: any = await this.http
-          .post(`${environment.apiBaseUrl}/api/upload`, formData)
-          .toPromise();
-        attachmentUrl = uploadRes.url;
-        attachmentType = this.selectedFile.type.startsWith('image')
-          ? 'image'
-          : 'file';
-      } catch (e) {
-        // Handle upload error
-        attachmentUrl = '';
-        attachmentType = '';
-      }
-    }
-
-    const msgPayload: any = {
-      chatId,
-      senderId,
-      senderGoogleId: this.currentUserId,
-      receiverId,
-      receiverGoogleId: receiverId,
-      productId,
-      message: text,
-      timestamp: Date.now(),
-      attachmentUrl,
-      attachmentType,
-    };
-    const lastMsg = this.messages[this.messages.length - 1];
-    const isDuplicate =
-      lastMsg &&
-      lastMsg.text === text &&
-      lastMsg.senderId === senderId &&
-      (!attachmentUrl || lastMsg.attachmentUrl === attachmentUrl);
-    if (!isDuplicate) {
-      this.messages.push({
-        text,
-        time: new Date().toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-        senderId,
-        receiverId,
-        productId,
-        chatId,
-        attachmentUrl,
-        attachmentType,
-      });
-      setTimeout(() => this.scrollToBottom(), 0);
-    }
-  this.socketService.emit('chatMessage', msgPayload);
-    this.newMessage = '';
-    this.selectedFile = null;
   }
 
-  // Helper to generate chatId from sorted user ids + product id
-  getChatId(ownerId: string, buyerId: string, productId: string): string {
-    const [userA, userB] = [ownerId, buyerId].sort();
-    return `${userA}_${userB}_${productId}`;
-  }
 
   scrollToBottom() {
     if (this.messagesContainer?.nativeElement) {
