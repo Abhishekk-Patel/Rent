@@ -11,11 +11,33 @@ export class NotificationService {
   private socket: Socket | null = null;
   private userId: string | null = null;
   private messageAudio: HTMLAudioElement;
+  private callAudio: HTMLAudioElement;
 
   constructor(private userService: UserService) {
     this.messageAudio = new Audio('assets/message_tone.mp3');
     this.messageAudio.load();
+    this.callAudio = new Audio('assets/call.mp3');
+    this.callAudio.loop = true;
     this.initSocket();
+  }
+  // Play call notification sound
+  playCallSound() {
+    try {
+      this.callAudio.currentTime = 0;
+      this.callAudio.play();
+    } catch (e) {
+      // Ignore play errors
+    }
+  }
+
+  // Stop call notification sound
+  stopCallSound() {
+    try {
+      this.callAudio.pause();
+      this.callAudio.currentTime = 0;
+    } catch (e) {
+      // Ignore errors
+    }
   }
 
   private initSocket() {

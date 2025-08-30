@@ -1,3 +1,4 @@
+
 import {
   Component,
   ElementRef,
@@ -7,13 +8,16 @@ import {
   Inject,
   OnInit,
 } from '@angular/core';
+import { NotificationService } from '../service/notification.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { environment } from '../../environments/environment';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { io, Socket } from 'socket.io-client';
+import { environment } from '../../environments/environment';
 import { UserService } from '../service/user.service';
 import { DataService } from '../service/data.service';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
+import { SocketService } from '../service/socket.service';
+import { CallService } from '../service/call.service';
+import { ChatService } from '../service/chat.service';
 interface ChatSummary {
   productId: string;
   ownerId: string;
@@ -39,6 +43,7 @@ interface ChatMessage {
   chatId: string;
   attachmentUrl?: string; // For file/image attachments
   attachmentType?: string; // e.g. 'image', 'file', etc.
+  systemType?: 'call-ended' | 'missed-call' | 'call-rejected'; // For system messages
 }
 
 @Component({
@@ -47,6 +52,22 @@ interface ChatMessage {
   styleUrls: ['./unified-chat.component.css'],
 })
 export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
+  // Call UI/logic state
+  incomingCall: boolean = false;
+  callFrom: string | null = null;
+  callType: 'video' | 'audio' | null = null;
+  callOffer: any = null;
+  callOfferSender: string | null = null;
+  callAudio: HTMLAudioElement | null = null; // For call.mp3 notification
+  // WebRTC call state
+  localStream: MediaStream | null = null;
+  remoteStream: MediaStream | null = null;
+  peerConnection: RTCPeerConnection | null = null;
+  isCalling = false;
+  isInCall = false;
+  isVideoCall = false;
+  @ViewChild('localVideo') localVideo!: ElementRef;
+  @ViewChild('remoteVideo') remoteVideo!: ElementRef;
   // Right-side profile panel state
   selectedProfile: ChatSummary | null = null;
   // Default avatar image (can be replaced with a real asset)
@@ -65,7 +86,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   isChatListLoading = false;
   isMessagesLoading = false;
-  socket!: Socket;
+  // socket!: Socket; // Remove direct socket usage
   currentUserId = '';
   chatList: ChatSummary[] = [];
   selectedChat: ChatSummary | null = null;
@@ -96,12 +117,25 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     public dataService: DataService,
     public myCartService: MyCartServiceService,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private http: HttpClient
+    private http: HttpClient,
+    private notificationService: NotificationService,
+    private socketService: SocketService,
+    private callService: CallService,
+    private chatService: ChatService
   ) {}
 
   ngOnInit(): void {
+    // Listen for call_accepted event so caller can update UI and start WebRTC
+    this.socketService.onEvent('call_accepted').subscribe(() => {
+      if (this.isCalling) {
+        this.isCalling = false;
+        this.isInCall = true;
+        this.initWebRTC(true);
+      }
+    });
     const userDetails = this.userService.getUserDetails();
     this.currentUserId = userDetails.googleId || userDetails.userId;
+    console.log('[Init] currentUserId:', this.currentUserId);
 
     if (this.data?.product) {
       const product = this.data.product;
@@ -118,89 +152,346 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
         googleId: this.currentUserId,
       };
       this.buyerId = isCurrentUserOwner ? '' : this.currentUserId;
+      console.log('[Init] selectedChat:', this.selectedChat);
       this.loadMessages(
         product.pk,
         product.userId,
         this.selectedChat.buyerId || this.buyerId
       );
     }
-  }
 
-  ngAfterViewInit() {
-    const token = localStorage.getItem('userToken');
-    this.socket = io(environment.apiBaseUrl, { auth: { token } });
+  // --- SOCKET INITIALIZATION AND EVENT LISTENERS ---
+  const token = localStorage.getItem('userToken');
+  this.socketService.connect(token!);
+  console.log('[SocketService] Connecting to server with token:', token);
 
-    this.socket.on('connect', () => {
-      this.joinAllChatRooms();
-      // Request online users list after connecting
-      this.socket.emit('getOnlineUsers');
+    // Listen for professional call signaling events
+  this.socketService.onCall().subscribe((data: any) => {
+      console.log('[SocketService] Received incoming_call', data);
+      this.incomingCall = true;
+      this.callFrom = data.from;
+      this.callType = data.isVideo ? 'video' : 'audio';
+      this.callOffer = null;
+      this.callOfferSender = data.from;
+      this.notificationService.playCallSound();
+      console.log('[State] incomingCall:', this.incomingCall, 'callFrom:', this.callFrom, 'callType:', this.callType);
     });
 
-    this.socket.on('disconnect', () => {});
-
-    // Listen for online users list from server
-    this.socket.on('onlineUsers', (userIds: string[]) => {
+  this.socketService.onOnlineUsers().subscribe((userIds: string[]) => {
       this.onlineUsers = new Set(userIds);
+      console.log('[SocketService] onlineUsers:', userIds);
     });
 
-    // Listen for user online/offline events
-    this.socket.on('userOnline', (userId: string) => {
-      this.onlineUsers.add(userId);
-    });
-    this.socket.on('userOffline', (userId: string) => {
-      this.onlineUsers.delete(userId);
-    });
-
-    this.socket.off('chatMessage');
-    this.socket.on('chatMessage', (msg: any) => {
-      if (!this.selectedChat) return;
-      const incomingChatId = msg.chatId;
-      const selectedChatId = this.getChatId(
-        this.selectedChat.ownerId,
-        this.selectedChat.buyerId || this.buyerId,
-        this.selectedChat.productId
-      );
-      if (incomingChatId === selectedChatId) {
-        // Message for currently open chat
-        const lastMsg = this.messages[this.messages.length - 1];
-        if (
-          lastMsg &&
-          lastMsg.text === msg.message &&
-          lastMsg.senderId === msg.senderId &&
-          lastMsg.receiverId === msg.receiverId
-        ) {
-          return;
-        }
-        this.messages.push({
-          text: msg.message,
-          time: new Date(msg.timestamp || Date.now()).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          }),
-          senderId: msg.senderId,
-          receiverId: msg.receiverId,
-          productId: msg.productId,
-          chatId: msg.chatId,
-        });
-        setTimeout(() => this.scrollToBottom(), 0);
-      } else {
-        // Message for another chat: set hasNewMessage on that chat
-        const chat = this.chatList.find(
-          (c) =>
-            this.getChatId(
-              c.ownerId,
-              c.buyerId || this.buyerId,
-              c.productId
-            ) === incomingChatId
-        );
-        if (chat) {
-          chat.hasNewMessage = true;
-        }
+  this.socketService.onMessage().subscribe((msg: any) => {
+    console.log('[SocketService] chatMessage:', msg);
+    if (!this.selectedChat) return;
+    const incomingChatId = msg.chatId;
+    const selectedChatId = this.getChatId(
+      this.selectedChat.ownerId,
+      this.selectedChat.buyerId || this.buyerId,
+      this.selectedChat.productId
+    );
+    if (incomingChatId === selectedChatId) {
+      const lastMsg = this.messages[this.messages.length - 1];
+      if (
+        lastMsg &&
+        lastMsg.text === msg.message &&
+        lastMsg.senderId === msg.senderId &&
+        lastMsg.receiverId === msg.receiverId
+      ) {
+        return;
       }
-    });
+      this.messages.push({
+        text: msg.message,
+        time: new Date(msg.timestamp || Date.now()).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        senderId: msg.senderId,
+        receiverId: msg.receiverId,
+        productId: msg.productId,
+        chatId: msg.chatId,
+      });
+      setTimeout(() => this.scrollToBottom(), 0);
+    } else {
+      const chat = this.chatList.find(
+        (c) =>
+          this.getChatId(
+            c.ownerId,
+            c.buyerId || this.buyerId,
+            c.productId
+          ) === incomingChatId
+      );
+      if (chat) {
+        chat.hasNewMessage = true;
+      }
+    }
+  });
+
+  // Listen for call_ended event from the server and end call on both sides
+  this.socketService.onEvent('call_ended').subscribe(() => {
+    this.endCall();
+  });
+
+  // TODO: Move WebRTC and call event listeners to SocketService or CallService for full modularization
 
     this.fetchChatList();
   }
+
+  ngAfterViewInit() {
+    // No socket logic here anymore; reserved for DOM logic if needed
+    // (intentionally left blank)
+  }
+  // --- WebRTC Voice/Video Call Methods ---
+  startCall(isVideo: boolean) {
+    console.log('[Call] startCall called', { isVideo, currentUserId: this.currentUserId, selectedChat: this.selectedChat });
+    this.isVideoCall = isVideo;
+    this.isCalling = true;
+    console.log('[State] isVideoCall:', this.isVideoCall, 'isCalling:', this.isCalling);
+    // Allow both buyer and owner to start a call
+    if (this.selectedChat) {
+      this.socketService.emit('incoming_call', {
+        ownerId: this.selectedChat.ownerId,
+        buyerId: this.selectedChat.buyerId,
+        isVideo: isVideo,
+        from: this.currentUserId
+      });
+      console.log('[SocketService] Emitted incoming_call', {
+        ownerId: this.selectedChat.ownerId,
+        buyerId: this.selectedChat.buyerId,
+        isVideo: isVideo,
+        from: this.currentUserId
+      });
+    }
+  }
+
+  async initWebRTC(isCaller: boolean) {
+  const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+  console.log('[WebRTC] initWebRTC', { isCaller, isVideoCall: this.isVideoCall, selectedChat: this.selectedChat });
+  this.peerConnection = new RTCPeerConnection(config);
+
+    this.peerConnection.onicecandidate = (event) => {
+      if (event.candidate && this.selectedChat) {
+        console.log('[WebRTC] onicecandidate:', event.candidate);
+        this.socketService.emit('webrtc_ice_candidate', {
+          candidate: event.candidate,
+          ownerId: this.selectedChat.ownerId,
+          buyerId: this.selectedChat.buyerId
+        });
+      }
+    };
+
+    this.peerConnection.ontrack = (event) => {
+      console.log('[WebRTC] ontrack:', event);
+      if (!this.remoteStream) {
+        this.remoteStream = new MediaStream();
+        setTimeout(() => {
+          if (this.remoteVideo)
+            this.remoteVideo.nativeElement.srcObject = this.remoteStream;
+        }, 0);
+      }
+      this.remoteStream.addTrack(event.track);
+      console.log('[WebRTC] remoteStream tracks:', this.remoteStream.getTracks());
+    };
+
+    try {
+      this.localStream = await navigator.mediaDevices.getUserMedia({
+        video: this.isVideoCall,
+        audio: true,
+      });
+      console.log('[WebRTC] got localStream', this.localStream);
+      this.localStream.getTracks().forEach((track) => {
+        this.peerConnection!.addTrack(track, this.localStream!);
+      });
+      setTimeout(() => {
+        if (this.localVideo)
+          this.localVideo.nativeElement.srcObject = this.localStream;
+      }, 0);
+    } catch (err) {
+      console.error('[WebRTC] Could not access camera/microphone', err);
+      alert('Could not access camera/microphone');
+      this.endCall();
+      return;
+    }
+
+    if (isCaller && this.selectedChat) {
+      const offer = await this.peerConnection.createOffer();
+      await this.peerConnection.setLocalDescription(offer);
+      console.log('[WebRTC] Sending offer', offer);
+      this.socketService.emit('webrtc_offer', {
+        offer,
+        isVideo: this.isVideoCall,
+        ownerId: this.selectedChat.ownerId,
+        buyerId: this.selectedChat.buyerId
+      });
+    }
+  }
+
+  handleOffer(offer: any, from: string, isVideo: boolean) {
+    console.log('[WebRTC] handleOffer', { offer, from, isVideo });
+    this.isVideoCall = isVideo;
+    this.initWebRTC(false).then(async () => {
+      await this.peerConnection!.setRemoteDescription(new RTCSessionDescription(offer));
+      console.log('[WebRTC] setRemoteDescription(offer) done');
+      const answer = await this.peerConnection!.createAnswer();
+      await this.peerConnection!.setLocalDescription(answer);
+      console.log('[WebRTC] Sending answer', answer);
+      if (this.selectedChat) {
+        this.socketService.emit('webrtc_answer', {
+          answer,
+          ownerId: this.selectedChat.ownerId,
+          buyerId: this.selectedChat.buyerId
+        });
+      }
+      this.isInCall = true; // Only set after connection is ready
+      console.log('[State] isInCall:', this.isInCall);
+    });
+  }
+
+  // Accept incoming call (owner)
+  acceptCall() {
+    if (!this.selectedChat) return;
+    console.log('[Call] acceptCall called');
+    this.incomingCall = false;
+    this.isInCall = true; // Set immediately for UI
+    this.isCalling = false;
+    this.isVideoCall = this.callType === 'video';
+    // Stop call notification sound
+  this.notificationService.stopCallSound();
+    console.log('[State] Accepting call. isVideoCall:', this.isVideoCall);
+    // Notify initiator
+    this.socketService.emit('call_accepted', {
+      ownerId: this.selectedChat.ownerId,
+      buyerId: this.selectedChat.buyerId
+    });
+    console.log('[Socket] Emitted call_accepted', {
+      ownerId: this.selectedChat.ownerId,
+      buyerId: this.selectedChat.buyerId
+    });
+    // Wait for webrtc_offer from initiator
+    this.callOffer = null;
+    this.callOfferSender = null;
+    this.callType = null;
+  }
+
+  // Reject incoming call (owner)
+  rejectCall() {
+    if (!this.selectedChat) return;
+    console.log('[Call] rejectCall called');
+    // Only send missed call if not in call
+    if (!this.isInCall) {
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      this.sendSystemMessage(`Missed call at ${timeStr}`, 'missed-call');
+    }
+    this.incomingCall = false;
+    this.callOffer = null;
+    this.callOfferSender = null;
+    this.callType = null;
+    // Stop call notification sound
+  this.notificationService.stopCallSound();
+    // Notify buyer
+    this.socketService.emit('call_rejected', {
+      ownerId: this.selectedChat.ownerId,
+      buyerId: this.selectedChat.buyerId
+    });
+    console.log('[Socket] Emitted call_rejected', {
+      ownerId: this.selectedChat.ownerId,
+      buyerId: this.selectedChat.buyerId
+    });
+  }
+
+  async handleAnswer(answer: any) {
+    if (this.peerConnection && this.peerConnection.signalingState === 'have-local-offer') {
+      await this.peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+      console.log('[WebRTC] setRemoteDescription(answer) done');
+    } else {
+      // Optionally log or handle unexpected state
+      console.warn('Cannot set remote answer in state:', this.peerConnection?.signalingState);
+    }
+  }
+
+  async handleIceCandidate(candidate: any) {
+  await this.peerConnection!.addIceCandidate(new RTCIceCandidate(candidate));
+  console.log('[WebRTC] addIceCandidate done', candidate);
+  }
+
+  endCall() {
+    // Only send 'call ended' if the call was actually received (in-call)
+    if (this.selectedChat && this.isInCall) {
+      this.sendSystemMessage('Call ended', 'call-ended');
+    }
+    // Only send 'missed call' if the call was never picked up (not in-call, but a call was attempted)
+    if (this.selectedChat && !this.isInCall && (this.isCalling || this.incomingCall)) {
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      this.sendSystemMessage(`Missed call at ${timeStr}`, 'missed-call');
+    }
+
+    console.log('[Call] endCall called');
+    // Notify the other user
+    if (this.selectedChat && (this.isInCall || this.isCalling)) {
+      this.socketService.emit('call_ended', {
+        ownerId: this.selectedChat.ownerId,
+        buyerId: this.selectedChat.buyerId
+      });
+    }
+    // Reset all call-related state and UI for both caller and receiver
+    this.incomingCall = false;
+    this.isInCall = false;
+    this.isCalling = false;
+    this.isVideoCall = false;
+    this.callType = null;
+    this.callFrom = null;
+    this.callOffer = null;
+    this.callOfferSender = null;
+    this.notificationService.stopCallSound();
+    if (this.peerConnection) {
+      this.peerConnection.close();
+      this.peerConnection = null;
+      console.log('[WebRTC] peerConnection closed');
+    }
+    if (this.localStream) {
+      this.localStream.getTracks().forEach((track) => track.stop());
+      this.localStream = null;
+      console.log('[WebRTC] localStream tracks stopped');
+    }
+    if (this.remoteStream) {
+      this.remoteStream.getTracks().forEach((track) => track.stop());
+      this.remoteStream = null;
+      console.log('[WebRTC] remoteStream tracks stopped');
+    }
+  }
+  sendSystemMessage(text: string, systemType: 'call-ended' | 'missed-call' | 'call-rejected') {
+    if (!this.selectedChat) return;
+    const ownerId: string = this.selectedChat.ownerId;
+    const buyerId: string = this.selectedChat.buyerId || this.buyerId || '';
+    const productId: string = this.selectedChat.productId;
+    const senderId: string = this.currentUserId;
+    const receiverId: string = senderId === ownerId ? buyerId : ownerId;
+    if (!ownerId || !buyerId || !productId || !receiverId) return;
+    const chatId: string = this.getChatId(ownerId, buyerId, productId);
+    const msgPayload: any = {
+      chatId,
+      senderId,
+      receiverId,
+      productId,
+      message: text,
+      timestamp: Date.now(),
+      systemType: systemType,
+    };
+    this.messages.push({
+      text,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      senderId,
+      receiverId,
+      productId,
+      chatId,
+      systemType: systemType,
+    });
+  this.socketService.emit('chatMessage', msgPayload);
+    setTimeout(() => this.scrollToBottom(), 0);
+  }
+
+  
   // Returns true if the user (owner or buyer) is online
   isUserOnline(userId: string): boolean {
     return this.onlineUsers.has(userId);
@@ -221,58 +512,39 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     for (const chat of this.chatList) {
       if (!chat.buyerId) continue;
       const chatId = this.getChatId(chat.ownerId, chat.buyerId, chat.productId);
-      this.socket.emit('joinRoom', { chatId });
+  this.socketService.emit('joinRoom', { chatId });
     }
   }
 
   fetchChatList() {
     const token = localStorage.getItem('userToken');
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
     const userId = this.currentUserId;
     this.isChatListLoading = true;
-    this.http
-      .get<ChatSummary[]>(`${environment.apiBaseUrl}/api/chat/list/${userId}`, {
-        headers,
-      })
-      .subscribe({
-        next: (list) => {
-          // console.log(list,"list")
-
-          // const productIds = list.map(chat => chat.productId);
-          // this.dataService.getProductById(productIds as any).subscribe((products) => {
-          //     console.log(products, "products 123");
-          // });
-          // // Example: fetch product for the first chat in the list (if any)
-          // if (list.length > 0) {
-          //   this.dataService.getProductById(list[0].productId).subscribe((product) => {
-          //     console.log(product,"product")
-          //   });
-          // }
-
-          this.chatList = list.map((chat) => ({
-            ...chat,
-            googleId: this.currentUserId,
-            ownerId: chat.ownerId,
-            // Example: fallback avatar/email logic, replace with real data if available
-            avatarUrl: chat.avatarUrl || (chat as any).ownerAvatar || '',
-            ownerEmail: chat.ownerEmail || (chat as any).email || '',
-          }));
-          if (this.chatList.length) {
-            const firstChat = this.chatList[0];
-            this.selectedChat = { ...firstChat };
-            this.loadMessages(
-              firstChat.productId,
-              firstChat.ownerId,
-              firstChat.buyerId || this.buyerId
-            );
-            this.joinAllChatRooms();
-          }
-          this.isChatListLoading = false;
-        },
-        error: (err) => {
-          this.isChatListLoading = false;
-        },
-      });
+    this.chatService.fetchChatList(userId, token!).subscribe({
+      next: (list) => {
+        this.chatList = list.map((chat) => ({
+          ...chat,
+          googleId: this.currentUserId,
+          ownerId: chat.ownerId,
+          avatarUrl: chat.avatarUrl || (chat as any).ownerAvatar || '',
+          ownerEmail: chat.ownerEmail || (chat as any).email || '',
+        }));
+        if (this.chatList.length) {
+          const firstChat = this.chatList[0];
+          this.selectedChat = { ...firstChat };
+          this.loadMessages(
+            firstChat.productId,
+            firstChat.ownerId,
+            firstChat.buyerId || this.buyerId
+          );
+          this.joinAllChatRooms();
+        }
+        this.isChatListLoading = false;
+      },
+      error: (err) => {
+        this.isChatListLoading = false;
+      },
+    });
   }
 
   selectChat(chat: ChatSummary) {
@@ -342,38 +614,32 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.isMessagesLoading = true;
     const token = localStorage.getItem('userToken');
-    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    this.http
-      .get<any[]>(
-        `${environment.apiBaseUrl}/api/chat/history/${ownerId}/${buyerId}/${productId}`,
-        { headers }
-      )
-      .subscribe({
-        next: (history) => {
-          if (history.length === 0) {
-            // No messages yet for this chat
-            this.messages = [];
-          } else {
-            this.messages = history.map((m) => ({
-              text: m.message,
-              time: new Date(m.timestamp).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              }),
-              senderId: m.senderId,
-              receiverId: m.receiverId,
-              productId: m.productId,
-              chatId: this.getChatId(m.senderId, m.receiverId, m.productId),
-            }));
-          }
-          setTimeout(() => this.scrollToBottom(), 0);
-          this.isMessagesLoading = false;
-        },
-        error: (err) => {
+    this.isMessagesLoading = true;
+    this.chatService.loadMessages(productId, ownerId, buyerId, token!).subscribe({
+      next: (history) => {
+        if (history.length === 0) {
           this.messages = [];
-          this.isMessagesLoading = false;
-        },
-      });
+        } else {
+          this.messages = history.map((m: any) => ({
+            text: m.message,
+            time: new Date(m.timestamp).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            senderId: m.senderId,
+            receiverId: m.receiverId,
+            productId: m.productId,
+            chatId: this.getChatId(m.senderId, m.receiverId, m.productId),
+          }));
+        }
+        setTimeout(() => this.scrollToBottom(), 0);
+        this.isMessagesLoading = false;
+      },
+      error: (_err) => {
+        this.messages = [];
+        this.isMessagesLoading = false;
+      },
+    });
   }
   async sendMessage() {
     const text = this.newMessage.trim();
@@ -452,7 +718,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       });
       setTimeout(() => this.scrollToBottom(), 0);
     }
-    this.socket.emit('chatMessage', msgPayload);
+  this.socketService.emit('chatMessage', msgPayload);
     this.newMessage = '';
     this.selectedFile = null;
   }
@@ -477,6 +743,10 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.socket?.disconnect();
+  this.socketService.disconnect();
+    if (this.callAudio) {
+      this.callAudio.pause();
+      this.callAudio.currentTime = 0;
+    }
   }
 }
