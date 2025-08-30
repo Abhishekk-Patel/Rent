@@ -1,11 +1,16 @@
 <div class="unified-chat-advanced">
-  <button class="chat-close-btn" (click)="this.myCartService.closeCartModel()" aria-label="Close chat">
+  <!-- Close Button -->
+  <button class="chat-close-btn" (click)="myCartService.closeCartModel()" aria-label="Close chat">
     <mat-icon>home</mat-icon>
   </button>
+
+  <!-- Chat List -->
   <aside class="chat-list-container">
     <header class="chat-list-header">
       <h3 class="chat-list-title">Chats</h3>
     </header>
+
+    <!-- No Chats Message -->
     <div *ngIf="chatList.length === 0" class="chat-list-empty">
       <div class="chat-list-empty-icon">
         <svg width="48" height="48" fill="none" viewBox="0 0 24 24">
@@ -17,46 +22,51 @@
       <div class="chat-list-empty-title">No Chats Yet</div>
       <div class="chat-list-empty-desc">You have no conversations yet.</div>
     </div>
+
+    <!-- Chat List Items -->
     <div class="chat-list-scroll">
       <ng-container *ngFor="let chat of chatList">
         <div class="chat-list-item" [class.selected]="isSelectedChat(chat)" (click)="selectChat(chat)">
           <div class="chat-list-img-wrapper">
             <img [src]="chat.avatarUrl || defaultAvatar" alt="User Avatar" class="chat-user-avatar" (click)="openProfilePanel(chat); $event.stopPropagation()" tabindex="0" />
-            <img [src]="chat.productImage" alt="Product" class="chat-list-img" />
             <span *ngIf="chat.hasNewMessage" class="chat-new-indicator"></span>
-            <span class="chat-list-status-dot" [ngClass]="isUserOnline(chat.ownerId) ? 'online' : 'offline'" title="{{ isUserOnline(chat.ownerId) ? 'Online' : 'Offline' }}"></span>
+            <span class="chat-list-status-dot" [ngClass]="getOnlineStatusClass(chat.ownerId)" title="{{ getOnlineStatusText(chat.ownerId) }}"></span>
           </div>
           <div class="chat-list-info">
             <div class="chat-list-product">{{ chat.productName }}</div>
             <div class="chat-list-owner">
               with {{ chat.ownerName }}
-              <span *ngIf="isUserOnline(chat.ownerId)" class="chat-list-status-text online">●</span>
-              <span *ngIf="!isUserOnline(chat.ownerId)" class="chat-list-status-text offline">●</span>
+              <span [ngClass]="getOnlineStatusClass(chat.ownerId)" class="chat-list-status-text"></span>
             </div>
             <div class="chat-list-last">{{ chat.lastMessage }}</div>
           </div>
-          <div class="chat-list-time">{{ chat.lastTime }}</div>
+          <div class="chat-list-time">{{ chat.lastTime | date }}</div>
         </div>
       </ng-container>
     </div>
   </aside>
+
+  <!-- Chat Panel -->
   <main class="chat-main-panel" [class.with-profile-panel]="selectedProfile">
     <section *ngIf="selectedChat; else noChatSelected" class="chat-dialog-container">
-      <!-- Incoming Call Modal (Receiver) -->
-      <div *ngIf="incomingCall" class="call-modal incoming-call-modal pro-call-modal">
-        <div class="call-modal-content">
-          <div class="call-modal-avatar">
+      
+      <!-- Incoming Call Modal -->
+      <div *ngIf="incomingCall" class="call-modal incoming-call-modal pro-call-modal modern-call-modal">
+        <div class="call-modal-content modern-call-modal-content">
+          <div class="call-modal-avatar modern-call-avatar">
             <img [src]="selectedChat.avatarUrl || defaultAvatar" alt="Caller Avatar" />
           </div>
-          <div class="call-modal-title">
-            <span class="call-modal-user">{{ selectedChat.ownerName || 'User' }}</span>
-            <span class="call-modal-type">is calling you</span>
+          <div class="modern-call-info">
+            <div class="call-modal-type-icon modern-call-type-icon">
+              <mat-icon *ngIf="callType === 'video'">videocam</mat-icon>
+              <mat-icon *ngIf="callType === 'audio'">call</mat-icon>
+            </div>
+            <div class="call-modal-title modern-call-title">
+              <span class="call-modal-user">{{ selectedChat.ownerName || 'User' }}</span>
+              <span class="call-modal-type">is calling you</span>
+            </div>
           </div>
-          <div class="call-modal-type-icon">
-            <mat-icon *ngIf="callType === 'video'">videocam</mat-icon>
-            <mat-icon *ngIf="callType === 'audio'">call</mat-icon>
-          </div>
-          <div class="call-modal-actions">
+          <div class="call-modal-actions modern-call-actions">
             <button class="accept-call-btn pro-call-btn accept" mat-fab color="primary" (click)="acceptCall()">
               <mat-icon>call</mat-icon>
             </button>
@@ -67,27 +77,31 @@
         </div>
       </div>
 
-      <!-- Outgoing Call Modal (Caller) -->
-      <div *ngIf="isCalling && !isInCall" class="call-modal outgoing-call-modal pro-call-modal">
-        <div class="call-modal-content">
-          <div class="call-modal-avatar">
+      <!-- Outgoing Call Modal -->
+      <div *ngIf="isCalling && !isInCall" class="call-modal outgoing-call-modal pro-call-modal modern-call-modal">
+        <div class="call-modal-content modern-call-modal-content">
+          <div class="call-modal-avatar modern-call-avatar">
             <img [src]="selectedChat.avatarUrl || defaultAvatar" alt="Receiver Avatar" />
           </div>
-          <div class="call-modal-title">
-            <span class="call-modal-user">Calling {{ selectedChat.ownerName || 'User' }}</span>
+          <div class="modern-call-info">
+            <div class="call-modal-type-icon modern-call-type-icon">
+              <mat-icon *ngIf="isVideoCall">videocam</mat-icon>
+              <mat-icon *ngIf="!isVideoCall">call</mat-icon>
+            </div>
+            <div class="call-modal-title modern-call-title">
+              <span class="call-modal-user">Calling {{ selectedChat.ownerName || 'User' }}</span>
+            </div>
+            <div class="call-modal-status modern-call-status">Ringing...</div>
           </div>
-          <div class="call-modal-type-icon">
-            <mat-icon *ngIf="isVideoCall">videocam</mat-icon>
-            <mat-icon *ngIf="!isVideoCall">call</mat-icon>
-          </div>
-          <div class="call-modal-actions">
+          <div class="call-modal-actions modern-call-actions">
             <button class="reject-call-btn pro-call-btn reject" mat-fab color="warn" (click)="endCall()">
               <mat-icon>call_end</mat-icon>
             </button>
           </div>
-          <div class="call-modal-status">Ringing...</div>
         </div>
       </div>
+
+      <!-- Chat Header -->
       <header class="chat-dialog-header">
         <img [src]="selectedChat.productImage" alt="Product" class="chat-dialog-img" />
         <div class="chat-dialog-info">
@@ -95,39 +109,50 @@
           <div class="chat-dialog-owner">with {{ selectedChat.ownerName }}</div>
         </div>
       </header>
+
+      <!-- Progress Bar -->
       <mat-progress-bar *ngIf="isMessagesLoading" mode="determinate" color="accent" [value]="100" class="chat-progress-bar"></mat-progress-bar>
+
+      <!-- Messages -->
       <div class="chat-messages" #messagesContainer>
         <ng-container *ngIf="messages.length > 0; else noMessages">
-          <div *ngFor="let msg of messages" class="chat-message"
-            [ngClass]="msg.systemType ? 'system-message ' + msg.systemType : (msg.senderId === currentUserId ? 'self' : 'user')">
-            <ng-container *ngIf="msg.systemType === 'call-ended'">
-              <span class="system-message-icon call-ended">📞</span>
-              <span class="system-message-text call-ended">Call ended</span>
-              <span class="system-message-time">{{ msg.time }}</span>
+          <ng-container *ngFor="let msg of messages">
+            <ng-container *ngIf="msg.systemType; else normalMsg">
+              <div class="system-message {{msg.systemType}}" [ngClass]="msg.systemType + ' ' + (msg.senderId === currentUserId ? 'caller' : 'receiver')">
+                <ng-container [ngSwitch]="msg.systemType">
+                  <ng-container *ngSwitchCase="'call-ended'">
+                    <span class="system-message-icon call-ended">📞</span>
+                    <span class="system-message-text call-ended">Call ended</span>
+                    <span class="system-message-time">{{ msg.time }}</span>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'missed-call'">
+                    <span class="system-message-icon missed-call" [ngClass]="msg.senderId === currentUserId ? 'caller' : 'receiver'">{{ msg.senderId === currentUserId ? '⏰' : '❌' }}</span>
+                    <span class="system-message-text missed-call" [ngClass]="msg.senderId === currentUserId ? 'caller' : 'receiver'">{{ msg.senderId === currentUserId ? 'You missed a call' : 'Missed call' }}</span>
+                    <span class="system-message-time">{{ msg.time }}</span>
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'call-rejected'">
+                    <span class="system-message-icon call-rejected" [ngClass]="msg.senderId === currentUserId ? 'caller' : 'receiver'">{{ msg.senderId === currentUserId ? '🚫' : '❎' }}</span>
+                    <span class="system-message-text call-rejected" [ngClass]="msg.senderId === currentUserId ? 'caller' : 'receiver'">{{ msg.senderId === currentUserId ? 'You rejected the call' : 'Call was rejected' }}</span>
+                    <span class="system-message-time">{{ msg.time }}</span>
+                  </ng-container>
+                </ng-container>
+              </div>
             </ng-container>
-            <ng-container *ngIf="msg.systemType === 'missed-call'">
-              <span class="system-message-icon missed-call">❌</span>
-              <span class="system-message-text missed-call">{{ msg.text }}</span>
-              <span class="system-message-time">{{ msg.time }}</span>
-            </ng-container>
-            <ng-container *ngIf="msg.systemType === 'call-rejected'">
-              <span class="system-message-icon missed-call">❌</span>
-              <span class="system-message-text missed-call">{{ msg.text }}</span>
-              <span class="system-message-time">{{ msg.time }}</span>
-            </ng-container>
-            <ng-container *ngIf="!msg.systemType">
-              <span class="message-text">{{ msg.text }}</span>
-              <ng-container *ngIf="msg.attachmentUrl">
-                <div *ngIf="msg.attachmentType === 'image'">
-                  <img [src]="msg.attachmentUrl" alt="attachment" class="chat-attachment-img" />
-                </div>
-                <div *ngIf="msg.attachmentType === 'file'">
-                  <a [href]="msg.attachmentUrl" target="_blank" class="chat-attachment-link">Download Attachment</a>
-                </div>
-              </ng-container>
-            </ng-container>
-            <span *ngIf="!msg.systemType" class="message-time">{{ msg.time }}</span>
-          </div>
+            <ng-template #normalMsg>
+              <div class="chat-message" [ngClass]="msg.senderId === currentUserId ? 'self' : 'user'">
+                <span class="message-text">{{ msg.text }}</span>
+                <ng-container *ngIf="msg.attachmentUrl">
+                  <div *ngIf="msg.attachmentType === 'image'">
+                    <img [src]="msg.attachmentUrl" alt="attachment" class="chat-attachment-img" />
+                  </div>
+                  <div *ngIf="msg.attachmentType === 'file'">
+                    <a [href]="msg.attachmentUrl" target="_blank" class="chat-attachment-link">Download Attachment</a>
+                  </div>
+                </ng-container>
+                <span class="message-time">{{ msg.time }}</span>
+              </div>
+            </ng-template>
+          </ng-container>
         </ng-container>
         <ng-template #noMessages>
           <div class="chat-no-messages modern-no-messages">
@@ -137,19 +162,12 @@
           </div>
         </ng-template>
       </div>
+
+      <!-- Input Bar -->
       <footer class="chat-input-bar">
         <button type="button" class="emoji-btn" (click)="showEmojiPicker = !showEmojiPicker" [disabled]="!selectedChat" aria-label="Emoji">😊</button>
         <div *ngIf="showEmojiPicker" class="emoji-picker-popup">
-          <span (click)="addEmoji('😀')">😀</span>
-          <span (click)="addEmoji('😂')">😂</span>
-          <span (click)="addEmoji('😍')">😍</span>
-          <span (click)="addEmoji('👍')">👍</span>
-          <span (click)="addEmoji('🙏')">🙏</span>
-          <span (click)="addEmoji('🎉')">🎉</span>
-          <span (click)="addEmoji('❤️')">❤️</span>
-          <span (click)="addEmoji('😎')">😎</span>
-          <span (click)="addEmoji('😢')">😢</span>
-          <span (click)="addEmoji('🤔')">🤔</span>
+          <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">{{ emoji }}</span>
         </div>
         <button class="call-btn" mat-icon-button aria-label="Voice Call" [disabled]="!selectedChat || isInCall" (click)="startCall(false)">
           <mat-icon>call</mat-icon>
@@ -169,25 +187,33 @@
         </button>
       </footer>
 
-      <!-- In-Call UI (Both Sides) -->
-      <div *ngIf="isInCall" class="call-modal pro-call-modal">
-        <div class="call-video-container" [ngClass]="{'video-mode': isVideoCall, 'voice-mode': !isVideoCall}">
-          <div *ngIf="isVideoCall" class="video-call-wrapper">
-            <video #remoteVideo class="remote-video" autoplay playsinline></video>
-            <video #localVideo class="local-video" autoplay muted playsinline></video>
-            <div class="call-user-label remote">{{ selectedChat.ownerName || 'User' }}</div>
-            <div class="call-user-label local">You</div>
+      <!-- In-Call UI -->
+      <div *ngIf="isInCall" class="call-modal pro-call-modal modern-call-modal">
+        <div class="call-modal-content modern-call-modal-content">
+          <div class="call-modal-avatar modern-call-avatar" *ngIf="!isVideoCall">
+            <img [src]="selectedChat.avatarUrl || defaultAvatar" alt="User Avatar" class="modern-voice-avatar-img" />
           </div>
-          <div *ngIf="!isVideoCall" class="voice-call-avatar">
-            <img [src]="selectedChat.avatarUrl || defaultAvatar" alt="User Avatar" />
-            <div class="voice-call-label">Voice Call with {{ selectedChat.ownerName || 'User' }}</div>
+          <div class="modern-call-info">
+            <div *ngIf="isVideoCall" class="modern-video-call-wrapper">
+              <video #remoteVideo class="remote-video modern-remote-video" autoplay playsinline></video>
+              <video #localVideo class="local-video modern-local-video" autoplay muted playsinline></video>
+              <div class="modern-call-labels">
+                <div class="call-user-label remote modern-call-user-label">{{ selectedChat.ownerName || 'User' }}</div>
+                <div class="call-user-label local modern-call-user-label">You</div>
+              </div>
+            </div>
+            <div *ngIf="!isVideoCall" class="voice-call-label modern-voice-call-label">Voice Call with {{ selectedChat.ownerName || 'User' }}</div>
           </div>
-          <button class="end-call-btn pro-call-btn reject" mat-fab color="warn" aria-label="End Call" (click)="endCall()">
-            <mat-icon>call_end</mat-icon>
-          </button>
+          <div class="call-modal-actions modern-call-actions">
+            <button class="end-call-btn pro-call-btn reject modern-end-call-btn" mat-fab color="warn" aria-label="End Call" (click)="endCall()">
+              <mat-icon>call_end</mat-icon>
+            </button>
+          </div>
         </div>
       </div>
     </section>
+
+    <!-- No Chat Selected -->
     <ng-template #noChatSelected>
       <section class="chat-dialog-container chat-dialog-empty modern-empty-state">
         <div class="chat-empty-icon">
@@ -198,14 +224,16 @@
       </section>
     </ng-template>
   </main>
+
+  <!-- Profile Panel -->
   <aside *ngIf="selectedProfile" class="profile-side-panel open">
     <button class="profile-panel-close" (click)="closeProfilePanel()" aria-label="Close profile">&times;</button>
     <div class="profile-panel-header">
       <img [src]="selectedProfile.avatarUrl || defaultAvatar" alt="User Avatar" class="profile-panel-avatar" />
       <div class="profile-panel-name">{{ selectedProfile.ownerName }}</div>
       <div class="profile-panel-status">
-        <span [ngClass]="isUserOnline(selectedProfile.ownerId) ? 'online' : 'offline'" class="profile-panel-status-dot"></span>
-        {{ isUserOnline(selectedProfile.ownerId) ? 'Online' : 'Offline' }}
+        <span [ngClass]="getOnlineStatusClass(selectedProfile.ownerId)" class="profile-panel-status-dot"></span>
+        {{ getOnlineStatusText(selectedProfile.ownerId) }}
       </div>
     </div>
     <div class="profile-panel-details">
@@ -214,8 +242,6 @@
       <div *ngIf="selectedProfile.productImage">
         <img [src]="selectedProfile.productImage" alt="Product" class="profile-panel-product-img" />
       </div>
-      <!-- Add more user/product details here as needed -->
     </div>
   </aside>
 </div>
-

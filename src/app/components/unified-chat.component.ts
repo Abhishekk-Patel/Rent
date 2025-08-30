@@ -1,6 +1,3 @@
-
-
-
 import {
   Component,
   ElementRef,
@@ -54,6 +51,19 @@ interface ChatMessage {
   styleUrls: ['./unified-chat.component.css'],
 })
 export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
+  // Emoji picker options
+  emojis: string[] = [
+    '😀',
+    '😂',
+    '😍',
+    '👍',
+    '🙏',
+    '🎉',
+    '❤️',
+    '😎',
+    '😢',
+    '🤔',
+  ];
   // Helper to add a message and scroll to bottom
   addMessageAndScroll(msg: any) {
     this.messages.push(msg);
@@ -151,7 +161,10 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isCalling = false;
         this.isInCall = false;
         this.callState.isVideoCall = false;
-        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const timeStr = new Date().toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
         this.sendSystemMessage(`Call rejected at ${timeStr}`, 'call-rejected');
         alert('Call was rejected');
       }
@@ -191,13 +204,13 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       );
     }
 
-  // --- SOCKET INITIALIZATION AND EVENT LISTENERS ---
-  const token = localStorage.getItem('userToken');
-  this.socketService.connect(token!);
-  console.log('[SocketService] Connecting to server with token:', token);
+    // --- SOCKET INITIALIZATION AND EVENT LISTENERS ---
+    const token = localStorage.getItem('userToken');
+    this.socketService.connect(token!);
+    console.log('[SocketService] Connecting to server with token:', token);
 
     // Listen for professional call signaling events
-  this.socketService.onCall().subscribe((data: any) => {
+    this.socketService.onCall().subscribe((data: any) => {
       console.log('[SocketService] Received incoming_call', data);
       this.incomingCall = true;
       this.callFrom = data.from;
@@ -205,65 +218,72 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       this.callOffer = null;
       this.callOfferSender = data.from;
       this.notificationService.playCallSound();
-      console.log('[State] incomingCall:', this.incomingCall, 'callFrom:', this.callFrom, 'callType:', this.callType);
+      console.log(
+        '[State] incomingCall:',
+        this.incomingCall,
+        'callFrom:',
+        this.callFrom,
+        'callType:',
+        this.callType
+      );
     });
 
-  this.socketService.onOnlineUsers().subscribe((userIds: string[]) => {
+    this.socketService.onOnlineUsers().subscribe((userIds: string[]) => {
       this.onlineUsers = new Set(userIds);
       console.log('[SocketService] onlineUsers:', userIds);
     });
 
-  this.socketService.onMessage().subscribe((msg: any) => {
-    console.log('[SocketService] chatMessage:', msg);
-    if (!this.selectedChat) return;
-    const incomingChatId = msg.chatId;
-    const selectedChatId = this.chatService.getChatId(
-      this.selectedChat.ownerId,
-      this.selectedChat.buyerId || this.buyerId,
-      this.selectedChat.productId
-    );
-    if (incomingChatId === selectedChatId) {
-      const lastMsg = this.messages[this.messages.length - 1];
-      if (
-        lastMsg &&
-        lastMsg.text === msg.message &&
-        lastMsg.senderId === msg.senderId &&
-        lastMsg.receiverId === msg.receiverId
-      ) {
-        return;
-      }
-      this.addMessageAndScroll({
-        text: msg.message,
-        time: new Date(msg.timestamp || Date.now()).toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-        senderId: msg.senderId,
-        receiverId: msg.receiverId,
-        productId: msg.productId,
-        chatId: msg.chatId,
-      });
-    } else {
-      const chat = this.chatList.find(
-        (c) =>
-          this.chatService.getChatId(
-            c.ownerId,
-            c.buyerId || this.buyerId,
-            c.productId
-          ) === incomingChatId
+    this.socketService.onMessage().subscribe((msg: any) => {
+      console.log('[SocketService] chatMessage:', msg);
+      if (!this.selectedChat) return;
+      const incomingChatId = msg.chatId;
+      const selectedChatId = this.chatService.getChatId(
+        this.selectedChat.ownerId,
+        this.selectedChat.buyerId || this.buyerId,
+        this.selectedChat.productId
       );
-      if (chat) {
-        chat.hasNewMessage = true;
+      if (incomingChatId === selectedChatId) {
+        const lastMsg = this.messages[this.messages.length - 1];
+        if (
+          lastMsg &&
+          lastMsg.text === msg.message &&
+          lastMsg.senderId === msg.senderId &&
+          lastMsg.receiverId === msg.receiverId
+        ) {
+          return;
+        }
+        this.addMessageAndScroll({
+          text: msg.message,
+          time: new Date(msg.timestamp || Date.now()).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+          senderId: msg.senderId,
+          receiverId: msg.receiverId,
+          productId: msg.productId,
+          chatId: msg.chatId,
+        });
+      } else {
+        const chat = this.chatList.find(
+          (c) =>
+            this.chatService.getChatId(
+              c.ownerId,
+              c.buyerId || this.buyerId,
+              c.productId
+            ) === incomingChatId
+        );
+        if (chat) {
+          chat.hasNewMessage = true;
+        }
       }
-    }
-  });
+    });
 
-  // Listen for call_ended event from the server and end call on both sides
-  this.socketService.onEvent('call_ended').subscribe(() => {
-    this.endCall();
-  });
+    // Listen for call_ended event from the server and end call on both sides
+    this.socketService.onEvent('call_ended').subscribe(() => {
+      this.endCall();
+    });
 
-  // TODO: Move WebRTC and call event listeners to SocketService or CallService for full modularization
+    // TODO: Move WebRTC and call event listeners to SocketService or CallService for full modularization
 
     this.fetchChatList();
   }
@@ -274,29 +294,38 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   // --- WebRTC Voice/Video Call Methods ---
   startCall(isVideo: boolean) {
-    console.log('[Call] startCall called', { isVideo, currentUserId: this.currentUserId, selectedChat: this.selectedChat });
-  this.callState.isVideoCall = isVideo;
+    console.log('[Call] startCall called', {
+      isVideo,
+      currentUserId: this.currentUserId,
+      selectedChat: this.selectedChat,
+    });
+    this.callState.isVideoCall = isVideo;
     this.isCalling = true;
-  console.log('[State] isVideoCall:', this.callState.isVideoCall, 'isCalling:', this.isCalling);
+    console.log(
+      '[State] isVideoCall:',
+      this.callState.isVideoCall,
+      'isCalling:',
+      this.isCalling
+    );
     // Allow both buyer and owner to start a call
     if (this.selectedChat) {
       this.socketService.emit('incoming_call', {
         ownerId: this.selectedChat.ownerId,
         buyerId: this.selectedChat.buyerId,
         isVideo: isVideo,
-        from: this.currentUserId
+        from: this.currentUserId,
       });
       console.log('[SocketService] Emitted incoming_call', {
         ownerId: this.selectedChat.ownerId,
         buyerId: this.selectedChat.buyerId,
         isVideo: isVideo,
-        from: this.currentUserId
+        from: this.currentUserId,
       });
     }
   }
 
   async initWebRTC(isCaller: boolean) {
-  // isVideoCall already set in startCall or acceptCall
+    // isVideoCall already set in startCall or acceptCall
     this.callState.selectedChat = this.selectedChat;
     await this.callService.initWebRTC(
       this.callState,
@@ -307,7 +336,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async handleOffer(offer: any, from: string, isVideo: boolean) {
-  this.callState.isVideoCall = isVideo;
+    this.callState.isVideoCall = isVideo;
     this.callState.selectedChat = this.selectedChat;
     await this.callService.handleOffer(
       this.callState,
@@ -326,18 +355,21 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.incomingCall = false;
     this.isInCall = true; // Set immediately for UI
     this.isCalling = false;
-  this.callState.isVideoCall = this.callType === 'video';
+    this.callState.isVideoCall = this.callType === 'video';
     // Stop call notification sound
-  this.notificationService.stopCallSound();
-  console.log('[State] Accepting call. isVideoCall:', this.callState.isVideoCall);
+    this.notificationService.stopCallSound();
+    console.log(
+      '[State] Accepting call. isVideoCall:',
+      this.callState.isVideoCall
+    );
     // Notify initiator
     this.socketService.emit('call_accepted', {
       ownerId: this.selectedChat.ownerId,
-      buyerId: this.selectedChat.buyerId
+      buyerId: this.selectedChat.buyerId,
     });
     console.log('[Socket] Emitted call_accepted', {
       ownerId: this.selectedChat.ownerId,
-      buyerId: this.selectedChat.buyerId
+      buyerId: this.selectedChat.buyerId,
     });
     // Wait for webrtc_offer from initiator
     this.callOffer = null;
@@ -351,7 +383,10 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('[Call] rejectCall called');
     // Only send missed call if not in call
     if (!this.isInCall) {
-      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const timeStr = new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
       this.sendSystemMessage(`Missed call at ${timeStr}`, 'missed-call');
     }
     this.incomingCall = false;
@@ -359,15 +394,15 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.callOfferSender = null;
     this.callType = null;
     // Stop call notification sound
-  this.notificationService.stopCallSound();
+    this.notificationService.stopCallSound();
     // Notify buyer
     this.socketService.emit('call_rejected', {
       ownerId: this.selectedChat.ownerId,
-      buyerId: this.selectedChat.buyerId
+      buyerId: this.selectedChat.buyerId,
     });
     console.log('[Socket] Emitted call_rejected', {
       ownerId: this.selectedChat.ownerId,
-      buyerId: this.selectedChat.buyerId
+      buyerId: this.selectedChat.buyerId,
     });
   }
 
@@ -385,21 +420,28 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sendSystemMessage('Call ended', 'call-ended');
     }
     // Only send 'missed call' if the call was never picked up (not in-call, but a call was attempted)
-    if (this.selectedChat && !this.isInCall && (this.isCalling || this.incomingCall)) {
-      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if (
+      this.selectedChat &&
+      !this.isInCall &&
+      (this.isCalling || this.incomingCall)
+    ) {
+      const timeStr = new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
       this.sendSystemMessage(`Missed call at ${timeStr}`, 'missed-call');
     }
 
     if (this.selectedChat && (this.isInCall || this.isCalling)) {
       this.socketService.emit('call_ended', {
         ownerId: this.selectedChat.ownerId,
-        buyerId: this.selectedChat.buyerId
+        buyerId: this.selectedChat.buyerId,
       });
     }
     this.incomingCall = false;
     this.isInCall = false;
     this.isCalling = false;
-  this.callState.isVideoCall = false;
+    this.callState.isVideoCall = false;
     this.callType = null;
     this.callFrom = null;
     this.callOffer = null;
@@ -407,7 +449,10 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.notificationService.stopCallSound();
     this.callService.cleanupCall(this.callState);
   }
-  sendSystemMessage(text: string, systemType: 'call-ended' | 'missed-call' | 'call-rejected') {
+  sendSystemMessage(
+    text: string,
+    systemType: 'call-ended' | 'missed-call' | 'call-rejected'
+  ) {
     if (!this.selectedChat) return;
     const ownerId: string = this.selectedChat.ownerId;
     const buyerId: string = this.selectedChat.buyerId || this.buyerId || '';
@@ -415,7 +460,11 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     const senderId: string = this.currentUserId;
     const receiverId: string = senderId === ownerId ? buyerId : ownerId;
     if (!ownerId || !buyerId || !productId || !receiverId) return;
-  const chatId: string = this.chatService.getChatId(ownerId, buyerId, productId);
+    const chatId: string = this.chatService.getChatId(
+      ownerId,
+      buyerId,
+      productId
+    );
     const msgPayload: any = {
       chatId,
       senderId,
@@ -427,7 +476,10 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     };
     this.addMessageAndScroll({
       text,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      time: new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
       senderId,
       receiverId,
       productId,
@@ -437,7 +489,6 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.socketService.emit('chatMessage', msgPayload);
   }
 
-  
   // Returns true if the user (owner or buyer) is online
   isUserOnline(userId: string): boolean {
     return this.onlineUsers.has(userId);
@@ -457,8 +508,12 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.chatList || this.chatList.length === 0) return;
     for (const chat of this.chatList) {
       if (!chat.buyerId) continue;
-  const chatId = this.chatService.getChatId(chat.ownerId, chat.buyerId, chat.productId);
-  this.socketService.emit('joinRoom', { chatId });
+      const chatId = this.chatService.getChatId(
+        chat.ownerId,
+        chat.buyerId,
+        chat.productId
+      );
+      this.socketService.emit('joinRoom', { chatId });
     }
   }
 
@@ -561,31 +616,37 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isMessagesLoading = true;
     const token = localStorage.getItem('userToken');
     this.isMessagesLoading = true;
-    this.chatService.loadMessages(productId, ownerId, buyerId, token!).subscribe({
-      next: (history) => {
-        if (history.length === 0) {
+    this.chatService
+      .loadMessages(productId, ownerId, buyerId, token!)
+      .subscribe({
+        next: (history) => {
+          if (history.length === 0) {
+            this.messages = [];
+          } else {
+            this.messages = history.map((m: any) => ({
+              text: m.message,
+              time: new Date(m.timestamp).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              }),
+              senderId: m.senderId,
+              receiverId: m.receiverId,
+              productId: m.productId,
+              chatId: this.chatService.getChatId(
+                m.senderId,
+                m.receiverId,
+                m.productId
+              ),
+            }));
+          }
+          setTimeout(() => this.scrollToBottom(), 0);
+          this.isMessagesLoading = false;
+        },
+        error: (_err) => {
           this.messages = [];
-        } else {
-          this.messages = history.map((m: any) => ({
-            text: m.message,
-            time: new Date(m.timestamp).toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-            }),
-            senderId: m.senderId,
-            receiverId: m.receiverId,
-            productId: m.productId,
-            chatId: this.chatService.getChatId(m.senderId, m.receiverId, m.productId),
-          }));
-        }
-        setTimeout(() => this.scrollToBottom(), 0);
-        this.isMessagesLoading = false;
-      },
-      error: (_err) => {
-        this.messages = [];
-        this.isMessagesLoading = false;
-      },
-    });
+          this.isMessagesLoading = false;
+        },
+      });
   }
   async sendMessage() {
     await this.chatService.sendMessage(
@@ -598,11 +659,14 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       this.currentUserId,
       this.buyerId,
       this.addMessageAndScroll.bind(this),
-      (val: string) => { this.newMessage = val; },
-      (val: File | null) => { this.selectedFile = val; }
+      (val: string) => {
+        this.newMessage = val;
+      },
+      (val: File | null) => {
+        this.selectedFile = val;
+      }
     );
   }
-
 
   scrollToBottom() {
     if (this.messagesContainer?.nativeElement) {
@@ -616,9 +680,16 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       this.sendMessage();
     }
   }
+  getOnlineStatusClass(userId: string): string {
+    return this.isUserOnline(userId) ? 'online' : 'offline';
+  }
+  getOnlineStatusText(userId: string): string {
+    return this.isUserOnline(userId) ? 'Online' : 'Offline';
+  }
+  // Returns the CSS class for online/offline status dot
 
   ngOnDestroy() {
-  this.socketService.disconnect();
+    this.socketService.disconnect();
     if (this.callAudio) {
       this.callAudio.pause();
       this.callAudio.currentTime = 0;
