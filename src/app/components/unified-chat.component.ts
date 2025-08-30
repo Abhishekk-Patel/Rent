@@ -125,6 +125,17 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    // Listen for call_rejected event so caller can update UI and state
+    this.socketService.onEvent('call_rejected').subscribe(() => {
+      if (this.isCalling) {
+        this.isCalling = false;
+        this.isInCall = false;
+        this.isVideoCall = false;
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        this.sendSystemMessage(`Call rejected at ${timeStr}`, 'call-rejected');
+        alert('Call was rejected');
+      }
+    });
     // Listen for call_accepted event so caller can update UI and start WebRTC
     this.socketService.onEvent('call_accepted').subscribe(() => {
       if (this.isCalling) {
