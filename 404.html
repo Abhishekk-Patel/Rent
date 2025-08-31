@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>404 Not Found</title>
+  <meta http-equiv="refresh" content="0; URL=./index.html">
+  <script>
+    // For static hosts like GitHub Pages: redirect to index.html and preserve the path
+    (function() {
+      var l = window.location;
+      var path = l.pathname.replace(/\\/g, '/');
+      if (path !== '/' && !path.startsWith('/index.html')) {
+        window.location.replace('/index.html?redirect=' + encodeURIComponent(l.pathname + l.search + l.hash));
+      }
+    })();
+  </script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 10%; }
+  </style>
+</head>
+<body>
+  <h1>404</h1>
+  <p>Redirecting...</p>
+</body>
+</html>
