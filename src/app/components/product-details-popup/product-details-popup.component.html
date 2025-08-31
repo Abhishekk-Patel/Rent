@@ -1,42 +1,48 @@
 
-<div class="product-details-popup modern-popup">
-  <div class="popup-header">
-    <h2>{{ getProductDetails()?.name || getProductDetails()?.productName }}</h2>
-    <button class="close-btn" (click)="closeProductDetailDialog()">&times;</button>
-  </div>
-  <div class="popup-content">
-    <div class="image-container">
-      <button class="nav-btn left" (click)="prevImage()">
-        <mat-icon>chevron_left</mat-icon>
-      </button>
-      <img [src]="getProductDetails()?.display_img_urls?.[getProductDetails()?.currentImageIndex ?? 0] || getProductDetails()[0]?.images?.[getProductDetails()[0]?.currentImageIndex ?? 0]?.url || 'assets/placeholder.png'" alt="{{ getProductDetails()?.name }}" class="product-image">
-      <button class="nav-btn right" (click)="nextImage()">
-        <mat-icon>chevron_right</mat-icon>
-      </button>
+<div class="product-details-modal">
+  <button class="close-btn" (click)="closeProductDetailDialog()">&times;</button>
+  <div class="modal-content">
+    <div class="modal-image-area">
+      <div class="main-image-wrapper">
+        <button class="nav-btn left" (click)="prevImage()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <img [src]="getProductDetails()?.display_img_urls?.[getProductDetails()?.currentImageIndex ?? 0] || getProductDetails()[0]?.images?.[getProductDetails()[0]?.currentImageIndex ?? 0]?.url || 'assets/placeholder.png'" alt="{{ getProductDetails()?.name }}" class="main-image">
+        <button class="nav-btn right" (click)="nextImage()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+      <div class="thumbs-row" *ngIf="getProductDetails()?.display_img_urls?.length > 1 || getProductDetails()[0]?.images?.length > 1">
+        <img *ngFor="let img of (getProductDetails()?.display_img_urls || getProductDetails()[0]?.images); let idx = index"
+             [src]="img.url || img"
+             [class.selected-thumb]="idx === (getProductDetails()?.currentImageIndex ?? getProductDetails()[0]?.currentImageIndex ?? 0)"
+             (click)="selectImage(idx)"
+             class="thumb-image"
+             alt="Thumbnail">
+      </div>
     </div>
-    <div class="product-main-info">
-      <div class="product-title-row">
-        <span class="product-name">{{ getProductDetails()?.name || getProductDetails()[0]?.productName }}</span>
-        <span class="product-price">${{ getProductDetails()?.Rent || getProductDetails()[0]?.productRent
- }}</span>
+    <div class="modal-details-area">
+      <h1 class="modal-title">{{ getProductDetails()?.name || getProductDetails()[0]?.productName }}</h1>
+      <div class="modal-price-row">
+        <span class="modal-price">${{ getProductDetails()?.Rent || getProductDetails()[0]?.productRent }}</span>
+        <span class="modal-category">{{ getProductDetails()?.category || getProductDetails()[0]?.category }}</span>
       </div>
-      <div class="product-meta-row">
-        <span class="product-category">{{ getProductDetails()?.category || getProductDetails()[0]?.category }}</span>
-        <span class="product-quantity">Qty: {{ getProductDetails()?.quantity || getProductDetails()[0]?.quantity }}</span>
+      <div class="modal-meta-row">
+        <span class="modal-quantity">Qty: {{ getProductDetails()?.quantity || getProductDetails()[0]?.quantity }}</span>
+        <span class="modal-valid-until">
+          <mat-icon class="calendar-icon">event</mat-icon>
+          {{ (getProductDetails()?.valid_until | date )|| (getProductDetails()[0]?.validUntil | date) }}
+        </span>
       </div>
-      <div class="product-valid-until">
-        <mat-icon class="calendar-icon">event</mat-icon>
-        <span>Valid Until: {{ (getProductDetails()?.valid_until | date )|| (getProductDetails()[0]?.validUntil | date) }}</span>
-      </div>
-      <div class="product-description">
+      <div class="modal-description">
         {{ getProductDetails()?.description  || getProductDetails()[0]?.description }}
       </div>
+      <div class="modal-footer">
+        <button class="add-to-cart-btn" (click)="addToCart()">
+          <mat-icon *ngIf="!isAddNewProduct" class="cart-icon">add_shopping_cart</mat-icon>
+          {{isAddNewProduct ? 'Done' : 'Add to Cart'}}
+        </button>
+      </div>
     </div>
-  </div>
-  <div class="popup-footer">
-    <button class="add-to-cart-btn" (click)="addToCart()">
-      <mat-icon *ngIf="!isAddNewProduct" class="cart-icon">add_shopping_cart</mat-icon>
-      {{isAddNewProduct ? 'Done' : 'Add to Cart'}}
-    </button>
   </div>
 </div>
