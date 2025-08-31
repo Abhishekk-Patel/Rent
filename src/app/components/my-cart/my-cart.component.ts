@@ -95,13 +95,18 @@ export class MyCartComponent implements OnInit, OnDestroy {
           this.isOwner = true;
           this.myCartService.showMessage(order.message);
          
-        } else {
+        }
+        
+        else if(order.product){
+          this.myCartService.showMessage(order.message);
+     }
+        else {
           this.isOwner = false; // Set to false if no match
           this.myCartService.showMessage('No new orders');
         }
 
         // If the order was placed by this user (customer), clear cart and show message
-        if (order.customer && order.customer.email === this.user) {
+        if (order.customer && order.customer.email !== this.user) {
           order.product.forEach((item: any) => {
             console.log('Removing item from cart:', item);
             this.myCartService.removeFromCart(item);
