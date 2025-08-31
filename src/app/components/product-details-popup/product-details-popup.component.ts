@@ -44,16 +44,34 @@ export class ProductDetailsPopupComponent implements OnInit, OnDestroy {
         low_quantity: item.lowQuantity || 5,
         buyers: item.buyers || 0,
       }));
+
+
+
+      console.log(this.data,'data');
+      console.log(products,'products')
       this.productDetails = products.find(
         (product: any) => product.pk === this.data.primaryKey
       );
-      if (!products.length) {
-        this.productDetails = this.data.response.product;
-      }
+
+    if (this.data.response.products && this.data.response.products.length > 0) {
+  console.log('Products array found');
+  this.productDetails = this.data.response.products;
+  console.log(this.productDetails,'productDetails array');
+
+} else if (this.data.response.product) {
+  console.log('Single product found');
+  this.productDetails = [this.data.response.product]; // wrap in array for consistency
+  console.log(this.productDetails,'productDetails single');
+} else {
+  console.log('No product(s) found');
+  this.productDetails = [];
+}
+
     });
   }
 
   getProductDetails() {
+    console.log(this.productDetails,'productDetails');
     return this.productDetails;
   }
 
@@ -80,22 +98,78 @@ export class ProductDetailsPopupComponent implements OnInit, OnDestroy {
     }
   }
 
-  nextImage() {
-    const product = this.getProductDetails();
-    if (product) {
-      product.currentImageIndex =
-        (product.currentImageIndex + 1) % product.display_img_urls.length;
+ nextImage() {
+  const products = this.getProductDetails();
+  const product = Array.isArray(products) ? products[0] : products;
+
+  if (!product) return;
+
+  // Case 1: images[] format
+  if (product.images?.length > 0) {
+    if (product.currentImageIndex === undefined) {
+      product.currentImageIndex = 0;
     }
+
+    product.currentImageIndex =
+      (product.currentImageIndex + 1) % product.images.length;
+
+    console.log("Current image:", product.images[product.currentImageIndex].url);
   }
 
-  prevImage() {
-    const product = this.getProductDetails();
-    if (product) {
-      product.currentImageIndex =
-        (product.currentImageIndex - 1 + product.display_img_urls.length) %
-        product.display_img_urls.length;
+  // Case 2: display_img_urls[] format
+  else if (product.display_img_urls?.length > 0) {
+    if (product.currentImageIndex === undefined) {
+      product.currentImageIndex = 0;
     }
+
+    product.currentImageIndex =
+      (product.currentImageIndex + 1) % product.display_img_urls.length;
+
+    console.log(
+      "Current image:",
+      product.display_img_urls[product.currentImageIndex]
+    );
   }
+}
+
+
+prevImage() {
+  const products = this.getProductDetails();
+  const product = Array.isArray(products) ? products[0] : products;
+
+  if (!product) return;
+
+  // Case 1: images[] format
+  if (product.images?.length > 0) {
+    if (product.currentImageIndex === undefined) {
+      product.currentImageIndex = 0;
+    }
+
+    product.currentImageIndex =
+      (product.currentImageIndex - 1 + product.images.length) %
+      product.images.length;
+
+    console.log("Current image:", product.images[product.currentImageIndex].url);
+  }
+
+  // Case 2: display_img_urls[] format
+  else if (product.display_img_urls?.length > 0) {
+    if (product.currentImageIndex === undefined) {
+      product.currentImageIndex = 0;
+    }
+
+    product.currentImageIndex =
+      (product.currentImageIndex - 1 + product.display_img_urls.length) %
+      product.display_img_urls.length;
+
+    console.log(
+      "Current image:",
+      product.display_img_urls[product.currentImageIndex]
+    );
+  }
+}
+
+
 
   ngOnDestroy(): void {
     if (this.subscription) {

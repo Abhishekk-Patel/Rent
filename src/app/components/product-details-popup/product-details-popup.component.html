@@ -9,26 +9,27 @@
       <button class="nav-btn left" (click)="prevImage()">
         <mat-icon>chevron_left</mat-icon>
       </button>
-      <img [src]="getProductDetails()?.display_img_urls?.[getProductDetails()?.currentImageIndex ?? 0] || getProductDetails()?.product?.images?.[getProductDetails()?.product?.currentImageIndex ?? 0]?.url || 'assets/placeholder.png'" alt="{{ getProductDetails()?.name }}" class="product-image">
+      <img [src]="getProductDetails()?.display_img_urls?.[getProductDetails()?.currentImageIndex ?? 0] || getProductDetails()[0]?.images?.[getProductDetails()[0]?.currentImageIndex ?? 0]?.url || 'assets/placeholder.png'" alt="{{ getProductDetails()?.name }}" class="product-image">
       <button class="nav-btn right" (click)="nextImage()">
         <mat-icon>chevron_right</mat-icon>
       </button>
     </div>
     <div class="product-main-info">
       <div class="product-title-row">
-        <span class="product-name">{{ getProductDetails()?.name || getProductDetails()?.productName }}</span>
-        <span class="product-price">${{ getProductDetails()?.Rent }}</span>
+        <span class="product-name">{{ getProductDetails()?.name || getProductDetails()[0]?.productName }}</span>
+        <span class="product-price">${{ getProductDetails()?.Rent || getProductDetails()[0]?.productRent
+ }}</span>
       </div>
       <div class="product-meta-row">
-        <span class="product-category">{{ getProductDetails()?.category }}</span>
-        <span class="product-quantity">Qty: {{ getProductDetails()?.quantity }}</span>
+        <span class="product-category">{{ getProductDetails()?.category || getProductDetails()[0]?.category }}</span>
+        <span class="product-quantity">Qty: {{ getProductDetails()?.quantity || getProductDetails()[0]?.quantity }}</span>
       </div>
       <div class="product-valid-until">
         <mat-icon class="calendar-icon">event</mat-icon>
-        <span>Valid Until: {{ getProductDetails()?.valid_until | date }}</span>
+        <span>Valid Until: {{ (getProductDetails()?.valid_until | date )|| (getProductDetails()[0]?.validUntil | date) }}</span>
       </div>
       <div class="product-description">
-        {{ getProductDetails()?.description }}
+        {{ getProductDetails()?.description  || getProductDetails()[0]?.description }}
       </div>
     </div>
   </div>
