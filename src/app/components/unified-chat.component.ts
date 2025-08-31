@@ -17,6 +17,8 @@ import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { SocketService } from '../service/socket.service';
 import { CallService } from '../service/call.service';
 import { ChatService } from '../service/chat.service';
+import { Store } from '@ngrx/store';
+import { combineLatest, map, of, switchMap } from 'rxjs';
 interface ChatSummary {
   productId: string;
   ownerId: string;
@@ -31,6 +33,7 @@ interface ChatSummary {
   googleId: string;
   hasNewMessage?: boolean;
   isOnline?: boolean; // Optional: for future use if needed
+  
 }
 
 interface ChatMessage {
@@ -51,6 +54,8 @@ interface ChatMessage {
   styleUrls: ['./unified-chat.component.css'],
 })
 export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  productData$ = this.store.select((state: any) => state.productData);
   // Emoji picker options
   emojis: string[] = [
     '😀',
@@ -151,7 +156,8 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     private notificationService: NotificationService,
     private socketService: SocketService,
     private callService: CallService,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private store: Store
   ) {}
 
   ngOnInit(): void {
@@ -517,36 +523,163 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  fetchChatList() {
-    const token = localStorage.getItem('userToken');
-    const userId = this.currentUserId;
-    this.isChatListLoading = true;
-    this.chatService.fetchChatList(userId, token!).subscribe({
-      next: (list) => {
-        this.chatList = list.map((chat) => ({
+//   fetchChatList() {
+//     const token = localStorage.getItem('userToken');
+//     const userId = this.currentUserId;
+//     this.isChatListLoading = true;
+//     this.chatService.fetchChatList(userId, token!).subscribe({
+//       next: (list:any) => {
+//         console.log(list, 'list');
+
+//         const productIds:any = [];
+//         list.forEach((item: any) => {
+//           productIds.push(item.productId);
+//           console.log(item.productId, 'list item');
+//         });
+
+//         const productId = productIds;
+// console.log(productId,"productId")
+
+//         this.productData$.subscribe((data) => {
+         
+//           const productImg = data.find((res: any) => res._id === productId);
+//        console.log(productImg,"productImg")
+//         });
+        
+//                 this.chatList = list.map((chat:any) => ({
+//           ...chat,
+//           googleId: this.currentUserId,
+//           ownerId: chat.ownerId,
+//           avatarUrl: chat.avatarUrl || (chat as any).ownerAvatar || '',
+//           ownerEmail: chat.ownerEmail || (chat as any).email || '',
+//         }));
+//         if (this.chatList.length) {
+//           const firstChat = this.chatList[0];
+//           this.selectedChat = { ...firstChat };
+//           this.loadMessages(
+//             firstChat.productId,
+//             firstChat.ownerId,
+//             firstChat.buyerId || this.buyerId
+//           );
+//           this.joinAllChatRooms();
+//         }
+//         this.isChatListLoading = false;
+//       },
+//       error: (err) => {
+//         this.isChatListLoading = false;
+//       },
+//     });
+//   }
+
+fetchChatList() {
+  const token = localStorage.getItem('userToken');
+  const userId = this.currentUserId;
+
+  if (!token || !userId) return;
+
+  this.isChatListLoading = true;
+
+  // 👇 helper to extract name from email
+  const getNameFromEmail = (email: string): string => {
+    if (!email) return '';
+    const match = email.match(/^([^@]+)/);
+    let name = match ? match[1] : '';
+
+    // If email is like "john.doe", take only "john"
+    if (name.includes('.')) {
+      name = name.split('.')[0];
+    }
+
+    // Capitalize first letter
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  };
+
+  this.chatService.fetchChatList(userId, token).pipe(
+    switchMap((list: any[]) => {
+      console.log(list, 'chat list');
+
+      const productIds = list.map(item => item.productId);
+
+      return combineLatest([
+        of(list),
+        this.productData$.pipe(
+          map((products: any[]) => {
+            console.log(products, 'products');
+
+            const productImages = productIds.map((id) =>
+              products.find((p) => p._id === id)
+            );
+
+            const productOwnerEmails = productIds.map((id) =>
+              products.find((p) => p._id === id)
+            );
+
+            return { productImages, productOwnerEmails };
+          })
+        ),
+      ]);
+    })
+  ).subscribe({
+    next: ([list, { productImages, productOwnerEmails }]) => {
+      console.log(productImages, 'productImages');
+      console.log(productOwnerEmails, 'productOwnerEmails');
+
+      this.chatList = list.map((chat: any, index: number) => {
+        const email =
+          chat.ownerEmail ||
+          chat.email ||
+          productOwnerEmails[index]?.productOwnerEmail ||
+          '';
+
+        return {
           ...chat,
           googleId: this.currentUserId,
           ownerId: chat.ownerId,
-          avatarUrl: chat.avatarUrl || (chat as any).ownerAvatar || '',
-          ownerEmail: chat.ownerEmail || (chat as any).email || '',
-        }));
-        if (this.chatList.length) {
-          const firstChat = this.chatList[0];
-          this.selectedChat = { ...firstChat };
-          this.loadMessages(
-            firstChat.productId,
-            firstChat.ownerId,
-            firstChat.buyerId || this.buyerId
-          );
-          this.joinAllChatRooms();
-        }
-        this.isChatListLoading = false;
-      },
-      error: (err) => {
-        this.isChatListLoading = false;
-      },
-    });
+          avatarUrl: chat.avatarUrl || chat.ownerAvatar || '',
+          ownerEmail: email,
+          ownerName: getNameFromEmail(email), // 👈 extracted first name
+          productImage: productImages[index]?.images?.[0]?.url || null,
+          productOwnerEmail: productOwnerEmails[index]?.productOwnerEmail || null
+        };
+      });
+
+      console.log(this.chatList, 'chat list');
+
+      if (this.chatList.length) {
+        const firstChat = this.chatList[0];
+        this.selectedChat = { ...firstChat };
+        this.loadMessages(
+          firstChat.productId,
+          firstChat.ownerId,
+          firstChat.buyerId || this.buyerId
+        );
+        this.joinAllChatRooms();
+      }
+
+      this.isChatListLoading = false;
+    },
+    error: (err) => {
+      console.error('Error fetching chat list:', err);
+      this.isChatListLoading = false;
+    }
+  });
+}
+
+
+ getNameFromEmail(email: string): string {
+  if (!email) return '';
+  // Grab everything before @
+  const match = email.match(/^([^@]+)/);
+  let name = match ? match[1] : '';
+
+  // If email is like "john.doe", split and take first part
+  if (name.includes('.')) {
+    name = name.split('.')[0];
   }
+
+  // Capitalize first letter
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
 
   selectChat(chat: ChatSummary) {
     // Always use all three: productId, ownerId, buyerId

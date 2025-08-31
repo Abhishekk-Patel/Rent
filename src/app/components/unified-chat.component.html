@@ -28,7 +28,7 @@
       <ng-container *ngFor="let chat of chatList">
         <div class="chat-list-item" [class.selected]="isSelectedChat(chat)" (click)="selectChat(chat)">
           <div class="chat-list-img-wrapper">
-            <img [src]="chat.avatarUrl || defaultAvatar" alt="User Avatar" class="chat-user-avatar" (click)="openProfilePanel(chat); $event.stopPropagation()" tabindex="0" />
+            <img [src]="chat.productImage  || defaultAvatar" alt="User Avatar" class="chat-user-avatar" (click)="openProfilePanel(chat); $event.stopPropagation()" tabindex="0" />
             <span *ngIf="chat.hasNewMessage" class="chat-new-indicator"></span>
             <span class="chat-list-status-dot" [ngClass]="getOnlineStatusClass(chat.ownerId)" title="{{ getOnlineStatusText(chat.ownerId) }}"></span>
           </div>
@@ -191,7 +191,7 @@
       <div *ngIf="isInCall" class="call-modal pro-call-modal modern-call-modal">
         <div class="call-modal-content modern-call-modal-content">
           <div class="call-modal-avatar modern-call-avatar" *ngIf="!isVideoCall">
-            <img [src]="selectedChat.avatarUrl || defaultAvatar" alt="User Avatar" class="modern-voice-avatar-img" />
+            <img [src]="selectedChat.productImage || defaultAvatar" alt="User Avatar" class="modern-voice-avatar-img" />
           </div>
           <div class="modern-call-info">
             <div *ngIf="isVideoCall" class="modern-video-call-wrapper">
@@ -237,7 +237,7 @@
       </div>
     </div>
     <div class="profile-panel-details">
-      <div class="profile-panel-email"><b>Email:</b> {{ selectedProfile.ownerEmail }}</div>
+      <div class="profile-panel-email"><b>Email:</b> {{ selectedProfile.ownerName }}</div>
       <div *ngIf="selectedProfile.productName"><b>Product:</b> {{ selectedProfile.productName }}</div>
       <div *ngIf="selectedProfile.productImage">
         <img [src]="selectedProfile.productImage" alt="Product" class="profile-panel-product-img" />

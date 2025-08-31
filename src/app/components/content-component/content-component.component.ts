@@ -79,54 +79,54 @@ export class ContentComponentComponent
  
 
  
-    this.data =   {
-        "_id": "67b090e3747349507c359a00",
-        "productName": "Mens",
-        "productDescription": "NA",
-        "productRent": 1200,
-        "category": "Groom’s Suit",
-        "quantity": 1,
-        "userRole": "Groom",
-        "validUntil": "2026-02-15T00:00:00.000Z",
-        "productOwnerEmail": "abhishekpatel67@gmail.com",
-        "productListedDate": "2025-02-15T00:00:00.000Z",
-        "city": "Test",
-        "images": [
-            {
-                "_id": "67b090e3747349507c359a01",
-                "filename": "image0.jpg",
-                "url": "https://mys3rentbucket.s3.ap-south-1.amazonaws.com/1739624672473_image0.jpg"
-            },
-            {
-                "_id": "67b090e3747349507c359a02",
-                "filename": "image1.jpg",
-                "url": "https://mys3rentbucket.s3.ap-south-1.amazonaws.com/1739624672495_image1.jpg"
-            },
-            {
-                "_id": "67b090e3747349507c359a03",
-                "filename": "image2.jpg",
-                "url": "https://mys3rentbucket.s3.ap-south-1.amazonaws.com/1739624672498_image2.jpg"
-            }
-        ],
-        "__v": 0,
-        "ratings": [
-            {
-                "_id": "687bdb5525dd53570083dd1b",
-                "productId": "67b090e3747349507c359a00",
-                "rating": 4,
-                "createdAt": "2025-07-19T17:52:23.012Z",
-                "__v": 0
-            },
-            {
-                "_id": "687bde1725dd53570083dd20",
-                "productId": "67b090e3747349507c359a00",
-                "rating": 3,
-                "createdAt": "2025-07-19T18:04:07.692Z",
-                "__v": 0
-            }
-        ],
-        "userId": "67a7b26a1730b16b90c52300"
-    };
+    // this.data =   {
+    //     "_id": "67b090e3747349507c359a00",
+    //     "productName": "Mens",
+    //     "productDescription": "NA",
+    //     "productRent": 1200,
+    //     "category": "Groom’s Suit",
+    //     "quantity": 1,
+    //     "userRole": "Groom",
+    //     "validUntil": "2026-02-15T00:00:00.000Z",
+    //     "productOwnerEmail": "abhishekpatel67@gmail.com",
+    //     "productListedDate": "2025-02-15T00:00:00.000Z",
+    //     "city": "Test",
+    //     "images": [
+    //         {
+    //             "_id": "67b090e3747349507c359a01",
+    //             "filename": "image0.jpg",
+    //             "url": "https://mys3rentbucket.s3.ap-south-1.amazonaws.com/1739624672473_image0.jpg"
+    //         },
+    //         {
+    //             "_id": "67b090e3747349507c359a02",
+    //             "filename": "image1.jpg",
+    //             "url": "https://mys3rentbucket.s3.ap-south-1.amazonaws.com/1739624672495_image1.jpg"
+    //         },
+    //         {
+    //             "_id": "67b090e3747349507c359a03",
+    //             "filename": "image2.jpg",
+    //             "url": "https://mys3rentbucket.s3.ap-south-1.amazonaws.com/1739624672498_image2.jpg"
+    //         }
+    //     ],
+    //     "__v": 0,
+    //     "ratings": [
+    //         {
+    //             "_id": "687bdb5525dd53570083dd1b",
+    //             "productId": "67b090e3747349507c359a00",
+    //             "rating": 4,
+    //             "createdAt": "2025-07-19T17:52:23.012Z",
+    //             "__v": 0
+    //         },
+    //         {
+    //             "_id": "687bde1725dd53570083dd20",
+    //             "productId": "67b090e3747349507c359a00",
+    //             "rating": 3,
+    //             "createdAt": "2025-07-19T18:04:07.692Z",
+    //             "__v": 0
+    //         }
+    //     ],
+    //     "userId": "67a7b26a1730b16b90c52300"
+    // };
     this.isLoading = true; // Set isLoading to true before data fetch
     this.productData$.subscribe((data) => {
       this.rewards = data.map((item: any) => ({
