@@ -230,6 +230,100 @@
   margin-right: 2px;
 }
 
+/* Zoomable image (default: scale 1.5, smooth, desktop only) */
+.zoomable-image {
+  transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s;
+  will-change: transform;
+  cursor: zoom-in;
+}
+@media (hover: hover) and (pointer: fine) {
+  .zoomable-image:hover:not(.magnifier-enabled) {
+    transform: scale(1.5);
+    z-index: 2;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+  }
+}
+@media (hover: none), (pointer: coarse) {
+  .zoomable-image {
+    /* Disable zoom on mobile/touch */
+    transform: none !important;
+    cursor: default;
+  }
+}
+
+/* Optional: Magnifier glass effect (toggle with .magnifier-enabled) */
+.zoomable-image.magnifier-enabled {
+  cursor: none;
+  /* JS will set background-position/size for magnifier */
+  /* fallback: no transform on hover */
+}
+
+/* Magnifier glass CSS */
+.magnifier-glass {
+  position: absolute;
+  pointer-events: none;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 2px solid #3b82f6;
+  box-shadow: 0 2px 12px rgba(59,130,246,0.18);
+  background-repeat: no-repeat;
+  background-size: 200% 200%; /* Will be overridden inline */
+  background-position: 50% 50%; /* Will be overridden inline */
+  z-index: 20;
+  transition: background-position 0.1s, background-size 0.1s;
+  /* Optional: add a slight glass effect */
+  backdrop-filter: blur(1.5px) brightness(1.1);
+  border: 2.5px solid #2563eb;
+}
+
+/* Zoom preview box for rectangular zoom effect */
+.zoom-preview-box {
+  position: fixed;
+  top: 50%;
+  left: calc(100vw - 260px);
+  transform: translateY(-50%);
+  pointer-events: none;
+  border-radius: 12px;
+  border: 2px solid #3b82f6;
+  box-shadow: 0 2px 12px rgba(59,130,246,0.18);
+  background-repeat: no-repeat;
+  background-size: 220% 220%; /* Will be overridden inline */
+  background-position: 50% 50%; /* Will be overridden inline */
+  z-index: 30;
+  transition: background-position 0.1s, background-size 0.1s, left 0.1s, top 0.1s;
+  backdrop-filter: blur(1.5px) brightness(1.1);
+  width: 240px !important;
+  height: 240px !important;
+  display: block !important;
+}
+
+@media (max-width: 1100px) {
+  .zoom-preview-box {
+    left: 50%;
+    top: 90%;
+    transform: translate(-50%, 0);
+    width: 180px !important;
+    height: 180px !important;
+  }
+}
+@media (max-width: 700px) {
+  .zoom-preview-box {
+    display: none !important;
+  }
+}
+
+.main-image-wrapper {
+  position: relative;
+  /* ...existing code... */
+}
+
+@media (max-width: 700px) {
+  .zoom-preview-box {
+    display: none !important;
+  }
+}
+
 /* Responsive Styles */
 @media (max-width: 1100px) {
   .modal-content {

@@ -14,6 +14,16 @@ import { Store } from '@ngrx/store';
         productDetails: any;
         isAddNewProduct: boolean = false;
         subscription: Subscription = new Subscription();
+        isMagnifierEnabled = true;
+        showZoomPreview = false;
+        zoomPreview = {
+          x: 0,
+          y: 0,
+          bgPos: '50% 50%',
+          scale: 2.2, // Preview box zoom
+          boxSize: 220, // px
+          imgUrl: '',
+        };
 
         constructor(
           public mycartService: MyCartServiceService,
@@ -129,6 +139,45 @@ import { Store } from '@ngrx/store';
           } else if (product.images && product.images.length > 0) {
             product.currentImageIndex = idx;
           }
+        }
+
+        onZoomEnter(event: MouseEvent): void {
+          if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+            this.showZoomPreview = true;
+            this.setZoomImageUrl();
+            this.updateZoomPosition(event);
+          }
+        }
+
+        onZoomLeave(): void {
+          this.showZoomPreview = false;
+        }
+
+        onZoomMove(event: MouseEvent): void {
+          if (!this.showZoomPreview) return;
+          this.updateZoomPosition(event);
+        }
+
+        updateZoomPosition(event: MouseEvent): void {
+          const img = event.target as HTMLElement;
+          const rect = img.getBoundingClientRect();
+          let x = event.clientX - rect.left;
+          let y = event.clientY - rect.top;
+          // Clamp preview box within image bounds
+          x = Math.max(0, Math.min(x, rect.width));
+          y = Math.max(0, Math.min(y, rect.height));
+          const xPercent = (x / rect.width) * 100;
+          const yPercent = (y / rect.height) * 100;
+          this.zoomPreview.x = x;
+          this.zoomPreview.y = y;
+          this.zoomPreview.bgPos = `${xPercent}% ${yPercent}%`;
+        }
+
+        setZoomImageUrl(): void {
+          this.zoomPreview.imgUrl =
+            this.getProductDetails()?.display_img_urls?.[this.getProductDetails()?.currentImageIndex ?? 0] ||
+            this.getProductDetails()[0]?.images?.[this.getProductDetails()[0]?.currentImageIndex ?? 0]?.url ||
+            'assets/placeholder.png';
         }
 
         ngOnDestroy(): void {
