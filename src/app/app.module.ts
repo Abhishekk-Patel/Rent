@@ -49,6 +49,7 @@ import { productDataEffects } from './components/Store/productData.effects';
 import { UserProductRatingComponent } from './components/user-rating/user-product-rating.component';
 import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
 import { AddProductIfSearchEmptyComponent } from './components/content-component/add-product-if-search-empty/add-product-if-search-empty';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -105,6 +106,8 @@ import { AddProductIfSearchEmptyComponent } from './components/content-component
   ],
   providers: [
     AuthGuard,
+    { provide: LocationStrategy, useClass: HashLocationStrategy }
+    ,
     {
       provide: 'SocialAuthServiceConfig',
       useValue: {
