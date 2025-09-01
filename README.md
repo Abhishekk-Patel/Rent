@@ -24,30 +24,37 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
+
 ## How to Access the Hosted Application
 
-1. Ensure that you have built the project for production:
+Your application is now hosted on your custom domain:
+
+```
+https://www.tryrentit.in/
+```
+
+### Build and Deploy Steps
+
+1. Build the project for production:
    ```sh
-   ng build --configuration production --base-href /Rent/
+   ng build --configuration production --output-path docs --base-href /
    ```
 
-2. Deploy the contents of the `dist/Rent` folder to your hosting service:
+2. Commit and push the contents of the `docs` folder to the `develop` branch:
    ```sh
-   npx angular-cli-ghpages --dir=dist/Rent
+   git add docs
+   git commit -m "Rebuild docs for deployment"
+   git push origin develop
    ```
 
-3. Access the hosted application at:
-   ```
-   https://your-github-username.github.io/Rent/
-   ```
+3. GitHub Pages will automatically deploy from the `docs` folder on the `develop` branch.
 
 ## Verify the Deployment
 
-1. Open your web browser and navigate to the URL where your project is hosted. Based on your setup, the URL should be:
+1. Open your web browser and navigate to:
    ```
-   https://your-github-username.github.io/Rent/
+   https://www.tryrentit.in/
    ```
-   Replace `your-github-username` with your actual GitHub username.
 
 2. Check for Issues:
    - Ensure that all the routes in your Angular application are working correctly.
@@ -55,9 +62,10 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 
 3. Troubleshooting:
    If you encounter any issues, here are some common troubleshooting steps:
-   - **404 Errors:** Ensure that the `baseHref` is correctly set to `/Rent/` in your `angular.json` file.
+   - **404 Errors:** Ensure that the `baseHref` is correctly set to `/` in your `angular.json` file and that `404.html` exists in the `docs` folder.
    - **Caching Issues:** Clear your browser cache or try accessing the site in an incognito window.
    - **Console Errors:** Open the browser's developer console (F12) and check for any errors or warnings.
+   - **Google Login Issues:** If you see an `origin_mismatch` error, make sure your custom domain is added as an authorized JavaScript origin in your Google Cloud Console.
 
 4. Update README.md:
    Make sure your README file has the correct URL for accessing the hosted application.
