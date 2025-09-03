@@ -34,14 +34,24 @@
         </mat-form-field>
 
         <!-- City -->
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline" class="full-width city-location-field">
           <mat-label>City</mat-label>
-          <input matInput placeholder="e.g. Mumbai, New Delhi" formControlName="city" required maxlength="30">
+          <div mat-form-field-flex>
+            <input matInput placeholder="e.g. Mumbai, New Delhi" formControlName="city" required maxlength="100"
+              [matTooltip]="fullAddressTooltip" matTooltipPosition="above">
+            <span class="location-action">
+              <button mat-icon-button type="button" aria-label="Detect Location" (click)="detectLocation()" matTooltip="Detect your city" [disabled]="isLocating">
+                <mat-icon>gps_fixed</mat-icon>
+              </button>
+              <span *ngIf="isLocating" class="location-loader"></span>
+            </span>
+          </div>
           <mat-error *ngIf="productForm.get('city')?.hasError('required')">City is required</mat-error>
           <mat-error *ngIf="productForm.get('city')?.hasError('maxLength')">City cannot exceed 30 characters</mat-error>
           <mat-error *ngIf="productForm.get('city')?.hasError('numeric')">City cannot be numeric</mat-error>
           <mat-error *ngIf="productForm.get('city')?.hasError('inappropriate')">City contains inappropriate words</mat-error>
         </mat-form-field>
+
 
         <!-- Rent & Quantity -->
         <div class="row-2-col">

@@ -1,3 +1,35 @@
+/* Align city input and location icon */
+/* City input field with right-aligned location icon */
+.city-location-field .mat-form-field-flex {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.city-location-field input[matInput] {
+  flex: 1 1 auto;
+  padding-right: 48px;
+}
+.city-location-field .location-action {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.city-location-field .location-loader {
+  width: 22px;
+  height: 22px;
+  border: 3px solid #ccc;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 /* Enterprise, modern, and responsive design for add-product component */
 .product-container-top {

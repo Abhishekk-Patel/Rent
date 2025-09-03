@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -16,11 +16,12 @@ import { UserService } from 'src/app/service/user.service';
   styleUrls: ['./add-product.component.css'],
 })
 export class AddProductComponent implements OnInit {
+  isLocating: boolean = false;
+  // ...existing code...
   productForm: FormGroup;
   selectedImages: string[] = [];
   userHistory: any[] = [];
   categories: string[] = [];
-
   brideCategories = [
     'Bridal Lehenga',
     'Bridal Saree',
@@ -34,7 +35,6 @@ export class AddProductComponent implements OnInit {
     'Bridal Handbags',
     'Other',
   ];
-
   groomCategories = [
     'Groom’s Sherwani',
     'Groom’s Kurta',
@@ -51,7 +51,8 @@ export class AddProductComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     public readonly myCartService: MyCartServiceService,
-    private userService: UserService
+    private userService: UserService,
+    private ngZone: NgZone
   ) {
     const userDetails = localStorage.getItem('userDetails');
     if (!userDetails) {
@@ -72,7 +73,6 @@ export class AddProductComponent implements OnInit {
       valid_until: [today, Validators.required],
       category: ['', Validators.required],
       city: ['', Validators.required],
-
       ProductDescription: [
         '',
         [
@@ -84,9 +84,49 @@ export class AddProductComponent implements OnInit {
       ],
       userRole: ['', Validators.required],
       productListedDate: [today, Validators.required],
-
     });
   }
+  fullAddressTooltip: string = '';
+  // Detect user's location and auto-fill city
+  detectLocation() {
+    this.isLocating = true;
+    if (!navigator.geolocation) {
+      this.isLocating = false;
+      return console.error('Geolocation is not supported by this browser.');
+    }
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          this.ngZone.run(() => {
+            this.productForm.get('city')?.setValue('Detecting location...');
+          });
+          const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+          const data = await response.json();
+          const fullAddress = [data.city, data.locality, data.principalSubdivision, data.postcode, data.countryName].filter(Boolean).join(', ');
+          this.ngZone.run(() => {
+            this.productForm.get('city')?.setValue(fullAddress);
+            this.fullAddressTooltip = fullAddress;
+            this.isLocating = false;
+          });
+        } catch (error) {
+          this.ngZone.run(() => {
+            this.productForm.get('city')?.setValue('Location detection failed');
+            this.isLocating = false;
+          });
+          console.error('Error fetching location data:', error);
+        }
+      },
+      (error) => {
+        this.ngZone.run(() => {
+          this.productForm.get('city')?.setValue('Location detection failed');
+          this.isLocating = false;
+        });
+        console.error('Error getting geolocation:', error);
+      }
+    );
+  }
+ 
 
   nonNumericValidator(control: FormControl) {
     const value = control.value;
