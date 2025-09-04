@@ -7,7 +7,10 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Filter } from 'bad-words';
+ // fixed import style for 'bad-words'
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
+import { ProductDetailsPopupComponent } from '../product-details-popup/product-details-popup.component';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { UserService } from 'src/app/service/user.service';
 
 @Component({
@@ -16,12 +19,15 @@ import { UserService } from 'src/app/service/user.service';
   styleUrls: ['./add-product.component.css'],
 })
 export class AddProductComponent implements OnInit {
-  isLocating: boolean = false;
-  // ...existing code...
+  isLocating = false;
+  isUploading = false;
   productForm: FormGroup;
   selectedImages: string[] = [];
-  userHistory: any[] = [];
   categories: string[] = [];
+  sizeOptions = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Custom'];
+  colorOptions = [
+    'Red', 'Blue', 'Green', 'Yellow', 'Black', 'White', 'Pink', 'Purple', 'Gold', 'Silver', 'Other',
+  ];
   brideCategories = [
     'Bridal Lehenga',
     'Bridal Saree',
@@ -46,6 +52,7 @@ export class AddProductComponent implements OnInit {
     'Groom’s Ties',
     'Other',
   ];
+  fullAddressTooltip = '';
 
   constructor(
     private fb: FormBuilder,
@@ -58,18 +65,12 @@ export class AddProductComponent implements OnInit {
     if (!userDetails) {
       this.router.navigate(['']);
     }
+
     const today = new Date().toISOString().split('T')[0];
     this.productForm = this.fb.group({
-      ProductName: [
-        '',
-        [
-          Validators.required,
-          Validators.maxLength(30),
-          this.nonNumericValidator,
-        ],
-      ],
-      ProductRent: ['', Validators.required],
-      quantity: [1, Validators.required],
+      ProductName: ['', [Validators.required, Validators.maxLength(30), this.nonNumericValidator]],
+      ProductRent: ['', [Validators.required, Validators.min(1)]],
+      quantity: [1, [Validators.required, Validators.min(1)]],
       valid_until: [today, Validators.required],
       category: ['', Validators.required],
       city: ['', Validators.required],
@@ -77,57 +78,23 @@ export class AddProductComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.maxLength(30),
+          Validators.maxLength(200),
           this.nonNumericValidator,
           this.inappropriateWordsValidator,
         ],
       ],
       userRole: ['', Validators.required],
       productListedDate: [today, Validators.required],
+      size: ['', Validators.required],
+      color: ['', Validators.required],
+      // Personal details
+      ownerName: ['', [Validators.required, Validators.maxLength(40)]],
+      ownerEmail: ['', [Validators.required, Validators.email]],
+      ownerPhone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
     });
   }
-  fullAddressTooltip: string = '';
-  // Detect user's location and auto-fill city
-  detectLocation() {
-    this.isLocating = true;
-    if (!navigator.geolocation) {
-      this.isLocating = false;
-      return console.error('Geolocation is not supported by this browser.');
-    }
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        try {
-          this.ngZone.run(() => {
-            this.productForm.get('city')?.setValue('Detecting location...');
-          });
-          const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
-          const data = await response.json();
-          const fullAddress = [data.city, data.locality, data.principalSubdivision, data.postcode, data.countryName].filter(Boolean).join(', ');
-          this.ngZone.run(() => {
-            this.productForm.get('city')?.setValue(fullAddress);
-            this.fullAddressTooltip = fullAddress;
-            this.isLocating = false;
-          });
-        } catch (error) {
-          this.ngZone.run(() => {
-            this.productForm.get('city')?.setValue('Location detection failed');
-            this.isLocating = false;
-          });
-          console.error('Error fetching location data:', error);
-        }
-      },
-      (error) => {
-        this.ngZone.run(() => {
-          this.productForm.get('city')?.setValue('Location detection failed');
-          this.isLocating = false;
-        });
-        console.error('Error getting geolocation:', error);
-      }
-    );
-  }
- 
 
+  // Custom validator to disallow purely numeric values for fields like ProductName & Description
   nonNumericValidator(control: FormControl) {
     const value = control.value;
     if (value && !isNaN(value)) {
@@ -140,7 +107,6 @@ export class AddProductComponent implements OnInit {
     const filter = new Filter();
     const value = control.value;
 
-    // If there's a value in the form control
     if (value && filter.isProfane(value)) {
       return { inappropriate: true };
     }
@@ -165,6 +131,51 @@ export class AddProductComponent implements OnInit {
     this.productForm.get('category')?.reset();
   }
 
+  detectLocation() {
+    this.isLocating = true;
+    if (!navigator.geolocation) {
+      this.isLocating = false;
+      return console.error('Geolocation is not supported by this browser.');
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          this.ngZone.run(() => {
+            this.productForm.get('city')?.setValue('Detecting location...');
+          });
+          const response = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+          );
+          const data = await response.json();
+          const fullAddress = [data.city, data.locality, data.principalSubdivision, data.postcode, data.countryName]
+            .filter(Boolean)
+            .join(', ');
+
+          this.ngZone.run(() => {
+            this.productForm.get('city')?.setValue(fullAddress);
+            this.fullAddressTooltip = fullAddress;
+            this.isLocating = false;
+          });
+        } catch (error) {
+          this.ngZone.run(() => {
+            this.productForm.get('city')?.setValue('Location detection failed');
+            this.isLocating = false;
+          });
+          console.error('Error fetching location data:', error);
+        }
+      },
+      (error) => {
+        this.ngZone.run(() => {
+          this.productForm.get('city')?.setValue('Location detection failed');
+          this.isLocating = false;
+        });
+        console.error('Error getting geolocation:', error);
+      }
+    );
+  }
+
   onFilesSelected(event: Event) {
     const files = (event.target as HTMLInputElement).files;
     if (files) {
@@ -172,11 +183,18 @@ export class AddProductComponent implements OnInit {
       Array.from(files).forEach((file) => {
         const reader = new FileReader();
         reader.onload = () => {
-          this.selectedImages.push(reader.result as string);
+          // Only add the image if it loads properly
+          if (reader.result) {
+            this.selectedImages.push(reader.result as string);
+          }
         };
         reader.readAsDataURL(file);
       });
     }
+  }
+
+  removeImage(index: number) {
+    this.selectedImages.splice(index, 1);
   }
 
   onSubmit() {
@@ -185,11 +203,9 @@ export class AddProductComponent implements OnInit {
       const productData = {
         ...this.productForm.value,
         display_img_urls: this.selectedImages,
-        email: userDetails.email, // Add email to product data
+        email: userDetails.email,
       };
-
-      let formData = new FormData();
-      // Frontend formData append - make sure these field names match the ones expected by the BE
+      const formData = new FormData();
       formData.append('productName', productData.ProductName);
       formData.append('productDescription', productData.ProductDescription);
       formData.append('productRent', productData.ProductRent.toString());
@@ -197,39 +213,40 @@ export class AddProductComponent implements OnInit {
       formData.append('quantity', productData.quantity.toString());
       formData.append('userRole', productData.userRole);
       formData.append('validUntil', productData.valid_until);
-      formData.append('productOwnerEmail', productData.email); // Append email to formData
-     formData.append('city', productData.city);
-     formData.append('productListedDate', productData.productListedDate);
-      // Convert each base64 image string to a Blob and append it to formData
-      productData.display_img_urls.forEach(
-        (imgBase64: string, index: number) => {
-          const byteCharacters = atob(imgBase64.split(',')[1]); // Decoding base64
-          const byteArrays = [];
-
-          for (let offset = 0; offset < byteCharacters.length; offset++) {
-            byteArrays.push(byteCharacters.charCodeAt(offset));
-          }
-
-          const blob = new Blob([new Uint8Array(byteArrays)], {
-            type: 'image/jpeg',
-          }); // Assuming image/jpeg, adjust if needed
-          formData.append(`image${index}`, blob, `image${index}.jpg`); // Append blob as a file
+      formData.append('productOwnerEmail', productData.email);
+      formData.append('city', productData.city);
+      formData.append('productListedDate', productData.productListedDate);
+      formData.append('size', productData.size);
+      formData.append('color', productData.color);
+      formData.append('ownerName', productData.ownerName);
+      formData.append('ownerEmail', productData.ownerEmail);
+      formData.append('ownerPhone', productData.ownerPhone);
+      productData.display_img_urls.forEach((imgBase64: string, index: number) => {
+        const byteCharacters = atob(imgBase64.split(',')[1]);
+        const byteArrays = [];
+        for (let offset = 0; offset < byteCharacters.length; offset++) {
+          byteArrays.push(byteCharacters.charCodeAt(offset));
         }
-      );
-
-      // Logging the form data (you can remove this once you're done testing)
-      formData.forEach((value: any, key: string) => {
+        const blob = new Blob([new Uint8Array(byteArrays)], { type: 'image/jpeg' });
+        formData.append(`image${index}`, blob, `image${index}.jpg`);
       });
 
-      // Assuming the method handles the API call
-      this.myCartService.addProductDetailsApi(formData);
-
-      // Adding user history (if needed)
-      this.userService.addUserHistory(formData);
+      this.isUploading = true;
+      this.myCartService.uploadProduct(formData).subscribe(
+        (response: any) => {
+          this.isUploading = false;
+          this.userService.addUserHistory(formData);
+          this.myCartService.openProductDetails(response);
+        },
+        (error: any) => {
+          this.isUploading = false;
+          console.error('Error submitting product details', error);
+          this.myCartService.showMessage('Failed to upload product. Please try again.');
+        }
+      );
+    } else {
+      this.productForm.markAllAsTouched();
+      alert('Please fill all required fields and upload at least 3 images.');
     }
-  }
-
-  getUserHistory() {
-    return this.userHistory;
   }
 }

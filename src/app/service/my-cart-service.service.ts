@@ -1,3 +1,4 @@
+
 import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -206,9 +207,17 @@ export class MyCartServiceService {
     this.dialog.closeAll();
   }
 
-  openProductDetails(primaryKey: number): void {
+
+  /**
+   * Upload product details and images. Returns observable for component to handle loader and response.
+   */
+  public uploadProduct(formData: FormData) {
+    return this.httpClient.post(`${this.url}/upload`, formData);
+  }
+
+  openProductDetails(response: any): void {
     this.dialog.open(ProductDetailsPopupComponent, {
-      data: { primaryKey },
+      data: { response },
     });
   }
 
@@ -225,6 +234,7 @@ export class MyCartServiceService {
       }
     );
   }
+ 
 
   itemExistsInCart(pk: number): boolean {
     return this.cartItems.value.some((cartItem) => cartItem.pk === pk);

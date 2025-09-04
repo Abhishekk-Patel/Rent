@@ -39,6 +39,7 @@ import { Store } from '@ngrx/store';
 
         ngOnInit(): void {
           this.subscription = this.store.select('productData').subscribe((res) => {
+           console.log(res,"res in popup");
             const products = res.map((item: any) => ({
               pk: item._id,
               name: item.productName,
@@ -53,23 +54,41 @@ import { Store } from '@ngrx/store';
               city: item.city || 'Unknown',
               low_quantity: item.lowQuantity || 5,
               buyers: item.buyers || 0,
+              color: item.color,
+              size: item.size,
+              productListedDate: item.productListedDate,
+              ownerName: item.ownerName,
+              ownerEmail: item.ownerEmail,
+              ownerPhone: item.ownerPhone,
             }));
 
             this.productDetails = products.find(
               (product: any) => product.pk === this.data.primaryKey
             );
-
+             
+           
             if (this.data.response.products && this.data.response.products.length > 0) {
               this.productDetails = this.data.response.products;
             } else if (this.data.response.product) {
+
               this.productDetails = [this.data.response.product];
-            } else {
+            }
+            else if(this.data){
+              this.productDetails = products.find(
+              (product: any) => product.pk === this.data.response
+            );
+              
+            }
+            else {
+              
               this.productDetails = [];
             }
           });
         }
 
         getProductDetails() {
+
+          console.log(this.productDetails,"this.productDetails");
           return this.productDetails;
         }
 

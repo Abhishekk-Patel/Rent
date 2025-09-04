@@ -1,206 +1,232 @@
-/* Align city input and location icon */
-/* City input field with right-aligned location icon */
-.city-location-field .mat-form-field-flex {
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-.city-location-field input[matInput] {
-  flex: 1 1 auto;
-  padding-right: 48px;
-}
-.city-location-field .location-action {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.city-location-field .location-loader {
-  width: 22px;
-  height: 22px;
-  border: 3px solid #ccc;
-  border-top: 3px solid #3b82f6;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
 
-/* Enterprise, modern, and responsive design for add-product component */
-.product-container-top {
-  background: #fdfaf5;
-  min-height: 100vh;
+
+/* Consistent Modern Container and Card */
+.container {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 32px 0;
+  padding: 48px 16px;
+  background: linear-gradient(120deg, #fdfaf5 0%, #f9fafb 100%);
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
 }
 
-.add-product-container {
+.form-card {
   width: 100%;
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 32px 24px;
+  max-width: 950px;
+  padding: 40px 48px 32px 48px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-  border: 1.5px solid #e0e0e0;
-  animation: fadeIn 0.5s ease-in-out;
+  border: 1.5px solid #f0f0f0;
+  transition: box-shadow 0.3s;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+h1 {
+  font-weight: 700;
+  font-size: 2.3rem;
+  color: #830e0e;
+  text-align: center;
+  margin-bottom: 36px;
+  letter-spacing: 0.5px;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+}
+
+section {
+  margin-bottom: 32px;
+  padding-bottom: 8px;
+  border-radius: 12px;
+  background: #fdfaf5;
+  box-shadow: 0 2px 8px rgba(131, 14, 14, 0.04);
+  padding-top: 18px;
+  padding-left: 18px;
+  padding-right: 18px;
 }
 
 h2 {
-  text-align: center;
-  margin-bottom: 32px;
-  font-family: 'Roboto', sans-serif;
-  font-weight: 700;
-  font-size: 2rem;
-  background: linear-gradient(135deg, #7c4700, #3b3b3b);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  position: relative;
-}
-h2::after {
-  content: '';
-  display: block;
-  width: 60px;
-  height: 4px;
-  background: linear-gradient(135deg, #7c4700, #3b3b3b);
-  margin: 12px auto 0;
-  border-radius: 2px;
-}
-
-.enterprise-form {
-  width: 100%;
-}
-
-.form-grid {
   display: flex;
-  flex-direction: column;
-  gap: 18px;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: #830e0e;
+  border-bottom: 2px solid #d9e4ff;
+  padding-bottom: 7px;
+  margin-bottom: 20px;
+  letter-spacing: 0.2px;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
 }
 
-.row-2-col {
-  display: flex;
-  gap: 18px;
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px 18px;
 }
-.half-width {
-  flex: 1 1 0;
-}
+
 .full-width {
   width: 100%;
 }
 
-mat-form-field {
-  width: 100%;
+.location-field {
+  position: relative;
 }
 
-.image-upload {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+.location-field mat-progress-spinner {
+  position: absolute;
+  top: 50%;
+  right: 40px;
+  transform: translateY(-50%);
+}
+
+
+.upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  margin-bottom: 18px;
+  font-weight: 600;
+  font-size: 1.08rem;
+  background: #830e0e;
+  color: #fff;
+  border-radius: 20px;
+  padding: 10px 22px;
+  box-shadow: 0 2px 8px rgba(131, 14, 14, 0.10);
+  transition: background 0.2s;
+}
+.upload-btn:hover {
+  background: #a32c2c;
+}
+
+.image-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 18px;
   margin-top: 8px;
 }
 
-.custom-file-upload {
-  background: #f5f5f5;
-  color: #333;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 8px 18px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: background 0.2s, border-color 0.2s;
-}
-.custom-file-upload:hover {
-  background: #ececec;
-  border-color: #bdbdbd;
-}
-#file-upload {
-  display: none;
-}
-.image-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 6px;
-}
-.image-preview img {
-  width: 80px;
-  height: 80px;
-  border-radius: 8px;
-  object-fit: cover;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  animation: zoomIn 0.5s;
-}
-@keyframes zoomIn {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
+.image-thumb {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgb(0 188 212 / 0.10);
+  transition: transform 0.3s cubic-bezier(.4,2,.6,1);
+  background: #f0f4ff;
 }
 
-.form-actions {
-  margin-top: 28px;
-  display: flex;
-  justify-content: flex-end;
+.image-thumb img {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  display: block;
+  border-radius: 14px;
 }
-button[mat-raised-button] {
+
+.image-thumb:hover {
+  transform: scale(1.07);
+  box-shadow: 0 12px 32px rgb(25 118 210 / 0.18);
+}
+
+.image-thumb button {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  background-color: #fff;
+  color: #830e0e;
+  border: 1px solid #d9e4ff;
+  transition: background-color 0.3s, color 0.3s;
+  z-index: 2;
+}
+.image-thumb button:hover {
+  background-color: #ffeaea;
+  color: #d32f2f;
+}
+
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+}
+
+button[mat-flat-button] {
+  padding: 16px 44px;
+  font-size: 1.13rem;
+  font-weight: 700;
+  border-radius: 24px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 28px;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 24px;
-  background: #3b82f6 ;
-  color: #fff !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transition: background 0.2s, box-shadow 0.2s;
+  gap: 12px;
+  box-shadow: 0 6px 18px rgba(131, 14, 14, 0.10);
+  background: #830e0e;
+  color: #fff;
+  letter-spacing: 0.2px;
+  transition: box-shadow 0.3s, transform 0.2s, background 0.2s;
 }
-button[mat-raised-button]:hover {
-  background: linear-gradient(135deg, #7c4700, #3b82f6);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+button[mat-flat-button]:hover:not(:disabled) {
+  box-shadow: 0 10px 32px rgba(131, 14, 14, 0.18);
+  transform: translateY(-4px) scale(1.03);
+  background: #a32c2c;
+}
+button[mat-flat-button]:disabled {
+  opacity: 0.7;
+  background: #b3d1fa;
+  color: #fff;
+}
+
+
+mat-error {
+  font-size: 1rem;
+  color: #d32f2f;
+  margin-top: 8px;
+  font-weight: 600;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+}
+
+mat-form-field {
+  background: #fdfaf5;
+  border-radius: 10px;
+  padding: 2px 8px 2px 8px;
+  box-shadow: 0 1.5px 6px 0 rgba(131, 14, 14, 0.04);
+}
+
+mat-form-field.mat-focused {
+  background: #ffeaea;
+}
+
+input[matInput], textarea[matInput] {
+  font-size: 1.08rem;
+  font-weight: 500;
+  color: #830e0e;
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
 }
 
 @media (max-width: 900px) {
-  .add-product-container {
-    max-width: 98vw;
-    padding: 18px 4vw;
+  .form-card {
+    padding: 24px 8px 18px 8px;
+  }
+  section {
+    padding-left: 6px;
+    padding-right: 6px;
   }
 }
+
 @media (max-width: 600px) {
-  .add-product-container {
-    padding: 10px 2vw;
-    border-radius: 8px;
+  .form-card {
+    padding: 12px 2px 8px 2px;
   }
-  .form-grid, .row-2-col {
-    flex-direction: column;
-    gap: 12px;
+  .grid-3 {
+    grid-template-columns: 1fr;
+    gap: 14px;
   }
-  .form-actions {
-    margin-top: 18px;
-    justify-content: center;
+  button[mat-flat-button] {
+    width: 100%;
+    padding: 14px 0;
   }
-  h2 {
-    font-size: 1.2rem;
-  }
-  .image-preview img {
-    width: 60px;
-    height: 60px;
+  section {
+    padding-left: 2px;
+    padding-right: 2px;
   }
 }
