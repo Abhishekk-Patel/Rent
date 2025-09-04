@@ -42,7 +42,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     // Subscribe to unread message count
     this.notificationService.unreadMessages$.subscribe(count => {
       this.unreadMessages = count;
-      console.log('[Header] Unread message badge count:', count);
+     
     });
   }
 openMessageDialog() {

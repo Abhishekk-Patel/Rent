@@ -64,7 +64,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   // Save user details (simulate update, in real app call service)
   saveUserDetails() {
     this.user = { ...this.editUser };
-    console.log(this.user, 'edited user deatils');
+  
     this.userEditMode = false;
     this.userService
       .editUser(this.user._id || this.user.userId, this.user)
@@ -89,7 +89,6 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Get user details when the component initializes
     this.user = this.userService.getUserDetails();
-    console.log('User details:', this.user);
 
     // Simulate loading for demo; in real app, set isLoading = false after data loads
     setTimeout(() => {
@@ -111,7 +110,6 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     // event.index gives the tab index (0 = History, 1 = Received Orders, 2 = Your Orders)
     const tabNames = ['history', 'received', 'your'];
     const selectedTab = tabNames[event.index];
-    console.log('Selected tab:', selectedTab);
 
     if (!this.user || !this.user.email) {
       return;
@@ -131,7 +129,6 @@ export class MyAccountComponent implements OnInit, OnDestroy {
           } else {
             this.receivedOrders = [];
           }
-          console.log('Received notifications:', this.receivedOrders);
         },
         (error) => {
           console.error('Error fetching received notifications:', error);
@@ -144,12 +141,7 @@ export class MyAccountComponent implements OnInit, OnDestroy {
   }
 
   onEditProduct(productId: string, updatedData: any) {
-    console.log(
-      'Editing product with ID:',
-      productId,
-      'and data:',
-      updatedData
-    );
+   
     this.dataService.editProduct(productId, updatedData).subscribe(
       (response: any) => {
         this.myCartService.showMessage(response.message);
@@ -190,7 +182,6 @@ export class MyAccountComponent implements OnInit, OnDestroy {
       .receiveOrder()
       .subscribe((order) => {
         this.receivedOrders = order;
-        console.log('Order received in component:', this.receivedOrders);
       });
 
     this.orderService.fetchOrders(this.user.email).subscribe(
@@ -381,12 +372,10 @@ export class MyAccountComponent implements OnInit, OnDestroy {
     }
     this.userService.verifyOtp(this.user.email, this.otp).subscribe(
       (res: any) => {
-        console.log(res, 'otp verification response');
         if (res) {
           this.user.isVerified = true;
           this.showOtpInput = false;
           this.userService.saveUserDetails(res.user);
-          console.log(this.showOtpInput, 'this.showOtpInput');
         } else {
           this.otpError = res.message || 'Invalid OTP.';
         }

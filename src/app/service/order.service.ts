@@ -29,7 +29,6 @@ export class OrderService {
 
   // Send order data to the server
   sendOrder(orderData: any): void {
-    console.log(orderData,'order Data')
     this.socket.emit('placeOrder', orderData);
   }
 
@@ -44,13 +43,10 @@ export class OrderService {
         // Log and handle different messages for product owner and customer
         if (data && data.message === 'Order placed successfully') {
           this.myCartService.showMessage(data.message);
-          console.log('Order placed successfully (customer):', data);
         } else if (data && data.message === 'New order received') {
           this.myCartService.showMessage(data.message);
-          console.log('New order received (product owner):', data);
         } else if (data && data.message) {
           this.myCartService.showMessage(data.message);
-          console.log('orderReceived:', data);
         }
         observer.next(data); // Push data to the observer
       });
@@ -112,7 +108,6 @@ orderError(): Observable<any> {
   disconnect(): void {
     if (this.socket) {
       this.socket.disconnect();
-      console.log('Socket disconnected');
     }
   }
 }

@@ -164,9 +164,7 @@ export class ContentComponentComponent
     window.addEventListener('scroll', this.onScroll.bind(this));
     this.loadMoreRewards();
 
-    // this.orderService.receiveOrder().subscribe((data: any) => {
-    //   console.log(data, 'receive order content page'); // Store the message in Msg variable
-    // });
+  
   }
    checkMobileView() {
     this.isMobileView = window.innerWidth <= 768;
@@ -437,7 +435,7 @@ export class ContentComponentComponent
     
     reward.rating = newRating;
     // Optionally, send the new rating to the backend here
-     this.userService.updateRating(reward.pk, newRating,reward.userId).subscribe(res=> console.log(res,"response"));
+     this.userService.updateRating(reward.pk, newRating,reward.userId).subscribe(res=> {});
   }
 
   openMessageDialog(product: any) {

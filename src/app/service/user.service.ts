@@ -11,7 +11,6 @@ import { map } from 'rxjs/operators';
 export class UserService {
   // Send OTP to user's email
   sendOtpToEmail(email: string): Observable<any> {
-    console.log("Sending OTP to email:", email);
     return this.http.post<any>(`${this.url}/users/send-otp`, { email: email });
   }
 

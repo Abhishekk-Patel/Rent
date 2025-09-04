@@ -71,20 +71,17 @@ export class MyCartComponent implements OnInit, OnDestroy {
     this.myCartService.fetchCartItems();
     this.myCartService.cartItems$.subscribe((items) => {
       this.cartItems = items;
-      console.log('Cart items updated:', this.cartItems);
       this.generateSuggestions(); // Generate suggestions whenever cart items change
     });
     this.favoriteItems = this.myCartService.getFavoriteItems(); // Fetch favorite items
     this.generateSuggestions(); // Generate suggestions on initialization
     this.startAutoSlider(); // Start the automatic slider
      this.user = this.userService.getUserDetails().email;
-    console.log('Connecting to socket with user:', this.user);
     this.orderService.connectToSocket(this.user);
 
     this.orderSubscription = this.orderService
       .receiveOrder()
       .subscribe((order) => {
-        console.log('Order received:', order);
 
         const productEmails = order.product.map(
           (res: any) =>res.productOwnerEmail
@@ -108,7 +105,6 @@ export class MyCartComponent implements OnInit, OnDestroy {
         // If the order was placed by this user (customer), clear cart and show message
         if (order.customer && order.customer.email !== this.user) {
           order.product.forEach((item: any) => {
-            console.log('Removing item from cart:', item);
             this.myCartService.removeFromCart(item);
           });
           this.cartItems = []; // Clear local cart items

@@ -51,7 +51,6 @@ export class NotificationService {
       this.socket?.emit('joinRoom', { chatId: this.userId });
     });
     this.socket.on('newMessageNotification', (notif: any) => {
-      console.log('[Global Socket] Received newMessageNotification:', notif);
       this.increment();
       this.playMessageSound();
     });

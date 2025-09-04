@@ -256,7 +256,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   handleCredentialResponse(response: any): void {
-    console.log(response,'response login ')
+   
     this.isLoading = true;
     // Send the token to your backend
     // https://rent-be.onrender.com/

@@ -28,7 +28,6 @@ export class productDataEffects {
       switchMap((action)=>{
         return this.orderService.fetchOrders(action.email).pipe(
           map((OrderData) => {
-            console.log(OrderData,"OrderData effect")
             return getOrderData({ OrderData });
           })
         )

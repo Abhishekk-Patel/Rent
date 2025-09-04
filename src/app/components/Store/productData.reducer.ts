@@ -7,7 +7,6 @@ export const initialOrderState: any[] = []; // Initial state for order data
 export const productDataReducer = createReducer(
   initialProductState,
   on(getProductData, (state, { data }) => {
-    console.log('Reducer updating productData state with data:', data); 
     return [...data]; // Update state with fetched product data
   })
 );
@@ -15,7 +14,6 @@ export const productDataReducer = createReducer(
 export const orderDataReducer = createReducer(
   initialOrderState,
   on(getOrderData, (state, { OrderData }) => {
-    console.log('Reducer updating orderData state with data:', OrderData); 
     return [...OrderData]; // Update state with fetched order data
   })
 );
