@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-partner-brand-slider',
@@ -26,11 +27,16 @@ export class PartnerBrandSliderComponent {
   ];
 
   currentIndex = 0;
+  isMobileView = false;
 
   constructor(
       public readonly router: Router,
-      
-    ) {}
+      private breakpointObserver: BreakpointObserver
+    ) {
+      this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet]).subscribe(result => {
+        this.isMobileView = result.matches;
+      });
+    }
 
   goToSlide(index: number) {
     this.currentIndex = index;
