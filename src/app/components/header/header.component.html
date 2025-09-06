@@ -1,99 +1,221 @@
 <nav *ngIf="isMobileView" class="mobile-nav-fancy">
   <ul class="nav-list">
-    <li class="nav-item" routerLinkActive="active" (click)="router.navigate(['content'])" aria-label="Home">
+    <li
+      class="nav-item"
+      routerLinkActive="active"
+      (click)="router.navigate(['content'])"
+      aria-label="Home"
+    >
       <span class="icon-bg"><mat-icon>home</mat-icon></span>
       <span class="nav-label">Home</span>
     </li>
-    <li class="nav-item" routerLinkActive="active" aria-label="Search" (click)="searchValue=''; search()">
+    <li
+      class="nav-item"
+      routerLinkActive="active"
+      aria-label="Search"
+      (click)="openMobileSearch()"
+    >
       <span class="icon-bg"><mat-icon>search</mat-icon></span>
       <span class="nav-label">Search</span>
     </li>
+    <!-- Mobile Search Overlay -->
+    <div *ngIf="isMobileView && showMobileSearch" class="mobile-search-overlay">
+      <div class="mobile-search-box">
+        <mat-form-field appearance="outline" class="mobile-search-field">
+          <mat-label>Search</mat-label>
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="searchValue"
+            (input)="search()"
+            (keypress)="handleKeyPress($event)"
+            placeholder="Search for lehenga, sherwani, city, occasion…"
+          />
+          <button
+            *ngIf="searchValue"
+            matSuffix
+            mat-icon-button
+            aria-label="Clear"
+            (click)="clear()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+        <button
+          mat-icon-button
+          class="close-search-btn"
+          aria-label="Close search"
+          (click)="closeMobileSearch()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
     <li class="nav-item add-center" routerLinkActive="active" aria-label="Add">
       <span class="icon-bg add-bg"><mat-icon>add</mat-icon></span>
-      <!-- <span class="nav-label">Add</span> -->
+      <!-- Add button, label hidden for cleaner UI -->
     </li>
-    <li class="nav-item" routerLinkActive="active"  aria-label="Profile" (click)="router.navigate(['my-account'])">
+    <li class="nav-item" routerLinkActive="active" aria-label="Profile">
+      <button
+        *ngIf="!isAddNewProduct"
+        mat-icon-button
+        class="cart"
+        aria-label="Cart"
+        matBadge="{{ cartService.getCartValue() }}"
+        matBadgePosition="above after"
+        matBadgeColor="warn"
+        (click)="openMyCard()"
+      >
+        <mat-icon>shopping_cart</mat-icon>
+      </button>
+    </li>
+    <li
+      class="nav-item"
+      routerLinkActive="active"
+      aria-label="Profile"
+      (click)="router.navigate(['my-account'])"
+    >
       <span class="icon-bg"><mat-icon>person</mat-icon></span>
       <span class="nav-label">Profile</span>
     </li>
-  <!-- Removed duplicate menu toggle from nav -->
+    <!-- End mobile nav -->
   </ul>
 </nav>
-<!-- Top Bar for Mobile: Product Logo/Title Left, Hamburger Right -->
+
+<!-- Mobile Top Bar -->
 <mat-toolbar class="topbar" color="primary" *ngIf="isMobileView">
-  <div class="topbar-inner" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+  <div
+    class="topbar-inner"
+    style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    "
+  >
     <!-- Left: Product Logo and Title -->
-    <div class="brand" style="display: flex; align-items: center;">
-      <img src="assets/ProductLogo.png" alt="TryRentiT" class="logo" style="height: 32px; margin-right: 8px;" />
-      <span class="brand-name" style="font-weight: bold; font-size: 1.2em;">Try Rent iT</span>
+    <div class="brand" style="display: flex; align-items: center">
+      <img
+        src="assets/ProductLogo.png"
+        alt="TryRentiT"
+        class="logo"
+        style="height: 32px; margin-right: 8px"
+      />
+      <span class="brand-name" style="font-weight: bold; font-size: 1.2em"
+        >TryRentiT</span
+      >
     </div>
     <!-- Right: Hamburger Icon -->
-    <button class="hamburger" mat-icon-button (click)="toggleMobileMenu()" aria-label="Toggle menu">
-      <mat-icon>{{ showCategoryMenu ? 'close' : 'menu' }}</mat-icon>
+    <button
+      class="hamburger"
+      mat-icon-button
+      (click)="toggleMobileMenu()"
+      aria-label="Toggle menu"
+    >
+      <mat-icon>{{ showCategoryMenu ? "close" : "menu" }}</mat-icon>
     </button>
   </div>
 </mat-toolbar>
 
 <!-- Mobile Slide-out Menu -->
 
-
-
-<!-- Fancy Mobile Slide-out Menu with CSS classes only -->
-
 <div *ngIf="isMobileView && showCategoryMenu">
-  <div class="menu-overlay fancy-overlay" (click)="toggleMobileMenu()">
-         
-
-  </div>
+  <div class="menu-overlay fancy-overlay" (click)="toggleMobileMenu()"></div>
   <div class="mobile-menu fancy-menu">
     <div class="menu-header-row">
       <span class="menu-title">Categories</span>
     </div>
     <div class="menu-content">
       <div class="category-tabs">
-        <button class="tab-btn bride-tab" [class.active]="activeCategory === 'bride'" (click)="toggleCategory('bride')">
+        <button
+          class="tab-btn bride-tab"
+          [class.active]="activeCategory === 'bride'"
+          (click)="toggleCategory('bride')"
+        >
           <mat-icon>female</mat-icon> Bride
         </button>
-        <button class="tab-btn groom-tab" [class.active]="activeCategory === 'groom'" (click)="toggleCategory('groom')">
+        <button
+          class="tab-btn groom-tab"
+          [class.active]="activeCategory === 'groom'"
+          (click)="toggleCategory('groom')"
+        >
           <mat-icon>male</mat-icon> Groom
         </button>
       </div>
-      <div class="category-list fancy-category-list" *ngIf="activeCategory === 'bride'">
-        <ng-container *ngFor="let cat of brideCategories">
-          <mat-checkbox color="primary" class="category-checkbox fancy-checkbox">{{cat}}</mat-checkbox>
+      <!-- Category search -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Search categories</mat-label>
+        <input
+          matInput
+          [(ngModel)]="searchValue"
+          (input)="search()"
+          placeholder="Type to filter..."
+        />
+      </mat-form-field>
+      <!-- Clear filter button -->
+
+      <a
+        *ngIf="isCategoryFilterApplied"
+        class="clear-icon-btn"
+        (click)="clearCategoryFilter()"
+        aria-label="Clear filter"
+        >Clear Filter</a
+      >
+
+      <div class="category-list fancy-category-list">
+        <ng-container *ngFor="let category of filteredCategories">
+          <mat-checkbox
+            color="primary"
+            class="category-checkbox fancy-checkbox"
+            [checked]="category.isSelected"
+            (change)="selectCategory(category.name)"
+          >
+            {{ category.name }}
+          </mat-checkbox>
         </ng-container>
       </div>
-      <div class="category-list fancy-category-list" *ngIf="activeCategory === 'groom'">
-        <ng-container *ngFor="let cat of groomCategories">
-          <mat-checkbox color="primary" class="category-checkbox fancy-checkbox">{{cat}}</mat-checkbox>
-        </ng-container>
-      </div>
+      <!-- End category list -->
     </div>
     <div class="myntra-actions-bar">
-      <button class="myntra-action-btn close-btn" mat-icon-button (click)="toggleMobileMenu()" aria-label="Close menu">
+      <button
+        class="myntra-action-btn close-btn"
+        mat-icon-button
+        (click)="toggleMobileMenu()"
+        aria-label="Close menu"
+      >
         <mat-icon>close</mat-icon>
       </button>
-      <button *ngIf="!isAddNewProduct"
-              mat-stroked-button
-              class="myntra-action-btn cart"
-              aria-label="Cart"
-              matBadge="{{ cartService.getCartValue() }}"
-              matBadgePosition="above after"
-              matBadgeColor="warn"
-              (click)="openMyCard()">
+      <button
+        *ngIf="!isAddNewProduct"
+        mat-stroked-button
+        class="myntra-action-btn cart"
+        aria-label="Cart"
+        matBadge="{{ cartService.getCartValue() }}"
+        matBadgePosition="above after"
+        matBadgeColor="warn"
+        (click)="openMyCard()"
+      >
         <mat-icon>shopping_cart</mat-icon>
         <span>Cart</span>
       </button>
-      <button mat-stroked-button
-              class="myntra-action-btn"
-              aria-label="Messages"
-              (click)="openMessageDialog()"
-              [matBadge]="unreadMessages"
-              matBadgeColor="warn">
+      <button
+        mat-stroked-button
+        class="myntra-action-btn"
+        aria-label="Messages"
+        (click)="openMessageDialog()"
+        [matBadge]="unreadMessages"
+        matBadgeColor="warn"
+      >
         <mat-icon>message</mat-icon>
         <span>Message</span>
       </button>
-      <button mat-raised-button color="warn" class="myntra-action-btn logout-btn" (click)="router.navigate([''])">
+      <button
+        mat-raised-button
+        color="warn"
+        class="myntra-action-btn logout-btn"
+        (click)="router.navigate([''])"
+      >
         <mat-icon>logout</mat-icon>
         <span>Logout</span>
       </button>
@@ -101,98 +223,137 @@
   </div>
 </div>
 
-<!-- Desktop Header (visible only on desktop) -->
+<!-- Desktop Header -->
 <mat-toolbar class="topbar" color="primary" *ngIf="!isMobileView">
   <div class="topbar-inner">
     <!-- Brand -->
-    <div class="brand"
-         
-          (click)="router.navigate(['content'])"
-         role="button"
-         tabindex="0"
-         aria-label="Go to Home">
+    <div
+      class="brand"
+      (click)="router.navigate(['content'])"
+      role="button"
+      tabindex="0"
+      aria-label="Go to Home"
+    >
       <img src="assets/ProductLogo.png" alt="Rent iT" class="logo" />
-      <!-- <p class="brand-name">TryRentiT</p>  -->
+      <!-- Brand name hidden for cleaner UI -->
     </div>
 
-    <!-- Navigation (Desktop only) -->
+    <!-- Desktop Navigation -->
     <nav class="primary-nav">
-      <button mat-button (click)="onUserRoleChange({ value: 'Bride' })">Bride</button>
-      <button mat-button (click)="onUserRoleChange({ value: 'Groom' })">Groom</button>
-      <button mat-button>Accessories</button>
-      <button mat-button>Jewellery</button>
-      <button mat-button>Footwear</button>
+      <button mat-button (click)="onUserRoleChange({ value: 'Bride' })">
+        Bride
+      </button>
+      <button mat-button (click)="onUserRoleChange({ value: 'Groom' })">
+        Groom
+      </button>
+      <button mat-button (click)="selectCategory('Accessories')">
+        Accessories
+      </button>
+      <button mat-button (click)="selectCategory('Jewellery')">
+        Jewellery
+      </button>
+      <button mat-button (click)="selectCategory('Footwear')">Footwear</button>
     </nav>
 
-    <!-- Search Bar -->
+    <!-- Desktop Search Bar -->
     <div class="search-wrap">
       <mat-form-field appearance="outline" class="search-field">
         <mat-icon matPrefix>search</mat-icon>
-        <input matInput
-               type="text"
-               #searchInput
-               [(ngModel)]="searchValue"
-               (input)="search()"
-               (keypress)="handleKeyPress($event)"
-               [placeholder]="'Search for lehenga, sherwani, city, occasion…'" />
-        <button *ngIf="searchValue"
-                matSuffix
-                mat-icon-button
-                aria-label="Clear"
-                (click)="clear()">
+        <input
+          matInput
+          type="text"
+          #searchInput
+          [(ngModel)]="searchValue"
+          (input)="search()"
+          (keypress)="handleKeyPress($event)"
+          [placeholder]="'Search for lehenga, sherwani, city, occasion…'"
+        />
+        <button
+          *ngIf="searchValue"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="clear()"
+        >
           <mat-icon>close</mat-icon>
         </button>
       </mat-form-field>
     </div>
 
-    <!-- Action Buttons -->
+    <!-- Desktop Action Buttons -->
     <div class="actions">
-      <!-- Messages -->
-      <button mat-icon-button
-              aria-label="Messages"
-              (click)="openMessageDialog()"
-              [matBadge]="unreadMessages"
-              matBadgeColor="warn">
-        <mat-icon>message</mat-icon>
-      </button>
-      <!-- Notifications -->
-      <button mat-icon-button
-              aria-label="Notifications"
-              *ngIf="(orderReceived && isOwner) || true"
-              matTooltip="{{ orderReceived }}"
-              [matBadge]="!isAddNewProduct ? 1 : 0"
-              matBadgePosition="above after"
-              matBadgeColor="warn">
-        <mat-icon>notifications</mat-icon>
-      </button>
-      <!-- Cart -->
-      <button *ngIf="!isAddNewProduct"
-              mat-icon-button
-              class="cart"
-              aria-label="Cart"
-              matBadge="{{ cartService.getCartValue() }}"
-              matBadgePosition="above after"
-              matBadgeColor="warn"
-              (click)="openMyCard()">
-        <mat-icon>shopping_cart</mat-icon>
-      </button>
-      <!-- User Menu -->
-      <div *ngIf="!isAddNewProduct">
-        <mat-menu #userMenu="matMenu">
-          <button mat-menu-item (click)="router.navigate(['my-account'])">Account</button>
-          <button mat-menu-item (click)="router.navigate([''])">Logout</button>
-        </mat-menu>
-        <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Profile">
-          <ng-container *ngIf="userService.getUserDetails().profilePicture; else defaultProfilePicture">
-            <img [src]="userService.getUserDetails().profilePicture"
-                 alt="Profile"
-                 class="profile-picture" />
-          </ng-container>
-          <ng-template #defaultProfilePicture>
-            <mat-icon>account_circle</mat-icon>
-          </ng-template>
-        </button>
-      </div>
+      <ul class="nav-list actions-nav-list">
+        <li class="nav-item" aria-label="Messages">
+          <button
+            mat-icon-button
+            (click)="openMessageDialog()"
+            [matBadge]="unreadMessages"
+            matBadgeColor="warn"
+          >
+            <span class="icon-bg"><mat-icon>message</mat-icon></span>
+          </button>
+        </li>
+        <li
+          class="nav-item"
+          aria-label="Notifications"
+          *ngIf="(orderReceived && isOwner) || true"
+        >
+          <button
+            mat-icon-button
+            matTooltip="{{ orderReceived }}"
+            [matBadge]="!isAddNewProduct ? 1 : 0"
+            matBadgePosition="above after"
+            matBadgeColor="warn"
+          >
+            <span class="icon-bg"><mat-icon>notifications</mat-icon></span>
+          </button>
+        </li>
+        <li class="nav-item" aria-label="Cart" *ngIf="!isAddNewProduct">
+          <button
+            mat-icon-button
+            class="cart"
+            matBadge="{{ cartService.getCartValue() }}"
+            matBadgePosition="above after"
+            matBadgeColor="warn"
+            (click)="openMyCard()"
+          >
+            <span class="icon-bg"><mat-icon>shopping_cart</mat-icon></span>
+          </button>
+        </li>
+        <li class="nav-item" aria-label="Profile" *ngIf="!isAddNewProduct">
+          <mat-menu #userMenu="matMenu">
+            <button mat-menu-item (click)="router.navigate(['my-account'])">
+              Account
+            </button>
+            <button mat-menu-item (click)="router.navigate([''])">
+              Logout
+            </button>
+          </mat-menu>
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="userMenu"
+            aria-label="Profile"
+          >
+            <span class="icon-bg">
+              <ng-container
+                *ngIf="
+                  userService.getUserDetails().profilePicture;
+                  else defaultProfilePicture
+                "
+              >
+                <img
+                  [src]="userService.getUserDetails().profilePicture"
+                  alt="Profile"
+                  class="profile-picture"
+                />
+              </ng-container>
+              <ng-template #defaultProfilePicture>
+                <mat-icon>account_circle</mat-icon>
+              </ng-template>
+            </span>
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
 </mat-toolbar>

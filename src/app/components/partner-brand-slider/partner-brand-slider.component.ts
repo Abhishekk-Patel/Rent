@@ -8,6 +8,14 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
   styleUrls: ['./partner-brand-slider.component.css'],
 })
 export class PartnerBrandSliderComponent {
+  scrollToCatalog(): void {
+    setTimeout(() => {
+      const catalogEl = document.querySelector('.catalog');
+      if (catalogEl) {
+        (catalogEl as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }
   brands = [
     // { name: 'Brand 3', imageUrl: './assets/22.webp' },
     // { name: 'Brand 2', imageUrl: './assets/16.png' },
@@ -59,7 +67,7 @@ export class PartnerBrandSliderComponent {
   }
 
   scrollToContent() {
-    const contentSection = document.querySelector('.content');
+    const contentSection = document.querySelector('.catalog');
     if (contentSection) {
       (contentSection as HTMLElement).scrollIntoView({ behavior: 'smooth', });
     }

@@ -9,6 +9,24 @@ import { map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class UserService {
+  private searchValueSubject = new BehaviorSubject<string>('');
+  searchValue$ = this.searchValueSubject.asObservable();
+
+  setSearchValue(value: string) {
+    this.searchValueSubject.next(value);
+  }
+  private userRoleSubject = new BehaviorSubject<string>('Bride');
+  userRole$ = this.userRoleSubject.asObservable();
+  private activeCategorySubject = new BehaviorSubject<string>('All');
+  activeCategory$ = this.activeCategorySubject.asObservable();
+
+  setActiveCategory(category: string) {
+    this.activeCategorySubject.next(category);
+  }
+
+  setUserRole(role: string) {
+    this.userRoleSubject.next(role);
+  }
   // Send OTP to user's email
   sendOtpToEmail(email: string): Observable<any> {
     return this.http.post<any>(`${this.url}/users/send-otp`, { email: email });

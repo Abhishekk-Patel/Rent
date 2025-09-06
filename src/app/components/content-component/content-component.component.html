@@ -1,8 +1,4 @@
-
-<!-- ...existing code... -->
-
-<!-- Optional partner brand slider -->
-<app-partner-brand-slider></app-partner-brand-slider>
+<app-partner-brand-slider *ngIf="!searchValue"></app-partner-brand-slider>
 
 <section class="catalog">
   <div class="catalog-inner">
@@ -103,7 +99,8 @@
 
       <!-- Product grid -->
       <div class="grid" [class.loading]="isLoading">
-        <div *ngFor="let reward of filteredRewards" class="product-card" [@fadeInCard]
+  <div *ngFor="let reward of filteredRewards" class="product-card" [@fadeInCard]
+       [attr.id]="'search-match-' + reward.pk" tabindex="0"
              (mouseenter)="reward._hover=true" (mouseleave)="reward._hover=false">
           <div class="media">
             <img [src]="(reward._hover && reward.display_img_urls[1]) ? reward.display_img_urls[1] : reward.display_img_urls[0]"

@@ -7,9 +7,13 @@
           <img [src]="brand.imageUrl" [alt]="brand.name" class="brand-img" />
           <!-- Call-to-Action Buttons -->
           <div class="button-wrapper img-overlay-btns">
-            <button mat-raised-button color="primary" class="cta-btn" (click)="scrollToContent()">
+            <!-- <button mat-raised-button color="primary" class="cta-btn" (click)="scrollToContent()">
               <span>Browse Collection</span>
               <mat-icon>touch_app</mat-icon>
+            </button> -->
+            <button mat-raised-button color="primary" class="cta-btn browse-catalog-btn" (click)="scrollToCatalog()">
+              <span>Browse Collection</span>
+              <mat-icon>collections_bookmark</mat-icon>
             </button>
             <button mat-raised-button color="accent" class="cta-btn product-btn" (click)="addNewProduct()">
               <span>Add a Product</span>
