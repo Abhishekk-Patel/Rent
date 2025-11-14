@@ -29,7 +29,7 @@ export class ContentComponentComponent
   showCategoryMenu: boolean = false;
   public totalPages: any;
   categories = Category_LIST;
-  
+
   onAddProduct() {
     this.router.navigate(['/add-product']);
   }

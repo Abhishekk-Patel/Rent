@@ -13,32 +13,28 @@
     </div>
 
     <div class="mobile-categories-wrapper">
-      <ul class="mobile-categories-grid">
-        <li class="category-item-mobile">
-          <div class="category-circle">
-            <mat-icon>checkroom</mat-icon>
-          </div>
-          <span class="cat-title">Dress</span>
-        </li>
-        <li class="category-item-mobile">
-          <div class="category-circle">
-            <mat-icon>woman</mat-icon>
-          </div>
-          <span class="cat-title">Suites</span>
-        </li>
-        <li class="category-item-mobile">
-          <div class="category-circle">
-            <mat-icon>diamond</mat-icon>
-          </div>
-          <span class="cat-title">Jewelry</span>
-        </li>
-        <li class="category-item-mobile">
-          <div class="category-circle">
-            <mat-icon>card_accessories</mat-icon>
-          </div>
-          <span class="cat-title">Accessories</span>
-        </li>
-      </ul>
+      <div class="mobile-categories-row">
+        <ul class="mobile-categories-list">
+          <li class="category-item-mobile" *ngFor="let c of ['Dress','Suites','Jewelry','Accessories','Lehenga','Saree','Tops','Bottoms','Shoes','Bags']" (click)="selectCategory({name: c})">
+            <div class="category-circle">
+              <mat-icon [ngSwitch]="c">
+                <ng-container *ngSwitchCase="'Dress'">checkroom</ng-container>
+                <ng-container *ngSwitchCase="'Suites'">man</ng-container>
+                <ng-container *ngSwitchCase="'Jewelry'">diamond</ng-container>
+                <ng-container *ngSwitchCase="'Accessories'">card_accessories</ng-container>
+                <ng-container *ngSwitchCase="'Lehenga'">celebration</ng-container>
+                <ng-container *ngSwitchCase="'Saree'">local_florist</ng-container>
+                <ng-container *ngSwitchCase="'Tops'">checkroom</ng-container>
+                <ng-container *ngSwitchCase="'Bottoms'">open_in_browser</ng-container>
+                <ng-container *ngSwitchCase="'Shoes'">directions_walk</ng-container>
+                <ng-container *ngSwitchCase="'Bags'">work</ng-container>
+                <ng-container *ngSwitchDefault>category</ng-container>
+              </mat-icon>
+            </div>
+            <span class="cat-title">{{c}}</span>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
   <div class="catalog-inner">

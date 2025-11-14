@@ -68,14 +68,25 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-.mobile-categories-grid {
+.mobile-categories-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.mobile-categories-list {
+  display: flex;
+  gap: 10px;
   list-style: none;
   margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  padding: 6px 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
+
+.mobile-categories-list::-webkit-scrollbar { height: 6px; }
+.mobile-categories-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 6px; }
 
 .category-item-mobile {
   display: flex;
@@ -113,6 +124,11 @@
   color: #222;
   word-break: break-word;
   line-height: 1.2;
+}
+
+@media (max-width: 420px) {
+  .category-circle { width: 48px; height: 48px; font-size: 24px; }
+  .mobile-categories-list { padding: 6px 12px; }
 }
 
 /* ---- Mobile Role (center + circular/pill) ---- */
