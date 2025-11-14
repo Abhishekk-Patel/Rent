@@ -1,6 +1,46 @@
 <app-partner-brand-slider *ngIf="!searchValue"></app-partner-brand-slider>
 
-<section class="catalog">
+<section class="catalog" [ngClass]="{ 'catalog-mobile': isMobileView }">
+  <div>
+  <div *ngIf="isMobileView" class="mobile-top">
+    <div class="filters-header mobile-role-center">
+      <fieldset class="role-puck" aria-label="User Role">
+        <mat-button-toggle-group [(ngModel)]="userRole" (change)="onUserRoleChange($event)" class="user-role-toggle" aria-label="User Role">
+          <mat-button-toggle value="Bride" class="mobile-role-toggle" aria-label="Bride">Bride</mat-button-toggle>
+          <mat-button-toggle value="Groom" class="mobile-role-toggle" aria-label="Groom">Groom</mat-button-toggle>
+        </mat-button-toggle-group>
+      </fieldset>
+    </div>
+
+    <div class="mobile-categories-wrapper">
+      <ul class="mobile-categories-grid">
+        <li class="category-item-mobile">
+          <div class="category-circle">
+            <mat-icon>checkroom</mat-icon>
+          </div>
+          <span class="cat-title">Dress</span>
+        </li>
+        <li class="category-item-mobile">
+          <div class="category-circle">
+            <mat-icon>woman</mat-icon>
+          </div>
+          <span class="cat-title">Suites</span>
+        </li>
+        <li class="category-item-mobile">
+          <div class="category-circle">
+            <mat-icon>diamond</mat-icon>
+          </div>
+          <span class="cat-title">Jewelry</span>
+        </li>
+        <li class="category-item-mobile">
+          <div class="category-circle">
+            <mat-icon>card_accessories</mat-icon>
+          </div>
+          <span class="cat-title">Accessories</span>
+        </li>
+      </ul>
+    </div>
+  </div>
   <div class="catalog-inner">
     <!-- Left Filters (desktop) -->
     <aside class="filters-panel" *ngIf="!isMobileView">
@@ -160,6 +200,7 @@
 
       <app-add-product-if-search-empty style="width: 100%;" *ngIf="searchValue" (addProduct)="onAddProduct()"></app-add-product-if-search-empty>
     </main>
+  </div>
   </div>
 
   <!-- Sort / Filter Panel (existing) -->

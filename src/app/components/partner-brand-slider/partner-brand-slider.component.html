@@ -6,7 +6,7 @@
         <div class="img-btn-container">
           <img [src]="brand.imageUrl" [alt]="brand.name" class="brand-img" />
           <!-- Call-to-Action Buttons -->
-          <div class="button-wrapper img-overlay-btns">
+          <div class="button-wrapper img-overlay-btns" *ngIf="!isMobileView">
             <!-- <button mat-raised-button color="primary" class="cta-btn" (click)="scrollToContent()">
               <span>Browse Collection</span>
               <mat-icon>touch_app</mat-icon>
