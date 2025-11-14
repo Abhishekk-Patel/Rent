@@ -264,7 +264,13 @@
   min-width: 260px;
   background: #fff;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-  border-radius: 18px 0 0 18px;
+  /* Keep only the left side rounded (menu slides in from right) */
+  border-top-left-radius: 18px;
+  border-bottom-left-radius: 18px;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  /* Prevent child elements from overflowing and showing extra rounding */
+  overflow: hidden;
   padding: 0;
   position: fixed;
   top: 0;
@@ -279,7 +285,34 @@
   align-items: center;
   justify-content: space-between;
   padding: 22px 24px 10px 24px;
+  width: 100%;
+  box-sizing: border-box;
   border-bottom: 1px solid #eee;
+}
+
+/* Make the logo in the slide-out menu a bit larger for mobile */
+.menu-header-row .menu-title .logo {
+  height: 40px;
+  width: auto;
+  margin-right: 8px;
+}
+
+/* Search input inside mobile menu — add readable size and ensure prefix icon spacing */
+.menu-content .w-100 .mat-input-element {
+  font-size: 1rem;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.menu-content .w-100 .mat-form-field-infix {
+  align-items: center;
+}
+
+/* Spacer/bottom line below the category search */
+.menu-content .search-spacer {
+  height: 1px;
+  background: #eee;
+  width: 100%;
+  margin: 10px 0 14px 0;
 }
 .menu-title {
   font-size: 1.3em;
@@ -557,7 +590,7 @@
   align-items: center;
   justify-content: center;
   flex: 1;
-  color: #a3420f;
+  color: #000;
   font-weight: 500;
   font-size: 0.95rem;
   cursor: pointer;
@@ -566,10 +599,16 @@
   border-radius: 12px;
 }
 
-.mobile-nav-fancy .nav-item.active,
-.mobile-nav-fancy .nav-item:active,
-.mobile-nav-fancy .nav-item:hover {
-  /* background: linear-gradient(90deg, #c3541c 0%, #f7b267 100%); */
+.mobile-nav-fancy .nav-item.active {
+  color: #a3420f;
+}
+
+.mobile-nav-fancy .nav-item.active .icon-bg {
+  background: #a3420f;
+  color: #fff;
+}
+
+.mobile-nav-fancy .nav-item.active .icon-bg mat-icon {
   color: #fff;
 }
 
@@ -577,25 +616,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* background: #f7b267; */
   border-radius: 50%;
   width: 38px;
   height: 38px;
   margin-bottom: 4px;
   box-shadow: 0 2px 8px rgba(195, 84, 28, 0.1);
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
+  background: transparent;
+  color: #000;
 }
 
-.mobile-nav-fancy .nav-item.active .icon-bg,
-.mobile-nav-fancy .nav-item:active .icon-bg,
-.mobile-nav-fancy .nav-item:hover .icon-bg {
-  background: #c3541c;
+.mobile-nav-fancy .icon-bg mat-icon {
+  color: #000;
 }
 
 .mobile-nav-fancy .nav-label {
   font-size: 0.85rem;
   margin-top: 2px;
   letter-spacing: 0.02em;
+  color: #000;
 }
 
 @media (max-width: 768px) {
@@ -709,7 +748,9 @@
   font-weight: 600;
   letter-spacing: 0.5px;
 }
-
+::ng-deep .mat-badge-medium.mat-badge-overlap.mat-badge-after .mat-badge-content {
+  top: -5px;
+}
 /* ================== Navigation ================== */
 .primary-nav {
   display: flex;
@@ -772,7 +813,7 @@
 .mobile-menu {
   position: fixed;
   top: 0;
-  left: -280px;
+  left: -260px;
   width: 260px;
   height: 100%;
   background: #fff;

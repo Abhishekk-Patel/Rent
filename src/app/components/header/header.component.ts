@@ -21,6 +21,7 @@ import { UserService } from 'src/app/service/user.service';
   showCategoryMenu = false;
   isSortPanelOpen = false;
   activeCategory: 'bride' | 'groom' = 'bride';
+  activeNavItem: string = 'home';
   brideCategories = [
     'Bridal Lehenga','Bridal Saree','Bridal Jewelry Set','Bridal Shoes','Bridal Accessories','Bridal Makeup','Bridal Clutches','Bridal Dupatta','Bridal Gown','Bridal Handbags','Other',
   ];
