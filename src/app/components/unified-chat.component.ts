@@ -7,6 +7,7 @@ import {
   Inject,
   OnInit,
 } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { NotificationService } from '../service/notification.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -33,7 +34,7 @@ interface ChatSummary {
   googleId: string;
   hasNewMessage?: boolean;
   isOnline?: boolean; // Optional: for future use if needed
-  
+
 }
 
 interface ChatMessage {
@@ -54,6 +55,10 @@ interface ChatMessage {
   styleUrls: ['./unified-chat.component.css'],
 })
 export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
+  // Responsive/mobile state
+  isMobileScreen: boolean = false;
+  showChatList: boolean = false;
+  showProfilePanel: boolean = false;
 
   productData$ = this.store.select((state: any) => state.productData);
   // Emoji picker options
@@ -157,10 +162,23 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     private socketService: SocketService,
     private callService: CallService,
     private chatService: ChatService,
-    private store: Store
+    private store: Store,
+    private breakpointObserver: BreakpointObserver
   ) {}
 
   ngOnInit(): void {
+    // Use BreakpointObserver for responsive detection (works inside dialogs)
+    this.breakpointObserver.observe(['(max-width: 600px)']).subscribe((state) => {
+      this.isMobileScreen = state.matches;
+      if (this.isMobileScreen) {
+        this.showChatList = true;
+        this.showProfilePanel = false;
+      } else {
+        this.showChatList = false;
+        this.showProfilePanel = false;
+      }
+    });
+
     // Listen for call_rejected event so caller can update UI and state
     this.socketService.onEvent('call_rejected').subscribe(() => {
       if (this.isCalling) {
@@ -202,7 +220,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
         googleId: this.currentUserId,
       };
       this.buyerId = isCurrentUserOwner ? '' : this.currentUserId;
- 
+
       this.loadMessages(
         product.pk,
         product.userId,
@@ -211,29 +229,29 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // --- SOCKET INITIALIZATION AND EVENT LISTENERS ---
-    const token = localStorage.getItem('userToken');
+      const token = localStorage.getItem('userToken');
     this.socketService.connect(token!);
-    
+
 
     // Listen for professional call signaling events
     this.socketService.onCall().subscribe((data: any) => {
-    
+
       this.incomingCall = true;
       this.callFrom = data.from;
       this.callType = data.isVideo ? 'video' : 'audio';
       this.callOffer = null;
       this.callOfferSender = data.from;
       this.notificationService.playCallSound();
-     
+
     });
 
     this.socketService.onOnlineUsers().subscribe((userIds: string[]) => {
       this.onlineUsers = new Set(userIds);
-     
+
     });
 
     this.socketService.onMessage().subscribe((msg: any) => {
-     
+
       if (!this.selectedChat) return;
       const incomingChatId = msg.chatId;
       const selectedChatId = this.chatService.getChatId(
@@ -286,17 +304,24 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.fetchChatList();
   }
-
+// Detect mobile screen and update toggles
+      updateScreenMode() {
+        this.isMobileScreen = window.innerWidth <= 600;
+        if (!this.isMobileScreen) {
+          this.showChatList = false;
+          this.showProfilePanel = false;
+        }
+      }
   ngAfterViewInit() {
     // No socket logic here anymore; reserved for DOM logic if needed
     // (intentionally left blank)
   }
   // --- WebRTC Voice/Video Call Methods ---
   startCall(isVideo: boolean) {
-   
+
     this.callState.isVideoCall = isVideo;
     this.isCalling = true;
-   
+
     // Allow both buyer and owner to start a call
     if (this.selectedChat) {
       this.socketService.emit('incoming_call', {
@@ -305,7 +330,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
         isVideo: isVideo,
         from: this.currentUserId,
       });
-     
+
     }
   }
 
@@ -336,20 +361,20 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   // Accept incoming call (owner)
   acceptCall() {
     if (!this.selectedChat) return;
-   
+
     this.incomingCall = false;
     this.isInCall = true; // Set immediately for UI
     this.isCalling = false;
     this.callState.isVideoCall = this.callType === 'video';
     // Stop call notification sound
     this.notificationService.stopCallSound();
-   
+
     // Notify initiator
     this.socketService.emit('call_accepted', {
       ownerId: this.selectedChat.ownerId,
       buyerId: this.selectedChat.buyerId,
     });
-  
+
     // Wait for webrtc_offer from initiator
     this.callOffer = null;
     this.callOfferSender = null;
@@ -359,7 +384,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
   // Reject incoming call (owner)
   rejectCall() {
     if (!this.selectedChat) return;
-  
+
     // Only send missed call if not in call
     if (!this.isInCall) {
       const timeStr = new Date().toLocaleTimeString([], {
@@ -379,7 +404,7 @@ export class UnifiedChatComponent implements OnInit, AfterViewInit, OnDestroy {
       ownerId: this.selectedChat.ownerId,
       buyerId: this.selectedChat.buyerId,
     });
-  
+
   }
 
   async handleAnswer(answer: any) {
@@ -519,7 +544,7 @@ fetchChatList() {
 
   this.chatService.fetchChatList(userId, token).pipe(
     switchMap((list: any[]) => {
-    
+
 
       const productIds = list.map(item => item.productId);
 
@@ -527,7 +552,7 @@ fetchChatList() {
         of(list),
         this.productData$.pipe(
           map((products: any[]) => {
-          
+
 
             const productImages = productIds.map((id) =>
               products.find((p) => p._id === id)
@@ -544,7 +569,7 @@ fetchChatList() {
     })
   ).subscribe({
     next: ([list, { productImages, productOwnerEmails }]) => {
-      
+
 
       this.chatList = list.map((chat: any, index: number) => {
         const email =
@@ -565,7 +590,7 @@ fetchChatList() {
         };
       });
 
-      
+
 
       if (this.chatList.length) {
         const firstChat = this.chatList[0];

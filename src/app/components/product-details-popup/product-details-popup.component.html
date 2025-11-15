@@ -40,7 +40,24 @@
       </div>
     </div>
     <div class="modal-details-area">
-      <h1 class="modal-title">{{ getProductDetails()?.name || getProductDetails()[0]?.productName }}</h1>
+      <ng-container *ngIf="getDisplayedProduct() as product">
+        <div class="title-actions">
+          <h1 class="modal-title">{{ product.name || product.productName }}</h1>
+          <div class="title-actions-right">
+            <app-product-rating
+              [rating]="product.ProductRatings && product.ProductRatings[0] ? product.ProductRatings[0].rating : 0"
+              [avgRating]="product.avgRating"
+              [totalUsers]="product.totalUserRated"
+              (ratingChange)="onRatingChange($event, product)"
+              [disabled]="userService.getUserDetails().userId === product.userId"
+            ></app-product-rating>
+
+            <button class="fav-btn" (click)="toggleFavorite(product)" [attr.aria-pressed]="product.isFavorite">
+              <mat-icon color="warn">{{ product.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+      </ng-container>
       <div class="modal-price-row">
         <span class="modal-price">{{ (getProductDetails()?.Rent || getProductDetails()[0]?.productRent ) | currency: "INR"}}</span>
         <span class="modal-category">{{ getProductDetails()?.category || getProductDetails()[0]?.category }}</span>
@@ -95,6 +112,10 @@
         <button class="add-to-cart-btn" (click)="addToCart()">
           <mat-icon *ngIf="!isAddNewProduct" class="cart-icon">add_shopping_cart</mat-icon>
           {{isAddNewProduct ? 'Done' : 'Add to Cart'}}
+        </button>
+        <button class="message-btn" (click)="openMessageDialog(getProductDetails())" aria-label="Message">
+          <mat-icon class="message-icon">message</mat-icon>
+          Message to Seller
         </button>
       </div>
     </div>

@@ -1,16 +1,96 @@
-<div class="unified-chat-advanced">
-  <!-- Close Button -->
-  <button class="chat-close-btn" (click)="myCartService.closeCartModel()" aria-label="Close chat">
-    <mat-icon>home</mat-icon>
-  </button>
 
-  <!-- Chat List -->
-  <aside class="chat-list-container">
+<!-- Mobile-only layout: shown when isMobileScreen === true -->
+<div *ngIf="isMobileScreen" class="unified-chat-mobile">
+  <header class="mobile-chat-header">
+    <button class="mobile-header-btn" (click)="showChatList = true; showProfilePanel = false; selectedChat = null">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span class="mobile-chat-title">RENTiT Chat</span>
+    <button class="mobile-header-btn" (click)="myCartService.closeCartModel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <!-- Chat list screen -->
+  <section *ngIf="!selectedChat && showChatList !== false" class="mobile-chat-list">
+    <div *ngIf="chatList.length === 0" class="mobile-chat-empty">
+      <div class="mobile-chat-empty-title">No Chats Yet</div>
+      <div class="mobile-chat-empty-desc">You have no conversations yet.</div>
+    </div>
+    <div *ngFor="let chat of chatList" class="mobile-chat-list-item" (click)="selectChat(chat); showChatList = false">
+      <img [src]="chat.productImage || defaultAvatar" class="mobile-chat-avatar" alt="avatar" />
+      <div class="mobile-chat-list-info">
+        <div class="mobile-chat-list-title">{{ chat.productName || 'Untitled' }}</div>
+        <div class="mobile-chat-list-owner">with {{ chat.ownerName }}</div>
+        <div class="mobile-chat-list-last">{{ chat.lastMessage }}</div>
+      </div>
+      <div class="mobile-chat-list-time">{{ chat.lastTime | date:'shortDate' }}</div>
+    </div>
+  </section>
+
+  <!-- Chat panel screen -->
+  <section *ngIf="selectedChat" class="mobile-chat-panel">
+    <header class="mobile-chat-panel-header">
+      <button class="mobile-back-btn" (click)="selectedChat = null; showChatList = true">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <img [src]="selectedChat.productImage || defaultAvatar" class="mobile-chat-avatar" alt="product" />
+      <div class="mobile-chat-panel-title">
+        <div class="mobile-chat-product">{{ selectedChat.productName }}</div>
+        <div class="mobile-chat-owner">with {{ selectedChat.ownerName }}</div>
+      </div>
+      <button class="mobile-call-btn" aria-label="Voice Call" (click)="startCall(false)" [disabled]="!selectedChat || isInCall">
+        <mat-icon>call</mat-icon>
+      </button>
+      <button class="mobile-call-btn" aria-label="Video Call" (click)="startCall(true)" [disabled]="!selectedChat || isInCall">
+        <mat-icon>videocam</mat-icon>
+      </button>
+      <button class="mobile-profile-toggle" (click)="openProfilePanel(selectedChat); showProfilePanel = true">
+        <mat-icon>person</mat-icon>
+      </button>
+    </header>
+
+    <div class="mobile-chat-messages" #messagesContainer>
+      <ng-container *ngIf="messages.length > 0; else mobileNoMessages">
+        <ng-container *ngFor="let msg of messages">
+          <div class="mobile-chat-message" [ngClass]="msg.senderId === currentUserId ? 'self' : 'user'">
+            <div class="mobile-message-text">{{ msg.text }}</div>
+            <div class="mobile-message-time">{{ msg.time }}</div>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-template #mobileNoMessages>
+        <div class="mobile-no-messages">No messages yet — start the conversation.</div>
+      </ng-template>
+    </div>
+
+    <footer class="mobile-chat-input-bar">
+      <button class="mobile-emoji-btn" (click)="showEmojiPicker = !showEmojiPicker">😊</button>
+      <input #mobileInput type="text" [(ngModel)]="newMessage" (keydown)="onInputKeydown($event)" placeholder="Type your message..." (click)="$event.stopPropagation()" />
+      <button class="mobile-send-btn" (click)="sendMessage()"><mat-icon>send</mat-icon></button>
+      <div *ngIf="showEmojiPicker" class="mobile-emoji-picker" (click)="$event.stopPropagation()">
+        <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">{{ emoji }}</span>
+      </div>
+    </footer>
+  </section>
+</div>
+
+<!-- Desktop/advanced layout: shown when not mobile -->
+<div *ngIf="!isMobileScreen" class="unified-chat-advanced">
+  <!-- Mobile Header (visible on mobile only) -->
+  <div class="mobile-header" *ngIf="isMobileScreen">
+    <button class="mobile-header-btn" (click)="showChatList = true; showProfilePanel = false;">Chats</button>
+    <span class="mobile-header-title">RENTiT Chat</span>
+    <button class="mobile-header-btn" (click)="myCartService.closeCartModel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Chat List (desktop: always, mobile: toggle) -->
+  <aside class="chat-list-container" *ngIf="!isMobileScreen || showChatList">
     <header class="chat-list-header">
       <h3 class="chat-list-title">Chats</h3>
     </header>
-
-    <!-- No Chats Message -->
     <div *ngIf="chatList.length === 0" class="chat-list-empty">
       <div class="chat-list-empty-icon">
         <svg width="48" height="48" fill="none" viewBox="0 0 24 24">
@@ -22,11 +102,9 @@
       <div class="chat-list-empty-title">No Chats Yet</div>
       <div class="chat-list-empty-desc">You have no conversations yet.</div>
     </div>
-
-    <!-- Chat List Items -->
     <div class="chat-list-scroll">
       <ng-container *ngFor="let chat of chatList">
-        <div class="chat-list-item" [class.selected]="isSelectedChat(chat)" (click)="selectChat(chat)">
+        <div class="chat-list-item" [class.selected]="isSelectedChat(chat)" (click)="selectChat(chat); showChatList = isMobileScreen ? false : showChatList">
           <div class="chat-list-img-wrapper">
             <img [src]="chat.productImage  || defaultAvatar" alt="User Avatar" class="chat-user-avatar" (click)="openProfilePanel(chat); $event.stopPropagation()" tabindex="0" />
             <span *ngIf="chat.hasNewMessage" class="chat-new-indicator"></span>
@@ -46,10 +124,11 @@
     </div>
   </aside>
 
-  <!-- Chat Panel -->
-  <main class="chat-main-panel" [class.with-profile-panel]="selectedProfile">
+  <!-- Chat Panel (desktop: always, mobile: toggle) -->
+  <main class="chat-main-panel" [class.with-profile-panel]="selectedProfile" *ngIf="!isMobileScreen || (!showChatList && !showProfilePanel)">
     <section *ngIf="selectedChat; else noChatSelected" class="chat-dialog-container">
-      
+      <!-- ...existing code for chat panel, call modals, header, messages, input bar, in-call UI... -->
+      <!-- (No change to this section, just moved for mobile toggling) -->
       <!-- Incoming Call Modal -->
       <div *ngIf="incomingCall" class="call-modal incoming-call-modal pro-call-modal modern-call-modal">
         <div class="call-modal-content modern-call-modal-content">
@@ -76,7 +155,6 @@
           </div>
         </div>
       </div>
-
       <!-- Outgoing Call Modal -->
       <div *ngIf="isCalling && !isInCall" class="call-modal outgoing-call-modal pro-call-modal modern-call-modal">
         <div class="call-modal-content modern-call-modal-content">
@@ -100,7 +178,6 @@
           </div>
         </div>
       </div>
-
       <!-- Chat Header -->
       <header class="chat-dialog-header">
         <img [src]="selectedChat.productImage" alt="Product" class="chat-dialog-img" />
@@ -108,11 +185,17 @@
           <div class="chat-dialog-product">{{ selectedChat.productName }}</div>
           <div class="chat-dialog-owner">with {{ selectedChat.ownerName }}</div>
         </div>
+        <!-- Mobile: show back to chat list button -->
+        <button *ngIf="isMobileScreen" class="mobile-back-btn" (click)="showChatList = true">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <!-- Mobile: show profile button -->
+        <button *ngIf="isMobileScreen" class="mobile-profile-btn" (click)="showProfilePanel = true">
+          <mat-icon>person</mat-icon>
+        </button>
       </header>
-
       <!-- Progress Bar -->
       <mat-progress-bar *ngIf="isMessagesLoading" mode="determinate" color="accent" [value]="100" class="chat-progress-bar"></mat-progress-bar>
-
       <!-- Messages -->
       <div class="chat-messages" #messagesContainer>
         <ng-container *ngIf="messages.length > 0; else noMessages">
@@ -162,7 +245,6 @@
           </div>
         </ng-template>
       </div>
-
       <!-- Input Bar -->
       <footer class="chat-input-bar">
         <button type="button" class="emoji-btn" (click)="showEmojiPicker = !showEmojiPicker" [disabled]="!selectedChat" aria-label="Emoji">😊</button>
@@ -186,7 +268,6 @@
           </svg>
         </button>
       </footer>
-
       <!-- In-Call UI -->
       <div *ngIf="isInCall" class="call-modal pro-call-modal modern-call-modal">
         <div class="call-modal-content modern-call-modal-content">
@@ -212,8 +293,6 @@
         </div>
       </div>
     </section>
-
-    <!-- No Chat Selected -->
     <ng-template #noChatSelected>
       <section class="chat-dialog-container chat-dialog-empty modern-empty-state">
         <div class="chat-empty-icon">
@@ -225,9 +304,9 @@
     </ng-template>
   </main>
 
-  <!-- Profile Panel -->
-  <aside *ngIf="selectedProfile" class="profile-side-panel open">
-    <button class="profile-panel-close" (click)="closeProfilePanel()" aria-label="Close profile">&times;</button>
+  <!-- Profile Panel (desktop: always, mobile: toggle) -->
+  <aside *ngIf="selectedProfile && (!isMobileScreen || showProfilePanel)" class="profile-side-panel open">
+    <button class="profile-panel-close" (click)="closeProfilePanel(); showProfilePanel = false;" aria-label="Close profile">&times;</button>
     <div class="profile-panel-header">
       <img [src]="selectedProfile.avatarUrl || defaultAvatar" alt="User Avatar" class="profile-panel-avatar" />
       <div class="profile-panel-name">{{ selectedProfile.ownerName }}</div>
