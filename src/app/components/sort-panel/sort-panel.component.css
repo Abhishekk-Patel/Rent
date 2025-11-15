@@ -27,6 +27,13 @@
   margin: 0;
   font-size: 20px;
   color: #333;
+  flex: 1;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .reset-btn {
@@ -36,10 +43,32 @@
   cursor: pointer;
   font-size: 14px;
   transition: color 0.3s;
+  white-space: nowrap;
 }
 
 .reset-btn:hover {
   color: #0056b3;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #666;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  padding: 0;
+}
+
+.close-btn:hover {
+  color: #333;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
 }
 
 .content {
@@ -147,12 +176,28 @@
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
     overflow-y: auto;
     max-height: 90vh;
+    padding-bottom: 70px;
   }
 
   .header {
-    flex-direction: column;
-    align-items: flex-start;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
     gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .header h3 {
+    margin: 0;
+    font-size: 18px;
+    flex: 1;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .sort-btns-container {

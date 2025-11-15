@@ -65,8 +65,8 @@ import { Store } from '@ngrx/store';
             this.productDetails = products.find(
               (product: any) => product.pk === this.data.primaryKey
             );
-             
-           
+
+
             if (this.data.response.products && this.data.response.products.length > 0) {
               this.productDetails = this.data.response.products;
             } else if (this.data.response.product) {
@@ -77,10 +77,10 @@ import { Store } from '@ngrx/store';
               this.productDetails = products.find(
               (product: any) => product.pk === this.data.response
             );
-              
+
             }
             else {
-              
+
               this.productDetails = [];
             }
           });

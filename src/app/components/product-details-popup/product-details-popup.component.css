@@ -1,5 +1,3 @@
-/* Enhanced extra details section styling */
-
 /* Consistent font and color with content page */
 .modal-extra-details {
   width: 100%;
@@ -10,6 +8,7 @@
   flex-direction: column;
   gap: 18px;
   font-family: 'Segoe UI', Arial, sans-serif;
+   padding-top: 50px;
 }
 .details-grid {
   display: grid;
@@ -115,6 +114,7 @@
   cursor: pointer;
   z-index: 10;
   transition: color 0.2s;
+
 }
 .close-btn:hover {
   color: #e74c3c;
@@ -442,11 +442,14 @@
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
+     padding-top: 70px;
+
   }
   .close-btn {
     top: 10px;
     right: 10px;
     font-size: 2rem;
+      padding-top: 60px;
   }
   .modal-content {
     flex-direction: column;

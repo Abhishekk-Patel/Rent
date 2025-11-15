@@ -299,8 +299,13 @@ export class ContentComponentComponent
         }
       }
 
-      addToFavorite(reward: any) {
-        this.mycartService.addToFavorites(reward);
+      toggleFavorite(reward: any) {
+        reward.isFavorite = !reward.isFavorite;
+        if (reward.isFavorite) {
+          this.mycartService.addToFavorites(reward);
+        } else {
+          this.mycartService.removeFromFavorites?.(reward);
+        }
       }
 
       showLoadingSpinner() {

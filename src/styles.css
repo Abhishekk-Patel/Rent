@@ -1,20 +1,28 @@
 /* You can add global styles to this file, and also import other style files */
 
-*, div::before, div::after { box-sizing: border-box; }
+*,
+div::before,
+div::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 
 
-
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; 
-/* background-image: url('https://img.freepik.com/free-vector/smooth-golden-wave-background_23-2148810350.jpg?t=st=1738482009~exp=1738485609~hmac=e2409dba7802e447d01e1f731b4d9e55a955dfd81a1e75d81b437beb3bda762d&w=740');
+  /* background-image: url('https://img.freepik.com/free-vector/smooth-golden-wave-background_23-2148810350.jpg?t=st=1738482009~exp=1738485609~hmac=e2409dba7802e447d01e1f731b4d9e55a955dfd81a1e75d81b437beb3bda762d&w=740');
 background-repeat: no-repeat;
 background-size: cover; */
 }
 
 body.dark-mode {
   background-color: #121212;
-  color: #ffffff ;
+  color: #ffffff;
 }
 
 body.dark-mode mat-toolbar {
@@ -25,7 +33,9 @@ body.dark-mode .mat-form-field-appearance-outline .mat-form-field-outline {
   color: #ffffff;
 }
 
-body.dark-mode .mat-form-field-appearance-outline .mat-form-field-outline-thick {
+body.dark-mode
+  .mat-form-field-appearance-outline
+  .mat-form-field-outline-thick {
   color: #ffffff;
 }
 

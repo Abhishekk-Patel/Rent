@@ -1,7 +1,10 @@
 <div class="sort-panel">
   <div class="header">
     <h3>Sort & Filter</h3>
-    <button class="reset-btn" (click)="resetAll()">Reset All</button>
+    <div class="header-actions">
+      <button class="reset-btn" (click)="resetAll()">Reset All</button>
+      <button class="close-btn" (click)="this.close.emit()">&times;</button>
+    </div>
   </div>
 
   <div class="content">

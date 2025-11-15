@@ -223,7 +223,6 @@
   /* background: white; */
   border-top-left-radius: 40px;
   border-top-right-radius: 40px;
-  padding: 20px;
   position: relative;
   z-index: 10;
 }
@@ -376,6 +375,7 @@
   right: 10px;
   background: #fff;
   color: #d32f2f;
+  z-index: 1;
 }
 
 .media-overlay {
@@ -543,7 +543,6 @@
   .topbar .topbar-inner {
     grid-template-columns: 1fr auto;
   }
-
   .primary-nav,
   .search-wrap {
     display: none;
@@ -553,8 +552,60 @@
     display: inline-flex;
   }
 
+  /* Show two products per row on small screens for denser layout */
   .grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 25px;
   }
+
+  .product-card {
+    border-radius: 10px;
+  }
+
+  .product-card .media {
+    aspect-ratio: 1/1;
+  }
+
+  .media img {
+    height: 140px;
+    object-fit: cover;
+  }
+
+  .meta {
+    padding: 8px;
+  }
+
+  .name {
+    font-size: 13px;
+  }
+
+  .sub { display: none; }
+
+  .price-row .rent { font-size: 13px; }
+
+  /* Compact action buttons: primary + icon */
+  .product-card .actions {
+    display: flex;
+    gap: 6px;
+    padding: 8px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .product-card .actions .btn {
+    height: 32px;
+    font-size: 12px;
+    padding: 0 8px;
+  }
+
+  .btn-icon { width: 36px; height: 36px; }
+}
+
+/* Even smaller phones: slightly reduce image and text */
+@media (max-width: 360px) {
+  .media img { height: 120px; }
+  .category-circle { width: 44px; height: 44px; font-size: 20px; }
+  .mobile-role-toggle { width: 46px; height: 46px; }
+  .name { font-size: 12px; }
+  .price-row .rent { font-size: 12px; }
 }
