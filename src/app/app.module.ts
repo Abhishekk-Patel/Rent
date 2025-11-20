@@ -1,3 +1,4 @@
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { UnifiedChatComponent } from './components/unified-chat.component';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -98,7 +99,8 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
     MatOptionModule,
     MatButtonToggleModule,
     HttpClientModule,
-    MatTabsModule,
+  MatTabsModule,
+  MatCheckboxModule,
     SocialLoginModule,
     StoreModule.forRoot({ productData: productReducer, orderData: orderReducer }),
   EffectsModule.forRoot([productDataEffects]),

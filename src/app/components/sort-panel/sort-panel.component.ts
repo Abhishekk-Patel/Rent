@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Optional, Output } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 
 @Component({
   selector: 'app-sort-panel',
@@ -13,10 +15,13 @@ export class SortPanelComponent {
 
   isAscApplied: boolean = false;
   isDescApplied: boolean = false;
+
   selectedSort: string | null = null;
   minPrice: number | null = null;
   maxPrice: number | null = null;
   location: string | null = null;
+
+  constructor( public myCartService: MyCartServiceService) {}
 
   applySort(order: string): void {
     if (order === 'asc') {
@@ -53,4 +58,5 @@ export class SortPanelComponent {
   isPriceFilterApplied(): boolean {
     return this.minPrice !== null || this.maxPrice !== null;
   }
+
 }

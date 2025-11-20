@@ -1,182 +1,389 @@
-<mat-toolbar color="primary" class="header-toolbar">
-  <!-- Left Section: Logo and Brand (centered on mobile) -->
-  <div class="header-left">
-    <div class="logo-section" (click)="router.navigate(['content'])">
-      <img
-        src="./assets/ProductLogo.png"
-        alt="Company Logo"
-        class="company-logo"
-      />
-    </div>
-    <!-- <div class="brand-info">
-      <span class="product-name"
-        >TryRentiT<span style="font-size: 12px"> (Beta)</span></span> 
-       <span class="tagline">Your wardrobe, on demand</span> 
-    </div>  -->
-  </div>
-
-  <!-- Spacer -->
-  <span class="spacer"></span>
-
-  <!-- Right Section: Icons -->
-  <div class="icon-section" *ngIf="!showMobileMenu">
-    <button
-      mat-icon-button
-      aria-label="Language"
-      matTooltip="{{ countryCode }}"
-      (click)="openLanguageDialog()"
+<nav *ngIf="isMobileView" class="mobile-nav-fancy">
+  <ul class="nav-list">
+    <li
+      class="nav-item"
+      [class.active]="activeNavItem === 'home'"
+      (click)="activeNavItem = 'home'; router.navigate(['content'])"
+      aria-label="Home"
     >
-      <mat-icon>language</mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      aria-label="message"
-      (click)="openMessageDialog()"
-      [matBadge]="unreadMessages"
-      matBadgeColor="warn"
+      <span class="icon-bg"><mat-icon>home</mat-icon></span>
+      <span class="nav-label">Home</span>
+    </li>
+    <li
+      class="nav-item"
+      [class.active]="activeNavItem === 'search'"
+      aria-label="Search"
+      (click)="activeNavItem = 'search'; openMobileSearch()"
     >
-      <mat-icon> message</mat-icon>
-    </button>
-
-    <button
-      mat-icon-button
-      aria-label="Notifications"
-      *ngIf="(orderReceived && this.isOwner) || true"
-      matTooltip="{{ orderReceived }}"
-      [matBadge]="!isAddNewProduct ? 1 : 0"
-      matBadgePosition="above after"
-      matBadgeColor="warn"
-    >
-      <mat-icon>notifications</mat-icon>
-    </button>
-    <button
-      *ngIf="!isAddNewProduct"
-      mat-icon-button
-      class="cart"
-      aria-label="Cart"
-      matBadge="{{ cartService.getCartValue() }}"
-      matBadgePosition="above after"
-      matBadgeColor="warn"
-      (click)="openMyCard()"
-    >
-      <mat-icon>shopping_cart</mat-icon>
-    </button>
-    <button mat-icon-button aria-label="Dark Mode" (click)="toggleDarkMode()">
-      <mat-icon>brightness_4</mat-icon>
-    </button>
-    <div *ngIf="!isAddNewProduct">
-      <mat-menu #userMenu="matMenu">
-        <button mat-menu-item (click)="router.navigate(['my-account'])">
-          Account
-        </button>
-        <button mat-menu-item (click)="router.navigate([''])">Logout</button>
-      </mat-menu>
-      <button
-        mat-icon-button
-        [matMenuTriggerFor]="userMenu"
-        aria-label="Profile"
-      >
-        <ng-container
-          *ngIf="
-            userService.getUserDetails().profilePicture;
-            else defaultProfilePicture
-          "
-        >
-          <img
-            [src]="userService.getUserDetails().profilePicture"
-            alt=""
-            class="profile-picture"
+      <span class="icon-bg"><mat-icon>search</mat-icon></span>
+      <span class="nav-label">Search</span>
+    </li>
+    <!-- Mobile Search Overlay -->
+    <div *ngIf="isMobileView && showMobileSearch" class="mobile-search-overlay">
+      <div class="mobile-search-box">
+        <mat-form-field appearance="outline" class="mobile-search-field">
+          <mat-label>Search</mat-label>
+          <input
+            matInput
+            type="text"
+            [(ngModel)]="searchValue"
+            (input)="search()"
+            (keypress)="handleKeyPress($event)"
+            placeholder="Search for lehenga, sherwani, city, occasion…"
           />
-        </ng-container>
-        <ng-template #defaultProfilePicture>
-          <mat-icon>account_circle</mat-icon>
-        </ng-template>
+          <button
+            *ngIf="searchValue"
+            matSuffix
+            mat-icon-button
+            aria-label="Clear"
+            (click)="clear()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+        <button
+          mat-icon-button
+          class="close-search-btn"
+          aria-label="Close search"
+          (click)="closeMobileSearch()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <li
+      class="nav-item add-center"
+      routerLinkActive="active"
+      aria-label="Add"
+      (click)="openAddProductDialog()"
+    >
+      <span class="icon-bg add-bg"><mat-icon>add</mat-icon></span>
+      <!-- Add button, label hidden for cleaner UI -->
+    </li>
+    <li class="nav-item" [class.active]="activeNavItem === 'message'" aria-label="Profile">
+      <button
+        mat-icon-button
+        (click)="activeNavItem = 'message'; openMessageDialog()"
+        [matBadge]="unreadMessages"
+        matBadgeColor="warn"
+      >
+        <span class="icon-bg"><mat-icon>message</mat-icon></span>
+      </button>
+    </li>
+
+    <li
+      class="nav-item"
+      [class.active]="activeNavItem === 'profile'"
+      aria-label="Profile"
+      (click)="activeNavItem = 'profile'; router.navigate(['my-account'])"
+    >
+      <span class="icon-bg"><mat-icon>person</mat-icon></span>
+      <span class="nav-label">Profile</span>
+    </li>
+    <!-- End mobile nav -->
+  </ul>
+</nav>
+
+<!-- Mobile Top Bar -->
+<mat-toolbar class="topbar" color="primary" *ngIf="isMobileView">
+  <div
+    class="topbar-inner"
+    style="
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    "
+  >
+    <!-- Right: Hamburger Icon -->
+    <button
+      class="hamburger"
+      mat-icon-button
+      (click)="toggleMobileMenu()"
+      aria-label="Toggle menu"
+    >
+      <mat-icon style="color: #b01212">{{ showCategoryMenu ? "close" : "menu" }}</mat-icon>
+    </button>
+    <!-- Left: Product Logo and Title -->
+    <div class="brand" style="display: flex; align-items: center">
+      <img
+        src="assets\ProductLogo.png"
+        alt="TryRentiT"
+        class="logo"
+        style="height: 32px; margin-right: 8px"
+        tabindex="0"
+        (click)="router.navigate(['content'])"
+        (keydown.enter)="router.navigate(['content'])"
+      />
+      <!-- <span class="brand-name" style="font-weight: bold; font-size: 1.2em"
+        >TryRentiT</span
+      > -->
+    </div>
+    <div class="nav-item" routerLinkActive="active" aria-label="Profile">
+      <button
+        *ngIf="!isAddNewProduct"
+        mat-icon-button
+        class="cart"
+        aria-label="Cart"
+        matBadge="{{ cartService.getCartValue() }}"
+        matBadgePosition="above after"
+        matBadgeColor="warn"
+        (click)="openMyCard()"
+      >
+        <mat-icon style="color: #b01212">shopping_cart</mat-icon>
       </button>
     </div>
   </div>
-  <!-- Hamburger for mobile -->
-  <button
-    mat-icon-button
-    class="mobile-menu-btn"
-    (click)="showMobileMenu = !showMobileMenu"
-    aria-label="Menu"
-    style="display: none"
-  >
-    <mat-icon>menu</mat-icon>
-  </button>
-  <div class="mobile-menu" *ngIf="showMobileMenu">
-    <button
-      mat-icon-button
-      aria-label="Language"
-      matTooltip="{{ countryCode }}"
-      (click)="openLanguageDialog(); showMobileMenu = false"
-    >
-      <mat-icon>language</mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      aria-label="message"
-      (click)="openMessageDialog()"
-      [matBadge]="unreadMessages"
-      matBadgeColor="warn"
-      [matBadgeHidden]="unreadMessages === 0"
-    >
-      <mat-icon>message</mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      aria-label="Notifications"
-      *ngIf="orderReceived && this.isOwner"
-      matTooltip="{{ orderReceived }}"
-      [matBadge]="!isAddNewProduct ? 1 : 0"
-      matBadgePosition="above after"
-      matBadgeColor="warn"
-      (click)="showMobileMenu = false"
-    >
-      <mat-icon>notifications</mat-icon>
-    </button>
-    <button
-      *ngIf="!isAddNewProduct"
-      class="cart"
-      [disabled]="cartService.getCartValue() === 0"
-      mat-icon-button
-      aria-label="Cart"
-      matBadge="{{ cartService.getCartValue() }}"
-      matBadgePosition="above after"
-      matBadgeColor="warn"
-      (click)="openMyCard(); showMobileMenu = false"
-    >
-      <mat-icon>shopping_cart</mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      aria-label="Dark Mode"
-      (click)="toggleDarkMode(); showMobileMenu = false"
-    >
-      <mat-icon>brightness_4</mat-icon>
-    </button>
-    <div *ngIf="!isAddNewProduct">
-      <mat-menu #userMenuMobile="matMenu">
+</mat-toolbar>
+
+<!-- Mobile Slide-out Menu -->
+
+<div *ngIf="isMobileView && showCategoryMenu">
+  <div class="menu-overlay fancy-overlay" (click)="toggleMobileMenu()"></div>
+  <div class="mobile-menu fancy-menu">
+    <div class="menu-header-row">
+      <span class="menu-title">
+        <img
+          src="assets\ProductLogo.png"
+          alt="TryRentiT"
+          class="logo"
+          style="height: 32px; margin-right: 8px"
+          tabindex="0"
+          (click)="router.navigate(['content'])"
+          (keydown.enter)="router.navigate(['content'])"
+      /></span>
+    </div>
+    <div class="menu-content">
+      <div class="category-tabs">
         <button
-          mat-menu-item
-          (click)="router.navigate(['my-account']); showMobileMenu = false"
+          class="tab-btn bride-tab"
+          [class.active]="activeCategory === 'bride'"
+          (click)="toggleCategory('bride')"
         >
-          Account
+          <mat-icon>female</mat-icon> Bride
         </button>
         <button
-          mat-menu-item
-          (click)="router.navigate(['']); showMobileMenu = false"
+          class="tab-btn groom-tab"
+          [class.active]="activeCategory === 'groom'"
+          (click)="toggleCategory('groom')"
         >
-          Logout
+          <mat-icon>male</mat-icon> Groom
         </button>
-      </mat-menu>
-      <button
-        mat-icon-button
-        [matMenuTriggerFor]="userMenuMobile"
-        aria-label="Profile"
+      </div>
+      <!-- Category search -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Search categories</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          [(ngModel)]="searchValue"
+          (input)="search()"
+          placeholder="Type to filter..."
+        />
+      </mat-form-field>
+      <div class="search-spacer" aria-hidden="true"></div>
+      <!-- Clear filter button -->
+
+      <a
+        *ngIf="isCategoryFilterApplied"
+        class="clear-icon-btn"
+        (click)="clearCategoryFilter()"
+        aria-label="Clear filter"
+        >Clear Filter</a
       >
-        <mat-icon>account_circle</mat-icon>
+
+      <div class="category-list fancy-category-list">
+        <ng-container *ngFor="let category of filteredCategories">
+          <mat-checkbox
+            color="primary"
+            class="category-checkbox fancy-checkbox"
+            [checked]="category.isSelected"
+            (change)="selectCategory(category.name)"
+          >
+            {{ category.name }}
+          </mat-checkbox>
+        </ng-container>
+      </div>
+      <!-- End category list -->
+    </div>
+    <div class="myntra-actions-bar">
+      <button
+        class="myntra-action-btn close-btn"
+        mat-icon-button
+        (click)="toggleMobileMenu()"
+        aria-label="Close menu"
+      >
+        <mat-icon>close</mat-icon>
       </button>
+      <button
+        *ngIf="!isAddNewProduct"
+        mat-stroked-button
+        class="myntra-action-btn cart"
+        aria-label="Cart"
+        matBadge="{{ cartService.getCartValue() }}"
+        matBadgePosition="above after"
+        matBadgeColor="warn"
+        (click)="openMyCard()"
+      >
+        <mat-icon>shopping_cart</mat-icon>
+        <span>Cart</span>
+      </button>
+      <button
+        mat-stroked-button
+        class="myntra-action-btn"
+        aria-label="Messages"
+        (click)="openMessageDialog()"
+        [matBadge]="unreadMessages"
+        matBadgeColor="warn"
+      >
+        <mat-icon>message</mat-icon>
+        <span>Message</span>
+      </button>
+      <button
+        mat-raised-button
+        color="warn"
+        class="myntra-action-btn logout-btn"
+        (click)="router.navigate([''])"
+      >
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Desktop Header -->
+<mat-toolbar class="topbar" color="primary" *ngIf="!isMobileView">
+  <div class="topbar-inner">
+    <!-- Brand -->
+    <div
+      class="brand"
+      (click)="router.navigate(['content'])"
+      role="button"
+      tabindex="0"
+      aria-label="Go to Home"
+    >
+      <img src="assets/ProductLogo.png" alt="Rent iT" class="logo" />
+      <!-- Brand name hidden for cleaner UI -->
+    </div>
+
+    <!-- Desktop Navigation -->
+    <nav class="primary-nav">
+      <button mat-button (click)="onUserRoleChange({ value: 'Bride' })">
+        Bride
+      </button>
+      <button mat-button (click)="onUserRoleChange({ value: 'Groom' })">
+        Groom
+      </button>
+      <button mat-button (click)="selectCategory('Accessories')">
+        Accessories
+      </button>
+      <button mat-button (click)="selectCategory('Jewellery')">
+        Jewellery
+      </button>
+      <button mat-button (click)="selectCategory('Footwear')">Footwear</button>
+    </nav>
+
+    <!-- Desktop Search Bar -->
+    <div class="search-wrap">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          type="text"
+          #searchInput
+          [(ngModel)]="searchValue"
+          (input)="search()"
+          (keypress)="handleKeyPress($event)"
+          [placeholder]="'Search for lehenga, sherwani, city, occasion…'"
+        />
+        <button
+          *ngIf="searchValue"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="clear()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <!-- Desktop Action Buttons -->
+    <div class="actions">
+      <ul class="nav-list actions-nav-list">
+        <li class="nav-item" aria-label="Messages">
+          <button
+            mat-icon-button
+            (click)="openMessageDialog()"
+            [matBadge]="unreadMessages"
+            matBadgeColor="warn"
+          >
+            <span class="icon-bg"><mat-icon>message</mat-icon></span>
+          </button>
+        </li>
+        <li
+          class="nav-item"
+          aria-label="Notifications"
+          *ngIf="(orderReceived && isOwner) || true"
+        >
+          <button
+            mat-icon-button
+            matTooltip="{{ orderReceived }}"
+            [matBadge]="!isAddNewProduct ? 1 : 0"
+            matBadgePosition="above after"
+            matBadgeColor="warn"
+          >
+            <span class="icon-bg"><mat-icon>notifications</mat-icon></span>
+          </button>
+        </li>
+        <li class="nav-item" aria-label="Cart" *ngIf="!isAddNewProduct">
+          <button
+            mat-icon-button
+            class="cart"
+            matBadge="{{ cartService.getCartValue() }}"
+            matBadgePosition="above after"
+            matBadgeColor="warn"
+            (click)="openMyCard()"
+          >
+            <span class="icon-bg"><mat-icon>shopping_cart</mat-icon></span>
+          </button>
+        </li>
+        <li class="nav-item" aria-label="Profile" *ngIf="!isAddNewProduct">
+          <mat-menu #userMenu="matMenu">
+            <button mat-menu-item (click)="router.navigate(['my-account'])">
+              Account
+            </button>
+            <button mat-menu-item (click)="router.navigate([''])">
+              Logout
+            </button>
+          </mat-menu>
+          <button
+            mat-icon-button
+            [matMenuTriggerFor]="userMenu"
+            aria-label="Profile"
+          >
+            <span class="icon-bg">
+              <ng-container
+                *ngIf="
+                  userService.getUserDetails().profilePicture;
+                  else defaultProfilePicture
+                "
+              >
+                <img
+                  [src]="userService.getUserDetails().profilePicture"
+                  alt="Profile"
+                  class="profile-picture"
+                />
+              </ng-container>
+              <ng-template #defaultProfilePicture>
+                <mat-icon>account_circle</mat-icon>
+              </ng-template>
+            </span>
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
 </mat-toolbar>

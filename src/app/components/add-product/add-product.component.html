@@ -1,107 +1,155 @@
+<!-- list-product.component.html -->
+<div class="container">
+  <mat-card class="form-card">
+    <h1>List Your Product for Rent</h1>
 
-
-<div class="product-container-top">
-  <div class="add-product-container">
-    <h2>List Your Product</h2>
-    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="enterprise-form">
-      <div class="form-grid">
-        <!-- Product Name -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Product Name</mat-label>
-          <input matInput placeholder="e.g. Bridal's Lehenga, Groom's Sherwani" formControlName="ProductName" required maxlength="30">
-          <mat-error *ngIf="productForm.get('ProductName')?.hasError('required')">Product Name is required</mat-error>
-          <mat-error *ngIf="productForm.get('ProductName')?.hasError('maxLength')">Product Name cannot exceed 30 characters</mat-error>
-          <mat-error *ngIf="productForm.get('ProductName')?.hasError('numeric')">Product Name cannot be numeric</mat-error>
-        </mat-form-field>
-
-        <!-- User Role -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>User Type</mat-label>
-          <mat-select formControlName="userRole" required>
-            <mat-option value="Bride">Bride</mat-option>
-            <mat-option value="Groom">Groom</mat-option>
-          </mat-select>
-          <mat-error *ngIf="productForm.get('userRole')?.hasError('required')">User Type is required</mat-error>
-        </mat-form-field>
-
-        <!-- Category (dynamic) -->
-        <mat-form-field appearance="outline" class="full-width" *ngIf="productForm.get('userRole')?.value">
-          <mat-label>Category</mat-label>
-          <mat-select formControlName="category" required>
-            <mat-option *ngFor="let category of categories" [value]="category">{{ category }}</mat-option>
-          </mat-select>
-          <mat-error *ngIf="productForm.get('category')?.hasError('required')">Category is required</mat-error>
-        </mat-form-field>
-
-        <!-- City -->
-        <mat-form-field appearance="outline" class="full-width city-location-field">
-          <mat-label>City</mat-label>
-          <div mat-form-field-flex>
-            <input matInput placeholder="e.g. Mumbai, New Delhi" formControlName="city" required maxlength="100"
-              [matTooltip]="fullAddressTooltip" matTooltipPosition="above">
-            <span class="location-action">
-              <button mat-icon-button type="button" aria-label="Detect Location" (click)="detectLocation()" matTooltip="Detect your city" [disabled]="isLocating">
-                <mat-icon>gps_fixed</mat-icon>
-              </button>
-              <span *ngIf="isLocating" class="location-loader"></span>
-            </span>
-          </div>
-          <mat-error *ngIf="productForm.get('city')?.hasError('required')">City is required</mat-error>
-          <mat-error *ngIf="productForm.get('city')?.hasError('maxLength')">City cannot exceed 30 characters</mat-error>
-          <mat-error *ngIf="productForm.get('city')?.hasError('numeric')">City cannot be numeric</mat-error>
-          <mat-error *ngIf="productForm.get('city')?.hasError('inappropriate')">City contains inappropriate words</mat-error>
-        </mat-form-field>
-
-
-        <!-- Rent & Quantity -->
-        <div class="row-2-col">
-          <mat-form-field appearance="outline" class="half-width">
-            <mat-label>Rent</mat-label>
-            <input matInput type="number" placeholder="Enter rent amount" formControlName="ProductRent" required min="1">
-            <mat-error *ngIf="productForm.get('ProductRent')?.hasError('required')">Rent is required</mat-error>
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
+     
+      
+      <!-- Product Info -->
+      <section>
+        <h2><mat-icon>inventory_2</mat-icon> Product Info</h2>
+        <div class="grid-3">
+          <mat-form-field appearance="fill">
+            <mat-label>Product Name</mat-label>
+            <input matInput placeholder="e.g. Bridal's Lehenga" formControlName="ProductName" maxlength="30" required>
+            <mat-error *ngIf="productForm.get('ProductName')?.hasError('required')">Product Name is required.</mat-error>
+            <mat-error *ngIf="productForm.get('ProductName')?.hasError('maxlength')">Max 30 characters allowed.</mat-error>
+            <mat-error *ngIf="productForm.get('ProductName')?.hasError('numeric')">Product Name cannot be only numbers.</mat-error>
           </mat-form-field>
-          <mat-form-field appearance="outline" class="half-width">
+
+          <mat-form-field appearance="fill">
+            <mat-label>User Type</mat-label>
+            <mat-select formControlName="userRole" required>
+              <mat-option value="Bride">Bride</mat-option>
+              <mat-option value="Groom">Groom</mat-option>
+            </mat-select>
+            <mat-error *ngIf="productForm.get('userRole')?.hasError('required')">User Type is required.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" *ngIf="productForm.get('userRole')?.value">
+            <mat-label>Category</mat-label>
+            <mat-select formControlName="category" required>
+              <mat-option *ngFor="let category of categories" [value]="category">{{ category }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="productForm.get('category')?.hasError('required')">Category is required.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Size</mat-label>
+            <mat-select formControlName="size" required>
+              <mat-option *ngFor="let size of sizeOptions" [value]="size">{{ size }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="productForm.get('size')?.hasError('required')">Size is required.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Color</mat-label>
+            <mat-select formControlName="color" required>
+              <mat-option *ngFor="let color of colorOptions" [value]="color">{{ color }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="productForm.get('color')?.hasError('required')">Color is required.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Rent (per day)</mat-label>
+            <input matInput type="number" formControlName="ProductRent" min="1" required>
+            <mat-error *ngIf="productForm.get('ProductRent')?.hasError('required')">Rent is required.</mat-error>
+            <mat-error *ngIf="productForm.get('ProductRent')?.hasError('min')">Minimum rent is 1.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
             <mat-label>Quantity</mat-label>
-            <input matInput type="number" placeholder="Enter quantity" formControlName="quantity" required min="1">
-            <mat-error *ngIf="productForm.get('quantity')?.hasError('required')">Quantity is required</mat-error>
+            <input matInput type="number" formControlName="quantity" min="1" required>
+            <mat-error *ngIf="productForm.get('quantity')?.hasError('required')">Quantity is required.</mat-error>
+            <mat-error *ngIf="productForm.get('quantity')?.hasError('min')">Minimum quantity is 1.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Valid Until</mat-label>
+            <input matInput type="date" formControlName="valid_until" required>
+            <mat-error *ngIf="productForm.get('valid_until')?.hasError('required')">Valid Until date is required.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="location-field">
+            <mat-label>City</mat-label>
+            <input matInput placeholder="e.g. Mumbai" formControlName="city" maxlength="100" required>
+            <button mat-icon-button matSuffix (click)="detectLocation()" aria-label="Detect Location" [disabled]="isLocating">
+              <mat-icon>gps_fixed</mat-icon>
+            </button>
+            <mat-progress-spinner *ngIf="isLocating" diameter="24" mode="indeterminate"></mat-progress-spinner>
+            <mat-error *ngIf="productForm.get('city')?.hasError('required')">City is required.</mat-error>
           </mat-form-field>
         </div>
+      </section>
 
-        <!-- Valid Until -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Valid Until</mat-label>
-          <input matInput type="date" formControlName="valid_until" required>
-          <mat-error *ngIf="productForm.get('valid_until')?.hasError('required')">Valid Until date is required</mat-error>
-        </mat-form-field>
-
-        <!-- Description -->
-        <mat-form-field appearance="outline" class="full-width">
+      <!-- Description -->
+      <section>
+        <h2><mat-icon>description</mat-icon> Description</h2>
+        <mat-form-field appearance="fill" class="full-width">
           <mat-label>Description</mat-label>
-          <textarea matInput placeholder="Enter product description" formControlName="ProductDescription" required maxlength="30"></textarea>
-          <mat-error *ngIf="productForm.get('ProductDescription')?.hasError('required')">Description is required</mat-error>
-          <mat-error *ngIf="productForm.get('ProductDescription')?.hasError('maxLength')">Description cannot exceed 30 characters</mat-error>
-          <mat-error *ngIf="productForm.get('ProductDescription')?.hasError('inappropriate')">Description contains inappropriate words</mat-error>
+          <textarea matInput formControlName="ProductDescription" maxlength="200" rows="4" required></textarea>
+          <mat-error *ngIf="productForm.get('ProductDescription')?.hasError('required')">Description is required.</mat-error>
+          <mat-error *ngIf="productForm.get('ProductDescription')?.hasError('maxlength')">Max 200 characters allowed.</mat-error>
+          <mat-error *ngIf="productForm.get('ProductDescription')?.hasError('numeric')">Description cannot be only numbers.</mat-error>
+          <mat-error *ngIf="productForm.get('ProductDescription')?.hasError('inappropriate')">Inappropriate words are not allowed.</mat-error>
         </mat-form-field>
+      </section>
 
-        <!-- Image Upload -->
-        <div class="image-upload full-width">
-          <label for="file-upload" class="custom-file-upload">
-            <mat-icon>cloud_upload</mat-icon> Upload Images
-          </label>
-          <input id="file-upload" type="file" (change)="onFilesSelected($event)" accept="image/*" multiple>
-          <div *ngIf="selectedImages.length" class="image-preview">
-            <img *ngFor="let image of selectedImages" [src]="image" alt="Selected Image">
+      <!-- Images Upload -->
+      <section>
+        <h2><mat-icon>cloud_upload</mat-icon> Upload Images</h2>
+        <label for="file-upload" class="upload-btn" mat-raised-button color="primary">
+          <mat-icon>upload</mat-icon> Choose Images
+        </label>
+        <input id="file-upload" type="file" (change)="onFilesSelected($event)" accept="image/*" multiple hidden>
+        
+        <div class="image-preview-grid" *ngIf="selectedImages.length > 0">
+          <div class="image-thumb" *ngFor="let img of selectedImages; let i = index">
+            <img [src]="img" alt="Selected Image">
+            <button mat-mini-fab color="warn" aria-label="Remove Image" (click)="removeImage(i)">
+              <mat-icon>close</mat-icon>
+            </button>
           </div>
-          <mat-error *ngIf="selectedImages.length < 3">At least 3 images are required</mat-error>
         </div>
+        <mat-error *ngIf="selectedImages.length < 3">Please upload at least 3 images.</mat-error>
+      </section>
+
+      <!-- Personal Details -->
+      <section>
+        <h2><mat-icon>person</mat-icon> Your Details</h2>
+        <div class="grid-3">
+          <mat-form-field appearance="fill">
+            <mat-label>Your Name</mat-label>
+            <input matInput formControlName="ownerName" maxlength="40" required>
+            <mat-error *ngIf="productForm.get('ownerName')?.hasError('required')">Name is required.</mat-error>
+            <mat-error *ngIf="productForm.get('ownerName')?.hasError('maxlength')">Max 40 characters allowed.</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="ownerEmail" required>
+            <mat-error *ngIf="productForm.get('ownerEmail')?.hasError('required')">Email is required.</mat-error>
+            <mat-error *ngIf="productForm.get('ownerEmail')?.hasError('email')">Invalid email address.</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Phone</mat-label>
+            <input matInput type="tel" formControlName="ownerPhone" maxlength="10" required>
+            <mat-error *ngIf="productForm.get('ownerPhone')?.hasError('required')">Phone is required.</mat-error>
+            <mat-error *ngIf="productForm.get('ownerPhone')?.hasError('pattern')">Phone must be 10 digits.</mat-error>
+          </mat-form-field>
+        </div>
+      </section>
+
+       <div *ngIf="isUploading" style="display: flex; justify-content: center; margin-bottom: 20px;">
+        <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
       </div>
 
-      <div class="form-actions">
-        <button mat-raised-button color="primary" type="submit" [disabled]="!productForm.valid || selectedImages.length < 3">
-          <mat-icon>add_circle</mat-icon>
-          <span>Add Product</span>
+      <!-- Submit Button -->
+      <div class="actions">
+        <button mat-flat-button color="primary" type="submit" [disabled]="!productForm.valid || selectedImages.length < 3">
+          <mat-icon>add_circle</mat-icon> Add Product
         </button>
       </div>
     </form>
-  </div>
+  </mat-card>
 </div>

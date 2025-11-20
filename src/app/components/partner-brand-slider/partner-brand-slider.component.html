@@ -1,50 +1,58 @@
-<section class="partner-brands-slider">
-  <div class="main-slider">
-    <div 
-      class="brand" 
-      *ngFor="let brand of brands; let i = index" 
-      [class.active]="i === currentIndex"
-      style="width: 100%; box-sizing: border-box;"
-    >
-      <div class="cta-img-wrapper" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-      <img 
-        [src]="brand.imageUrl" 
-        [alt]="brand.name" 
-        class="brand-img"
-        style="max-width: 100%; height: auto; border-radius: 8px;"
-      >
-      <div 
-        class="button-wrapper" 
-        style="display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: center; margin-top: 12px;"
-      >
-        <button 
-        class="cta-btn" 
-        (click)="scrollToContent()" 
-        style="width: 90%; max-width: 250px; font-size: 1rem;"
-        >
-        <span>Browse Collection</span>
-        <mat-icon style="vertical-align: middle; margin-left: 4px;">touch_app</mat-icon>
-        </button>
-        <button 
-        class="cta-btn product-btn" 
-        style="width: 90%; max-width: 250px; margin-left: 0; background-color: #3b82f6; font-size: 1rem;"
-        (click)="addNewProduct()"
-        >
-        <span>Add a Product</span>
-        <mat-icon style="vertical-align: middle; margin-left: 4px;">add_circle</mat-icon>
-        </button>
-      </div>
-      </div>
-    </div>
-
-    <!-- Animated Dots or Buttons for Navigation -->
-    <div class="nav-dots">
-      <div 
-        *ngFor="let brand of brands; let i = index" 
-        class="nav-dot" 
-        [class.active]="i === currentIndex"
-        (click)="goToSlide(i)">
+<section class="partner-brands-slider" fxLayout="column" fxLayoutAlign="start stretch">
+  <!-- Hero Banner Section -->
+  <div class="main-slider" fxLayout="row" fxLayoutAlign="start center">
+    <div class="brand" *ngFor="let brand of brands; let i = index" [class.active]="i === currentIndex">
+      <div class="cta-img-wrapper">
+        <div class="img-btn-container">
+          <img [src]="brand.imageUrl" [alt]="brand.name" class="brand-img" />
+          <!-- Call-to-Action Buttons -->
+          <div class="button-wrapper img-overlay-btns" *ngIf="!isMobileView">
+            <!-- <button mat-raised-button color="primary" class="cta-btn" (click)="scrollToContent()">
+              <span>Browse Collection</span>
+              <mat-icon>touch_app</mat-icon>
+            </button> -->
+            <button mat-raised-button color="primary" class="cta-btn browse-catalog-btn" (click)="scrollToCatalog()">
+              <span>Browse Collection</span>
+              <mat-icon>collections_bookmark</mat-icon>
+            </button>
+            <button mat-raised-button color="accent" class="cta-btn product-btn" (click)="addNewProduct()">
+              <span>Add a Product</span>
+              <mat-icon>add_circle</mat-icon>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Navigation Dots -->
+  <div class="nav-dots">
+    <div *ngFor="let brand of brands; let i = index" class="nav-dot" [class.active]="i === currentIndex" (click)="goToSlide(i)"></div>
+  </div>
+
+  <!-- Bottom Navigation (Mobile Only) -->
+  <!-- <nav *ngIf="isMobileView" class="mobile-nav-fancy">
+    <ul class="nav-list">
+      <li class="nav-item" routerLinkActive="active" [routerLink]="['/home']" aria-label="Home">
+        <span class="icon-bg"><mat-icon>home</mat-icon></span>
+        <span class="nav-label">Home</span>
+      </li>
+      <li class="nav-item" routerLinkActive="active" [routerLink]="['/search']" aria-label="Search">
+        <span class="icon-bg"><mat-icon>search</mat-icon></span>
+        <span class="nav-label">Search</span>
+      </li>
+      <li class="nav-item add-center" routerLinkActive="active" [routerLink]="['/add']" aria-label="Add">
+        <span class="icon-bg add-bg"><mat-icon>add</mat-icon></span>
+        <span class="nav-label">Add</span>
+      </li>
+      <li class="nav-item" routerLinkActive="active" [routerLink]="['/profile']" aria-label="Profile">
+        <span class="icon-bg"><mat-icon>person</mat-icon></span>
+        <span class="nav-label">Profile</span>
+      </li>
+      <li class="nav-item" routerLinkActive="active" [routerLink]="['/menu']" aria-label="Menu">
+        <span class="icon-bg"><mat-icon>menu</mat-icon></span>
+        <span class="nav-label">Menu</span>
+      </li>
+    </ul>
+  </nav> -->
 </section>

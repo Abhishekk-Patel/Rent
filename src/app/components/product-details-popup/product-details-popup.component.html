@@ -40,9 +40,26 @@
       </div>
     </div>
     <div class="modal-details-area">
-      <h1 class="modal-title">{{ getProductDetails()?.name || getProductDetails()[0]?.productName }}</h1>
+      <ng-container *ngIf="getDisplayedProduct() as product">
+        <div class="title-actions">
+          <h1 class="modal-title">{{ product.name || product.productName }}</h1>
+          <div class="title-actions-right">
+            <app-product-rating
+              [rating]="product.ProductRatings && product.ProductRatings[0] ? product.ProductRatings[0].rating : 0"
+              [avgRating]="product.avgRating"
+              [totalUsers]="product.totalUserRated"
+              (ratingChange)="onRatingChange($event, product)"
+              [disabled]="userService.getUserDetails().userId === product.userId"
+            ></app-product-rating>
+
+            <button class="fav-btn" (click)="toggleFavorite(product)" [attr.aria-pressed]="product.isFavorite">
+              <mat-icon color="warn">{{ product.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+            </button>
+          </div>
+        </div>
+      </ng-container>
       <div class="modal-price-row">
-        <span class="modal-price">${{ getProductDetails()?.Rent || getProductDetails()[0]?.productRent }}</span>
+        <span class="modal-price">{{ (getProductDetails()?.Rent || getProductDetails()[0]?.productRent ) | currency: "INR"}}</span>
         <span class="modal-category">{{ getProductDetails()?.category || getProductDetails()[0]?.category }}</span>
       </div>
       <div class="modal-meta-row">
@@ -52,6 +69,42 @@
           {{ (getProductDetails()?.valid_until | date )|| (getProductDetails()[0]?.validUntil | date) }}
         </span>
       </div>
+
+
+      <!-- Enhanced Product Details Section -->
+      <div class="modal-extra-details">
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="detail-label">City:</span>
+            <span class="detail-value">{{ getProductDetails()?.city || getProductDetails()[0]?.city }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Color:</span>
+            <span class="detail-value">{{ getProductDetails()?.color || getProductDetails()[0]?.color }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Size:</span>
+            <span class="detail-value">{{ getProductDetails()?.size || getProductDetails()[0]?.size }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">User Role:</span>
+            <span class="detail-value">{{ getProductDetails()?.userRole || getProductDetails()[0]?.userRole }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Listed Date:</span>
+            <span class="detail-value">{{ (getProductDetails()?.productListedDate || getProductDetails()[0]?.productListedDate) | date:'mediumDate' }}</span>
+          </div>
+        </div>
+        <div class="owner-section">
+          <div class="owner-title">Owner Details</div>
+          <div class="owner-details">
+            <div class="owner-row"><span class="owner-label">Name:</span> <span class="owner-value">{{ getProductDetails()?.ownerName || getProductDetails()[0]?.ownerName }}</span></div>
+            <div class="owner-row"><span class="owner-label">Email:</span> <span class="owner-value">{{ getProductDetails()?.ownerEmail || getProductDetails()[0]?.ownerEmail }}</span></div>
+            <div class="owner-row"><span class="owner-label">Phone:</span> <span class="owner-value">{{ getProductDetails()?.ownerPhone || getProductDetails()[0]?.ownerPhone }}</span></div>
+          </div>
+        </div>
+      </div>
+
       <div class="modal-description">
         {{ getProductDetails()?.description  || getProductDetails()[0]?.description }}
       </div>
@@ -59,6 +112,10 @@
         <button class="add-to-cart-btn" (click)="addToCart()">
           <mat-icon *ngIf="!isAddNewProduct" class="cart-icon">add_shopping_cart</mat-icon>
           {{isAddNewProduct ? 'Done' : 'Add to Cart'}}
+        </button>
+        <button class="message-btn" (click)="openMessageDialog(getProductDetails())" aria-label="Message">
+          <mat-icon class="message-icon">message</mat-icon>
+          Message to Seller
         </button>
       </div>
     </div>
