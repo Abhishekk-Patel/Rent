@@ -350,7 +350,7 @@
 
       <app-add-product-if-search-empty
         style="width: 100%"
-        *ngIf="searchValue"
+        *ngIf="searchValue || filteredRewards.length === 0"
         (addProduct)="onAddProduct()"
       ></app-add-product-if-search-empty>
     </main>
