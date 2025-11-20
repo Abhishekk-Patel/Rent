@@ -56,7 +56,7 @@
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('src/assets/HomeBg.jpg') no-repeat center center/cover;
   animation: fadeIn 0.5s ease-in-out;
 }
-  
+
 
 /* Modal content */
 .modal-content {
@@ -195,7 +195,7 @@
 
 .login-form p,
 .signup-form p {
-  
+
   margin-top: 10px;
 }
 
@@ -224,6 +224,19 @@
   flex: 1;
   padding-right: 20px;
   color: black;
+}
+
+
+@media (max-width: 700px) {
+  .about-section{
+     padding-right: 0px;
+  }
+  img{
+     width: 100% !important;
+     margin: 0px !important;
+
+
+  }
 }
 
 .about-section h2 {
@@ -266,7 +279,7 @@
 ::ng-deep .mat-mdc-raised-button:not(:disabled) {
   background-color: #3b82f6 !important;
   color: white !important;
-  font-weight: 400 !important;  
+  font-weight: 400 !important;
 }
 
 /* Animations */

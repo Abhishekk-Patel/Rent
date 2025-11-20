@@ -1,8 +1,10 @@
 <div class="modal" *ngIf="!isLoggedIn">
   <div class="modal-content">
     <div class="about-section">
-      <h2>About Us</h2>
-      <p>
+       <img src="assets/Downloads/couple.jpeg" style="width: 110%;
+  height: 115%; margin: -40px;">
+      <!-- <h2>About Us</h2> -->
+      <!-- <p>
         Welcome to our rental platform! Our aims to provide a seamless and
         efficient way for users to rent and sell bridal and groom products.
         Whether you are looking for the perfect bridal lehenga, groom's
@@ -12,13 +14,16 @@
         easily browse, search, and filter products to find exactly what you are
         looking for. Join us today and make your wedding preparations
         hassle-free and memorable!
-      </p>
+
+      </p> -->
+
     </div>
-    <div class="divider-vertical"></div>
+    <!-- <div class="divider-vertical"></div> -->
     <div class="form-section">
       <div *ngIf="showLogin">
         <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
-          <h2>Login</h2>
+          <h2>Welcome Back</h2>
+          <h6>Unlock you style</h6>
           <mat-form-field class="login-input" appearance="outline">
             <mat-label>Email</mat-label>
             <!-- Updated to use email -->
