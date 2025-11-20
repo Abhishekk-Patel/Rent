@@ -43,7 +43,7 @@ import { UnifiedChatComponent } from '../unified-chat.component';
 
         ngOnInit(): void {
           this.subscription = this.store.select('productData').subscribe((res) => {
-           console.log(res,"res in popup");
+          //  console.log(res,"res in popup");
             const products = res.map((item: any) => ({
               pk: item._id,
               name: item.productName,
@@ -99,7 +99,7 @@ import { UnifiedChatComponent } from '../unified-chat.component';
 
         getProductDetails() {
 
-          console.log(this.productDetails,"this.productDetails");
+          // console.log(this.productDetails,"this.productDetails");
           return this.productDetails;
         }
 
