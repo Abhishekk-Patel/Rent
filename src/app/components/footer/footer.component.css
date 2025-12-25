@@ -1,5 +1,4 @@
 
-/* Import Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
 .modern-footer {
@@ -9,11 +8,36 @@
   flex-wrap: wrap;
   padding: 20px 40px;
   background: linear-gradient(135deg, #ffecd2, #fcb69f);
+
+  /* background: url('assets/svg/footer-wave.svg') no-repeat center / cover;  */
+
+  
+
+  /* SVG background */
+  /* background: url('assets/svg/footer-wave.svg') no-repeat center / cover; */
+
   color: #333;
   font-family: 'Poppins', sans-serif;
   box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
+/* Optional overlay for better text contrast */
+.modern-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.4) 100%);
+  pointer-events: none;
+}
+
+.modern-footer > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Left column */
 .footer-left img {
   max-width: 120px;
   margin-bottom: 10px;
@@ -24,6 +48,7 @@
   color: #444;
 }
 
+/* Center navigation */
 .footer-center .footer-nav {
   display: flex;
   gap: 20px;
@@ -40,6 +65,7 @@
   color: #ff6f61;
 }
 
+/* Right column */
 .footer-right {
   text-align: right;
 }
@@ -49,6 +75,7 @@
   margin-bottom: 10px;
 }
 
+/* Social icons */
 .social-icons {
   display: flex;
   gap: 15px;
@@ -71,6 +98,18 @@
     flex-direction: column;
     text-align: center;
     gap: 20px;
+    padding: 30px 20px;
+  }
+
+  .footer-center .footer-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .footer-right {
+    text-align: center;
   }
 }
 
+  
