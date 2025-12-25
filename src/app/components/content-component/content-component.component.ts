@@ -441,16 +441,27 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   openMessageDialog(product: any) {
-    this.dialog.open(UnifiedChatComponent, {
-      position: { top: '0', left: '0' },
-      width: '100vw',
-      height: '100vh',
-      maxWidth: '100vw',
-      maxHeight: '100vh',
-      panelClass: 'chat-dialog-fullscreen',
-      autoFocus: false,
-      data: { product }
-    });
+    // this.dialog.open(UnifiedChatComponent, {
+    //   position: { top: '0', left: '0' },
+    //   width: '100vw',
+    //   height: '100vh',
+    //   maxWidth: '100vw',
+    //   maxHeight: '100vh',
+    //   panelClass: 'chat-dialog-fullscreen',
+    //   autoFocus: false,
+    //   data: { product }
+    // });
+
+    
+ this.router.navigate(['/messenger'], {
+  queryParams: {
+    productId: product.pk || product._id,
+    ownerId: product.userId,
+    name: product.name,
+    image: product.display_img_urls?.[0] || product.imageUrl || ''
+  }
+});
+
   }
 
   closeSortPanel() {

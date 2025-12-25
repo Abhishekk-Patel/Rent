@@ -1,5 +1,4 @@
 
-
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../environments/environment';
@@ -28,10 +27,10 @@ export class SocketService {
   emit(event: string, data: any): void {
     this.socket?.emit(event, data);
   }
-    // Listen for arbitrary socket events
+
+  // Listen for arbitrary socket events
   onEvent(event: string): Observable<any> {
     return new Observable(observer => {
-      // Wait until socket is defined
       const waitForSocket = () => {
         if (this.socket) {
           this.socket.on(event, (data: any) => observer.next(data));
@@ -56,9 +55,25 @@ export class SocketService {
   }
 
   private registerEvents() {
+    // Chat message pipeline
     this.socket.on('chatMessage', (msg: any) => this.messageSubject.next(msg));
+
+    // Incoming call (signaling)
     this.socket.on('incoming_call', (data: any) => this.callSubject.next(data));
-    this.socket.on('onlineUsers', (users: string[]) => this.onlineUsersSubject.next(users));
-    // Add more event handlers as needed
+
+    // Presence
+    this.socket.on('onlineUsers', (users: string[]) => this.onlineUsersSubject.next(users || []));
+
+    // WebRTC signaling passthrough
+    this.socket.on('webrtc_offer', (payload: any) => {
+      // { offer, isVideo, ownerId, buyerId, productId }
+      this.socket.emit('ack_webrtc_offer'); // optional
+    });
+    this.socket.on('webrtc_answer', (_payload: any) => {
+      /* pass-through handled via onEvent in component */
+    });
+    this.socket.on('webrtc_ice_candidate', (_payload: any) => {
+      /* pass-through handled via onEvent in component */
+    });
   }
 }

@@ -10,6 +10,7 @@ import { AboutUsComponent } from './components/footer/about-us/about-us.componen
 import { ContactUsComponent } from './components/footer/contact-us/contact-us.component';
 import { PrivacyComponent } from './components/footer/privacy/privacy.component';
 import { TermsComponent } from './components/footer/terms/terms.component';
+import { UnifiedChatComponent } from './components/unified-chat.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -17,10 +18,13 @@ const routes: Routes = [
   { path: 'add-product', component: AddProductComponent }, //canActivate: [AuthGuard]
   { path: 'my-account', component: MyAccountComponent }, //canActivate: [AuthGuard]
   { path: 'MyCart', component: MyCartComponent }, //canActivate: [AuthGuard]
+  {path: 'messenger', component:   UnifiedChatComponent },
+
   { path: 'about', component: AboutUsComponent },
   { path: 'contact', component: ContactUsComponent },
   {path: 'privacy', component: PrivacyComponent },
   {path: 'terms', component: TermsComponent },
+
 
   
   { path: '**', redirectTo: '', pathMatch: 'full' } // Redirect any unknown paths to HomeComponent

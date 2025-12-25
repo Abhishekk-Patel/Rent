@@ -1,50 +1,26 @@
 
-import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { MyCartComponent } from '../components/my-cart/my-cart.component';
 import { ProductDetailsPopupComponent } from '../components/product-details-popup/product-details-popup.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HttpClient } from '@angular/common/http';
 import { signal } from '@angular/core';
 import { UserService } from './user.service';
-import { EmailValidator } from '@angular/forms';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class MyCartServiceService {
-  /**
-   * Clears the cart for the current user (both backend and local state)
-   */
-  // clearCart(): void {
-  //   const userId = this.userService.getUserDetails().userId || this.userService.getUserDetails().googleId;
-  //   this.httpClient
-  //     .delete<any>(`${this.url}/api/cart/clear`, { body: { userId } })
-  //     .subscribe(
-  //       (response) => {
-  //         this.cartItems.next([]);
-  //         this.myCartValue.set(0);
-  //         this.showMessage('Cart cleared');
-  //       },
-  //       (error) => {
-  //         this.showMessage('Error clearing cart');
-  //         console.error('Error clearing cart:', error);
-  //       }
-  //     );
-  // }
   private readonly cartItems = new BehaviorSubject<any[]>([]);
-  private readonly favoriteItems = new BehaviorSubject<any[]>([]); // Add favorite items BehaviorSubject
+  private readonly favoriteItems = new BehaviorSubject<any[]>([]);
   cartItems$ = this.cartItems.asObservable();
-  favoriteItems$ = this.favoriteItems.asObservable(); // Observable for favorite items
+  favoriteItems$ = this.favoriteItems.asObservable();
   isUser: string = '';
   myCartValue = signal(0);
   public isAddNewProductSubject = new BehaviorSubject<boolean>(false);
   isAddNewProduct$ = this.isAddNewProductSubject.asObservable();
 
-  // Use localhost by default, switch to apiBaseUrl for production or as needed
   url = environment.apiBaseUrl;
 
   constructor(
@@ -60,16 +36,14 @@ export class MyCartServiceService {
   }
 
   addToCart(item: any): void {
-    const userId = this.userService.getUserDetails().userId;
+    const userId = this.userService.getUserDetails()?.userId || this.userService.getUserDetails()?.googleId;
     const currentItems = this.cartItems.value;
-    // Prevent adding if already in cart
     if (currentItems.some((cartItem) => cartItem.pk === (item.pk || item._id))) {
       this.showMessage('Item already in cart');
       return;
     }
-    // Normalize item for backend contract
     const productToAdd: any = {
-      userId: userId || this.userService.getUserDetails().googleId,
+      userId,
       pk: item.pk || item._id,
       quantity: item.quantity && item.quantity > 0 ? item.quantity : 1,
       productName: item.productName || item.name,
@@ -81,8 +55,7 @@ export class MyCartServiceService {
     this.httpClient
       .post<any>(`${this.url}/api/cart/add`, productToAdd)
       .subscribe(
-        (response) => {
-          // After successful add, fetch cart from backend to ensure sync
+        () => {
           this.fetchCartItems();
           this.myCartValue.update((value) => value + 1);
           this.showMessage('Product successfully added in cart');
@@ -95,7 +68,6 @@ export class MyCartServiceService {
   }
 
   getCartItems(): any[] {
-    // Always return the latest cart items from BehaviorSubject, normalized for UI/suggestions
     return this.cartItems.value.map((item) => ({
       pk: item.pk || item._id,
       productName: item.productName || item.name,
@@ -106,13 +78,19 @@ export class MyCartServiceService {
       category: item.category || item.productCategory || '',
     }));
   }
+
   fetchCartItems(): void {
-    const userId = this.userService.getUserDetails().userId || this.userService.getUserDetails().googleId;
+    const userId = this.userService.getUserDetails()?.userId || this.userService.getUserDetails()?.googleId;
+    if (!userId) {
+      this.cartItems.next([]);
+      this.myCartValue.set(0);
+      return;
+    }
+
     this.httpClient
       .get<any>(`${this.url}/api/cart/${userId}`)
       .subscribe(
         (res) => {
-          // Map API response: each item has { product, quantity }
           if (res && Array.isArray(res.items)) {
             const mapped = res.items.map((item: any) => {
               const prod = item.product || item;
@@ -133,7 +111,7 @@ export class MyCartServiceService {
             this.myCartValue.set(0);
           }
         },
-        (error) => {
+        () => {
           this.cartItems.next([]);
           this.myCartValue.set(0);
         }
@@ -141,15 +119,15 @@ export class MyCartServiceService {
   }
 
   removeFromCart(item: any): void {
-    const userId = this.userService.getUserDetails().userId || this.userService.getUserDetails().googleId;
+    const userId = this.userService.getUserDetails()?.userId || this.userService.getUserDetails()?.googleId;
     const pk = item.pk || item.product?.pk;
-  
+
     this.httpClient
-      .delete<any>(`${this.url}/api/cart/remove`, { body: {userId,pk } })
+      .delete<any>(`${this.url}/api/cart/remove`, { body: { userId, pk } })
       .subscribe(
-        (response) => {
+        () => {
           this.showMessage('Item removed from cart');
-          this.fetchCartItems(); // Refresh cart from backend
+          this.fetchCartItems();
         },
         (error) => {
           this.showMessage('Error removing item from cart');
@@ -160,9 +138,7 @@ export class MyCartServiceService {
 
   addToFavorites(item: any): void {
     const currentFavorites = this.favoriteItems.value;
-    const itemExists = currentFavorites.some(
-      (favItem) => favItem.pk === item.pk
-    );
+    const itemExists = currentFavorites.some((favItem) => favItem.pk === (item.pk || item._id));
 
     if (!itemExists) {
       this.favoriteItems.next([...currentFavorites, item]);
@@ -173,7 +149,6 @@ export class MyCartServiceService {
   }
 
   getFavoriteItems(): any[] {
-    // Always return normalized favorite items for UI/suggestions
     return this.favoriteItems.value.map((item) => ({
       pk: item.pk || item._id,
       productName: item.productName || item.name,
@@ -187,12 +162,10 @@ export class MyCartServiceService {
 
   removeFromFavorites(item: any): void {
     const currentFavorites = this.favoriteItems.value;
-    const updatedFavorites = currentFavorites.filter(
-      (favItem) => favItem.pk !== item.pk
-    );
+    const updatedFavorites = currentFavorites.filter((favItem) => favItem.pk !== (item.pk || item._id));
 
     if (updatedFavorites.length !== currentFavorites.length) {
-      this.favoriteItems.next(updatedFavorites); // Update the BehaviorSubject with the new list
+      this.favoriteItems.next(updatedFavorites);
       this.showMessage('Item removed from favorites');
     } else {
       this.showMessage('Item not found in favorites');
@@ -200,7 +173,6 @@ export class MyCartServiceService {
   }
 
   openCart(): void {
-    // this.dialog.open(MyCartComponent);
     this.router.navigate(['/MyCart']);
   }
 
@@ -208,43 +180,31 @@ export class MyCartServiceService {
     this.dialog.closeAll();
   }
 
-
-  /**
-   * Upload product details and images. Returns observable for component to handle loader and response.
-   */
   public uploadProduct(formData: FormData) {
     return this.httpClient.post(`${this.url}/upload`, formData);
   }
 
   openProductDetails(response: any): void {
-    this.dialog.open(ProductDetailsPopupComponent, {
-      data: { response },
-    });
+    this.dialog.open(ProductDetailsPopupComponent, { data: { response } });
   }
 
   addProductDetailsApi(formData: FormData) {
     this.httpClient.post(`${this.url}/upload`, formData).subscribe(
       (response) => {
-        this.dialog.open(ProductDetailsPopupComponent, {
-          data: { response },
-        });
+        this.dialog.open(ProductDetailsPopupComponent, { data: { response } });
       },
       (error) => {
         console.error('Error submitting product details', error);
-        // Handle error here
       }
     );
   }
- 
 
   itemExistsInCart(pk: number): boolean {
     return this.cartItems.value.some((cartItem) => cartItem.pk === pk);
   }
 
   showMessage(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-    });
+    this.snackBar.open(message, 'Close', { duration: 3000 });
   }
 
   setUser(user: string): void {
@@ -259,6 +219,4 @@ export class MyCartServiceService {
   getCartValue(): number {
     return this.myCartValue();
   }
-
-
 }

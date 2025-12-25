@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { FormGroup } from '@angular/forms';
@@ -5,9 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class UserService {
   private searchValueSubject = new BehaviorSubject<string>('');
   searchValue$ = this.searchValueSubject.asObservable();
@@ -15,8 +14,10 @@ export class UserService {
   setSearchValue(value: string) {
     this.searchValueSubject.next(value);
   }
+
   private userRoleSubject = new BehaviorSubject<string>('Bride');
   userRole$ = this.userRoleSubject.asObservable();
+
   private activeCategorySubject = new BehaviorSubject<string>('All');
   activeCategory$ = this.activeCategorySubject.asObservable();
 
@@ -27,15 +28,17 @@ export class UserService {
   setUserRole(role: string) {
     this.userRoleSubject.next(role);
   }
+
   // Send OTP to user's email
   sendOtpToEmail(email: string): Observable<any> {
-    return this.http.post<any>(`${this.url}/users/send-otp`, { email: email });
+    return this.http.post<any>(`${this.url}/users/send-otp`, { email });
   }
 
   // Verify OTP for user's email
   verifyOtp(email: string, otp: string): Observable<any> {
-    return this.http.post<any>(`${this.url}/users/verify-otp`, { email: email, otp: otp });
+    return this.http.post<any>(`${this.url}/users/verify-otp`, { email, otp });
   }
+
   public user: any = null;
   private userHistory: any[] = [];
   public googleProfilePicture: string = '';
@@ -43,15 +46,14 @@ export class UserService {
   private isLoggedInSubject = new BehaviorSubject<boolean>(!!this.getUserFromStorage());
   isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
-  // Use localhost by default, switch to apiBaseUrl for production or as needed
   private baseUrl = environment.apiBaseUrl;
-  // private baseUrl = environment.apiBaseUrl; // Uncomment to use hosted
   private loginApiUrl = this.baseUrl + '/users/login';
   signUpApiUrl = this.baseUrl + '/users/register';
   url = this.baseUrl;
+
   constructor(private http: HttpClient) {
     this.loadUserDetails();
-    this.loadUserHistory(); // Fix: Load user history in the constructor
+    this.loadUserHistory();
     this.isLoggedInSubject.next(!!this.user);
   }
 
@@ -60,8 +62,7 @@ export class UserService {
       return this.http.post<any>(this.loginApiUrl, loginForm.value).pipe(
         map((response) => {
           if (response && response.User) {
-          localStorage.setItem('userToken', response.token);
-
+            localStorage.setItem('userToken', response.token);
             this.user = response.User;
             this.saveUserDetails();
             this.isLoggedInSubject.next(true);
@@ -81,8 +82,7 @@ export class UserService {
       return this.http.post<any>(this.signUpApiUrl, signUpForm.value).pipe(
         map((response) => {
           if (response && response.User) {
-      localStorage.setItem('userToken',response.token);
-
+            localStorage.setItem('userToken', response.token);
             this.user = response.User;
             this.saveUserDetails();
             this.isLoggedInSubject.next(true);
@@ -110,7 +110,7 @@ export class UserService {
     this.saveUserHistory();
   }
 
-   saveUserDetails(user?: any ) {
+  saveUserDetails(user?: any ) {
     localStorage.setItem('userDetails', JSON.stringify(user || this.user));
   }
 
@@ -135,26 +135,18 @@ export class UserService {
       this.userHistory = JSON.parse(history);
     }
   }
-  updateRating(
-    productId: string,
-    rating: number,
-    userId: number
-  ): Observable<any> {
+
+  updateRating(productId: string, rating: number, userId: number): Observable<any> {
     const url = `${this.url}/productRating`;
     return this.http.post<any>(url, { productId, rating, userId });
   }
-  /**
-   * Store user info after successful login (Google or email/password)
-   */
+
   handleLoginSuccess(user: any) {
     this.user = user;
     this.saveUserDetails();
     this.isLoggedInSubject.next(true);
   }
 
-  /**
-   * Handle Google login backend response
-   */
   loginWithGoogleBackendResponse(backendResponse: any): boolean {
     if (backendResponse && backendResponse.user) {
       localStorage.setItem('userDetails', JSON.stringify(backendResponse.user));

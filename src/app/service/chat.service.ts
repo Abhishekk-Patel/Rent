@@ -1,7 +1,8 @@
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 
 export interface ChatSummary {
   productId: string;
@@ -33,6 +34,8 @@ export interface ChatMessage {
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
+  constructor(private http: HttpClient) {}
+
   // Helper to generate chatId from sorted user ids + product id
   getChatId(ownerId: string, buyerId: string, productId: string): string {
     const [userA, userB] = [ownerId, buyerId].sort();
@@ -42,7 +45,7 @@ export class ChatService {
   // Send a chat message (with optional file upload)
   async sendMessage(
     http: HttpClient,
-    environment: any,
+    environmentRef: any,
     socketService: any,
     selectedChat: any,
     newMessage: string,
@@ -53,18 +56,16 @@ export class ChatService {
     setNewMessage: (val: string) => void,
     setSelectedFile: (val: File | null) => void
   ) {
-    const text = newMessage.trim();
-    if (!selectedChat || (!text && !selectedFile)) {
-      return;
-    }
-    const { ownerId, buyerId: chatBuyerId, productId } = selectedChat;
+    const text = (newMessage || '').trim();
+    if (!selectedChat || (!text && !selectedFile)) return;
+
+    const { ownerId, productId } = selectedChat;
     selectedChat.googleId = currentUserId;
     selectedChat.ownerId = ownerId;
-    selectedChat.buyerId = chatBuyerId || buyerId || currentUserId;
+    selectedChat.buyerId = selectedChat.buyerId || buyerId || currentUserId;
 
-    if (!ownerId || !selectedChat.buyerId) {
-      return;
-    }
+    if (!ownerId || !selectedChat.buyerId) return;
+
     const senderId = currentUserId;
     const receiverId = senderId === ownerId ? selectedChat.buyerId : ownerId;
     const chatId = this.getChatId(ownerId, selectedChat.buyerId, productId);
@@ -75,14 +76,12 @@ export class ChatService {
       const formData = new FormData();
       formData.append('file', selectedFile);
       try {
-        const uploadRes: any = await http
-          .post(`${environment.apiBaseUrl}/api/upload`, formData)
-          .toPromise();
-        attachmentUrl = uploadRes.url;
-        attachmentType = selectedFile.type.startsWith('image')
-          ? 'image'
-          : 'file';
-      } catch (e) {
+        const uploadRes: any = await firstValueFrom(
+          http.post(`${environmentRef.apiBaseUrl}/api/upload`, formData)
+        );
+        attachmentUrl = uploadRes?.url || '';
+        attachmentType = selectedFile.type.startsWith('image') ? 'image' : 'file';
+      } catch {
         attachmentUrl = '';
         attachmentType = '';
       }
@@ -100,8 +99,7 @@ export class ChatService {
       attachmentUrl,
       attachmentType,
     };
-    // Prevent duplicate messages
-    // (You may want to pass messages array if you want to check for duplicates, or handle this in the component)
+
     addMessageAndScroll({
       text,
       time: new Date().toLocaleTimeString([], {
@@ -115,11 +113,11 @@ export class ChatService {
       attachmentUrl,
       attachmentType,
     });
+
     socketService.emit('chatMessage', msgPayload);
     setNewMessage('');
     setSelectedFile(null);
   }
-  constructor(private http: HttpClient) {}
 
   fetchChatList(userId: string, token: string): Observable<ChatSummary[]> {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
@@ -128,8 +126,9 @@ export class ChatService {
 
   loadMessages(productId: string, ownerId: string, buyerId: string, token: string): Observable<any[]> {
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    return this.http.get<any[]>(`${environment.apiBaseUrl}/api/chat/history/${ownerId}/${buyerId}/${productId}`, { headers });
+    return this.http.get<any[]>(
+      `${environment.apiBaseUrl}/api/chat/history/${ownerId}/${buyerId}/${productId}`,
+      { headers }
+    );
   }
-
-  // Add more chat-related methods as needed
 }

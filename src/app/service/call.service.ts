@@ -1,5 +1,7 @@
+
 import { Injectable, ElementRef } from '@angular/core';
 import { SocketService } from './socket.service';
+
 export interface CallState {
   peerConnection: RTCPeerConnection | null;
   localStream: MediaStream | null;
@@ -18,7 +20,9 @@ export class CallService {
     socketService: SocketService,
     onEndCall: () => void
   ) {
-    const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    const config: RTCConfiguration = {
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+    };
     state.peerConnection = new RTCPeerConnection(config);
 
     state.peerConnection.onicecandidate = (event) => {
@@ -26,7 +30,8 @@ export class CallService {
         socketService.emit('webrtc_ice_candidate', {
           candidate: event.candidate,
           ownerId: state.selectedChat.ownerId,
-          buyerId: state.selectedChat.buyerId
+          buyerId: state.selectedChat.buyerId,
+          productId: state.selectedChat.productId,
         });
       }
     };
@@ -67,7 +72,8 @@ export class CallService {
         offer,
         isVideo: state.isVideoCall,
         ownerId: state.selectedChat.ownerId,
-        buyerId: state.selectedChat.buyerId
+        buyerId: state.selectedChat.buyerId,
+        productId: state.selectedChat.productId,
       });
     }
   }
@@ -88,7 +94,8 @@ export class CallService {
       socketService.emit('webrtc_answer', {
         answer,
         ownerId: state.selectedChat.ownerId,
-        buyerId: state.selectedChat.buyerId
+        buyerId: state.selectedChat.buyerId,
+        productId: state.selectedChat.productId,
       });
     }
   }
@@ -100,7 +107,12 @@ export class CallService {
   }
 
   async handleIceCandidate(state: CallState, candidate: any) {
-    await state.peerConnection!.addIceCandidate(new RTCIceCandidate(candidate));
+    if (!state.peerConnection) return;
+    try {
+      await state.peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+    } catch {
+      // Ignore malformed candidates
+    }
   }
 
   cleanupCall(state: CallState) {
