@@ -543,6 +543,9 @@
   .topbar .topbar-inner {
     grid-template-columns: 1fr auto;
   }
+  .scroll-to-top-btn{
+    bottom: 78px;
+  }
   .primary-nav,
   .search-wrap {
     display: none;

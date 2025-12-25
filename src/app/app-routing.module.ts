@@ -5,12 +5,16 @@ import { ContentComponentComponent } from './components/content-component/conten
 import { AddProductComponent } from './components/add-product/add-product.component';
 import { MyAccountComponent } from './components/my-account/my-account.component';
 import { AuthGuard } from './guards/auth.guard';
+import { MyCartComponent } from './components/my-cart/my-cart.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'content', component: ContentComponentComponent },
   { path: 'add-product', component: AddProductComponent }, //canActivate: [AuthGuard]
   { path: 'my-account', component: MyAccountComponent }, //canActivate: [AuthGuard]
+  { path: 'MyCart', component: MyCartComponent }, //canActivate: [AuthGuard]
+
+  
   { path: '**', redirectTo: '', pathMatch: 'full' } // Redirect any unknown paths to HomeComponent
 ];
 

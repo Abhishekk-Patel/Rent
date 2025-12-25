@@ -21,7 +21,7 @@ import { Router } from '@angular/router';
   ],
 })
 export class MyCartComponent implements OnInit, OnDestroy {
-  
+
   cartItems: any[] = [];
   favoriteItems: any[] = []; // List of favorite items
   suggestedProducts: any[] = []; // List of suggested products
@@ -43,7 +43,7 @@ export class MyCartComponent implements OnInit, OnDestroy {
     private readonly dataService: DataService,
     private readonly orderService: OrderService,
     private readonly userService: UserService,
-       public router: Router,
+    public router: Router,
   ) {
     this.productFormGroup = this.fb.group({});
 
@@ -76,7 +76,7 @@ export class MyCartComponent implements OnInit, OnDestroy {
     this.favoriteItems = this.myCartService.getFavoriteItems(); // Fetch favorite items
     this.generateSuggestions(); // Generate suggestions on initialization
     this.startAutoSlider(); // Start the automatic slider
-     this.user = this.userService.getUserDetails().email;
+    this.user = this.userService.getUserDetails().email;
     this.orderService.connectToSocket(this.user);
 
     this.orderSubscription = this.orderService
@@ -84,19 +84,19 @@ export class MyCartComponent implements OnInit, OnDestroy {
       .subscribe((order) => {
 
         const productEmails = order.product.map(
-          (res: any) =>res.productOwnerEmail
+          (res: any) => res.productOwnerEmail
         );
 
         // Check if the current user matches any product owner email
         if (productEmails.includes(this.user)) {
           this.isOwner = true;
           this.myCartService.showMessage(order.message);
-         
+
         }
-        
-        else if(order.product){
+
+        else if (order.product) {
           this.myCartService.showMessage(order.message);
-     }
+        }
         else {
           this.isOwner = false; // Set to false if no match
           this.myCartService.showMessage('No new orders');
@@ -108,17 +108,17 @@ export class MyCartComponent implements OnInit, OnDestroy {
             this.myCartService.removeFromCart(item);
           });
           this.cartItems = []; // Clear local cart items
-          this.closeCartModel();
+          // this.closeCartModel();
           this.myCartService.showMessage(order.message);
 
         }
       });
 
 
-      this.orderService.orderError().subscribe((error) => {
-        this.myCartService.showMessage(error.message); // or handle as needed
-        console.error('Order error:', error);
-      });
+    this.orderService.orderError().subscribe((error) => {
+      this.myCartService.showMessage(error.message); // or handle as needed
+      console.error('Order error:', error);
+    });
   }
 
   ngOnDestroy(): void {
@@ -133,9 +133,9 @@ export class MyCartComponent implements OnInit, OnDestroy {
     this.selectedHeader = header;
     this.showStepper = false; // Reset stepper view when switching
   }
- onAddProduct() {
-  this.myCartService.closeCartModel(); // Close the cart model if it's open
-    this.router.navigate(['/add-product']);
+  onAddProduct() {
+    this.myCartService.closeCartModel(); // Close the cart model if it's open
+    this.router.navigate(['/content']);
   }
   removeFromCart(item: any, index: number): void {
     item.removing = true; // Add the removing class to trigger the animation
@@ -151,15 +151,15 @@ export class MyCartComponent implements OnInit, OnDestroy {
   }
 
   placeOrder(): void {
-    this.showStepper = true; 
+    this.showStepper = true;
     this.confirmOrder();
   }
 
-  closeCartModel(){
-    this.myCartService.closeCartModel(); // Call the service to close the cart model
-  }
+  // closeCartModel(){
+  //   this.myCartService.closeCartModel(); // Call the service to close the cart model
+  // }
   confirmOrder(): void {
-     const userId = this.userService.getUserDetails().userId || this.userService.getUserDetails().googleId;
+    const userId = this.userService.getUserDetails().userId || this.userService.getUserDetails().googleId;
     if (this.deliveryFormGroup.valid) {
       const orderData = {
         product: [...this.cartItems],
@@ -169,7 +169,7 @@ export class MyCartComponent implements OnInit, OnDestroy {
 
       this.orderService.sendOrder(orderData);
       // this.myCartService.showMessage('Order placed successfully');
-     
+
       this.showStepper = false; // Return to cart after placing order
     } else {
       this.myCartService.showMessage('Error! Please fill all the details');

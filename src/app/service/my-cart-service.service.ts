@@ -200,7 +200,8 @@ export class MyCartServiceService {
   }
 
   openCart(): void {
-    this.dialog.open(MyCartComponent);
+    // this.dialog.open(MyCartComponent);
+    this.router.navigate(['/MyCart']);
   }
 
   closeCartModel(): void {

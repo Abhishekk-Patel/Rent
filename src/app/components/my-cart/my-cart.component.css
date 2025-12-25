@@ -142,6 +142,7 @@ mat-card-title {
   display: flex;
   gap: 5px;
 }
+
 .nav-icons:hover {
   transform: scale(1.1);
 }
@@ -207,10 +208,10 @@ mat-card-title {
 /* Right Section */
 .main-content {
   flex-grow: 1;
-  width: 600px;
+  /* width: 600px;
   max-width: calc(100% - 320px);
   max-height: 500px;
-  min-width: fit-content;
+  min-width: fit-content; */
   /* Set a fixed height for the content */
   overflow-y: auto;
   /* Enable vertical scrolling if content exceeds height */
@@ -417,6 +418,11 @@ mat-horizontal-stepper {
 @media (max-width: 768px) {
   .cart-container {
     flex-direction: column;
+    padding-bottom: 60px;
+  }
+
+  .product-details {
+    padding: 20px;
   }
 
   .sidebar {
