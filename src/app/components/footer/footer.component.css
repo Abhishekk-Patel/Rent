@@ -1,85 +1,76 @@
 
-.footer {
-  /* background-image: url('https://mobirise.com/extensions/weddingamp/wedding/assets/images/background2.jpg');
-background-repeat: no-repeat;
-background-size: cover;
-background-position: center; */
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.modern-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  background: bisque;
-  color: #000000;
-  box-shadow: 0px -4px 8px rgba(0, 0, 0, 0.1);
-  /* border-top: 5px solid #fff; */
-  font-family: 'Arial', sans-serif;
+  flex-wrap: wrap;
+  padding: 20px 40px;
+  background: linear-gradient(135deg, #ffecd2, #fcb69f);
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.footer-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.footer .left {
-  text-align: left;
-  align-items: flex-start;
-}
-
-.footer .center {
-  text-align: center;
-}
-
-.footer .right {
-  text-align: right;
-  align-items: flex-end;
-}
-
-.footer img {
-  max-width: 100px;
-  display: block;
+.footer-left img {
+  max-width: 120px;
   margin-bottom: 10px;
 }
 
-.footer nav a {
-  margin: 5px 0;
-  color: #000000;
-  text-decoration: none;
-  transition: color 0.3s;
+.footer-left p {
+  font-size: 14px;
+  color: #444;
 }
 
-.footer nav a:hover {
-  color: #ddd;
-}
-
-.center-nav {
+.footer-center .footer-nav {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  gap: 20px;
 }
 
-.center-nav a {
-  margin: 5px 0;
-  color: #fff;
+.footer-center .footer-nav a {
   text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
-.center-nav a:hover {
-  color: #ddd;
+.footer-center .footer-nav a:hover {
+  color: #ff6f61;
 }
 
-.social-media {
+.footer-right {
+  text-align: right;
+}
+
+.footer-right .version {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.social-icons {
   display: flex;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 15px;
 }
 
-.social-media img {
-  width: 24px;
-  height: 24px;
-  transition: transform 0.3s;
+.social-icons a {
+  color: #333;
+  font-size: 18px;
+  transition: transform 0.3s, color 0.3s;
 }
 
-.social-media img:hover {
+.social-icons a:hover {
+  color: #ff6f61;
   transform: scale(1.2);
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modern-footer {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+}
+

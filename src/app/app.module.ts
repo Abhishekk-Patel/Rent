@@ -49,8 +49,12 @@ import { EffectsModule } from '@ngrx/effects';
 import { productDataEffects } from './components/Store/productData.effects';
 import { UserProductRatingComponent } from './components/user-rating/user-product-rating.component';
 import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
-import { AddProductIfSearchEmptyComponent } from './components/content-component/add-product-if-search-empty/add-product-if-search-empty';
+import { AddProductIfSearchEmptyComponent } from './components/add-product-if-search-empty/add-product-if-search-empty';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { AboutUsComponent } from './components/footer/about-us/about-us.component';
+import { ContactUsComponent } from './components/footer/contact-us/contact-us.component';
+import { PrivacyComponent } from './components/footer/privacy/privacy.component';
+import { TermsComponent } from './components/footer/terms/terms.component';
 
 @NgModule({
   declarations: [
@@ -67,7 +71,11 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
     PartnerBrandSliderComponent,
     UserProductRatingComponent,
   AddProductIfSearchEmptyComponent,
-  UnifiedChatComponent
+  UnifiedChatComponent,
+  AboutUsComponent,
+  ContactUsComponent,
+  PrivacyComponent,
+  TermsComponent
   ],
   imports: [
     BrowserModule,

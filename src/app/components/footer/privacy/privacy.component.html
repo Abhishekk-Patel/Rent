@@ -1,0 +1,215 @@
+
+<!-- privacy.component.html -->
+
+<section class="privacy-hero">
+    <div class="hero-content">
+      <h1>Privacy Policy</h1>
+      <p>
+        Your privacy matters to us. This policy explains what data we collect, how we use it,
+        and the choices you have.
+      </p>
+      <div class="hero-meta">
+        <mat-chip color="primary" selected>
+          <mat-icon>update</mat-icon>
+          <span>&nbsp;Last updated: {{ lastUpdated }}</span>
+        </mat-chip>
+        <mat-chip>
+          <mat-icon>domain</mat-icon>
+          <span>&nbsp;RENT Pvt Ltd</span>
+        </mat-chip>
+      </div>
+      <div class="hero-actions">
+        <a routerLink="/contact" mat-stroked-button color="primary" aria-label="Contact us">
+          <mat-icon>mail</mat-icon>
+          <span>&nbsp;Contact us</span>
+        </a>
+        <a routerLink="/terms" mat-stroked-button aria-label="View terms">
+          <mat-icon>gavel</mat-icon>
+          <span>&nbsp;View Terms</span>
+        </a>
+      </div>
+    </div>
+  
+    <div class="hero-art" aria-hidden="true">
+      assets/hero/abstract-wave.svg
+    </div>
+  </section>
+  
+  <mat-divider></mat-divider>
+  
+  <!-- Table of contents -->
+  <section class="toc">
+    <mat-card class="toc-card" matRipple>
+      <mat-card-title>Table of Contents</mat-card-title>
+      <mat-card-content>
+        <mat-nav-list>
+          <a mat-list-item [routerLink]="[]" [fragment]="s.id" *ngFor="let s of sections">
+            <mat-icon matListIcon>chevron_right</mat-icon>
+            <span matLine>{{ s.title }}</span>
+          </a>
+        </mat-nav-list>
+      </mat-card-content>
+    </mat-card>
+  </section>
+  
+  <section class="content">
+    <!-- Overview -->
+    <mat-card id="overview" class="section-card" matRipple>
+      <mat-card-title>Overview</mat-card-title>
+      <mat-card-content>
+        <p>
+          This Privacy Policy describes how RENT Pvt Ltd (“we”, “us”, “our”) collects, uses,
+          and shares information when you use our website, mobile apps, and services. By
+          accessing or using our services, you agree to the practices described here.
+        </p>
+      </mat-card-content>
+    </mat-card>
+  
+    <!-- Data We Collect -->
+    <mat-card id="data-we-collect" class="section-card" matRipple>
+      <mat-card-title>Data We Collect</mat-card-title>
+      <mat-card-content>
+        <mat-accordion multi>
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Account & Contact Information</mat-panel-title>
+              <mat-panel-description>Names, email, phone, and profile details</mat-panel-description>
+            </mat-expansion-panel-header>
+            <p>We collect basic identifiers to create and maintain your account.</p>
+          </mat-expansion-panel>
+  
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Usage & Device Data</mat-panel-title>
+              <mat-panel-description>Logs, pages viewed, app version, device type</mat-panel-description>
+            </mat-expansion-panel-header>
+            <p>We collect analytics data to improve performance and reliability.</p>
+          </mat-expansion-panel>
+  
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Payment & Transaction Data</mat-panel-title>
+              <mat-panel-description>Payments processed via trusted providers</mat-panel-description>
+            </mat-expansion-panel-header>
+            <p>We do not store full card numbers; payments are processed by PCI‑compliant gateways.</p>
+          </mat-expansion-panel>
+  
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Location Data</mat-panel-title>
+              <mat-panel-description>Approximate location and address details</mat-panel-description>
+            </mat-expansion-panel-header>
+            <p>We may use location to personalize listings and service availability.</p>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </mat-card-content>
+    </mat-card>
+  
+    <!-- How We Use Data -->
+    <mat-card id="how-we-use" class="section-card" matRipple>
+      <mat-card-title>How We Use Data</mat-card-title>
+      <mat-card-content>
+        <ul class="bullets">
+          <li>To provide, operate, and maintain our services.</li>
+          <li>To personalize content and recommendations.</li>
+          <li>To communicate with you (service updates, support, marketing with consent).</li>
+          <li>To ensure security, prevent fraud, and comply with legal obligations.</li>
+          <li>To analyze usage and improve product quality.</li>
+        </ul>
+      </mat-card-content>
+    </mat-card>
+  
+    <!-- Sharing & Disclosure -->
+    <mat-card id="sharing" class="section-card" matRipple>
+      <mat-card-title>Data Sharing & Disclosure</mat-card-title>
+      <mat-card-content>
+        <ul class="bullets">
+          <li><strong>Service providers:</strong> cloud hosting, analytics, payment gateways.</li>
+          <li><strong>Legal:</strong> to comply with applicable law, regulation, or legal process.</li>
+          <li><strong>Business transfers:</strong> in case of merger, acquisition, or asset sale.</li>
+          <li><strong>With your consent:</strong> when you opt‑in or request integrations.</li>
+        </ul>
+      </mat-card-content>
+    </mat-card>
+  
+    <!-- Cookies -->
+    <mat-card id="cookies" class="section-card" matRipple>
+      <mat-card-title>Cookies & Tracking</mat-card-title>
+      <mat-card-content>
+        <p>
+          We use cookies and similar technologies to remember preferences, measure performance,
+          and deliver relevant content. You can manage cookies via your browser settings.
+        </p>
+        <div class="cookie-actions">
+          <a routerLink="/privacy#cookies" mat-stroked-button aria-label="Manage cookie settings">
+            <mat-icon>tune</mat-icon>
+            <span>&nbsp;Manage Settings</span>
+          </a>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  
+    <!-- Security -->
+    <mat-card id="security" class="section-card" matRipple>
+      <mat-card-title>Security</mat-card-title>
+      <mat-card-content>
+        <p>
+          We implement organizational and technical safeguards to protect your information,
+          including encryption in transit, access controls, and regular monitoring.
+        </p>
+      </mat-card-content>
+    </mat-card>
+  
+    <!-- Your Rights -->
+    <mat-card id="your-rights" class="section-card" matRipple>
+      <mat-card-title>Your Rights</mat-card-title>
+      <mat-card-content>
+        <ul class="bullets">
+          <li>Access, correct, or delete your personal data.</li>
+          <li>Object to or restrict certain processing.</li>
+          <li>Data portability where applicable.</li>
+          <li>Withdraw consent for marketing at any time.</li>
+        </ul>
+        <p>
+          To exercise rights, contact us at
+          <a [href]="'mailto:' + contactEmail">{{ contactEmail }}</a>.
+        </p>
+      </mat-card-content>
+    </mat-card>
+  
+    <!-- Children’s Privacy -->
+    <mat-card id="children" class="section-card" matRipple>
+      <mat-card-title>Children’s Privacy</mat-card-title>
+      <mat-card-content>
+        <p>
+          Our services are not directed to children under the age of 13. If we learn that we have
+          collected personal information from a child, we will take steps to delete such information.
+        </p>
+      </mat-card-content>
+    </mat-card>
+  
+    <!-- Changes -->
+    <mat-card id="changes" class="section-card" matRipple>
+      <mat-card-title>Changes to This Policy</mat-card-title>
+      <mat-card-content>
+        <p>
+          We may update this Privacy Policy from time to time to reflect changes to our practices.
+          When we do, we will revise the “Last updated” date at the top of this page.
+        </p>
+      </mat-card-content>
+    </mat-card>
+  
+    <!-- Contact -->
+    <mat-card id="contact" class="section-card" matRipple>
+      <mat-card-title>Contact Us</mat-card-title>
+      <mat-card-content>
+        <p>
+          If you have any questions or requests related to privacy, reach us at
+          <a [href]="'mailto:' + contactEmail">{{ contactEmail }}</a>
+          or visit our <a routerLink="/contact">Contact page</a>.
+        </p>
+      </mat-card-content>
+    </mat-card>
+  </section>
+  
+  
