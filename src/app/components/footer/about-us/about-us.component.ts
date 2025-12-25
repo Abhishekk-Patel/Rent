@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-about-us',
   templateUrl: './about-us.component.html',
   styleUrls: ['./about-us.component.css']
 })
-export class AboutUsComponent {
+export class AboutUsComponent implements OnInit {
 
 
   currentYear = new Date().getFullYear();
@@ -30,4 +30,7 @@ export class AboutUsComponent {
     { year: '2022', title: 'Pan-India Launch', desc: 'Expanded operations across major cities in India.' },
     { year: '2025', title: 'Smart Rentals', desc: 'Launched AI-powered recommendations and dynamic pricing.' },
   ];
+  ngOnInit(): void {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  }
 }

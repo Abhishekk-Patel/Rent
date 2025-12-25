@@ -1,12 +1,12 @@
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-privacy',
   templateUrl: './privacy.component.html',
   styleUrls: ['./privacy.component.css']
 })
-export class PrivacyComponent {
+export class PrivacyComponent implements OnInit {
   lastUpdated = 'December 25, 2025'; // set dynamically if you prefer
   contactEmail = 'privacy@tryrentit.in';
 
@@ -22,4 +22,7 @@ export class PrivacyComponent {
     { id: 'changes',       title: 'Changes to This Policy' },
     { id: 'contact',       title: 'Contact Us' }
   ];
+  ngOnInit(): void {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  }
 }

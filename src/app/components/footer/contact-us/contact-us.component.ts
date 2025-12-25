@@ -1,5 +1,5 @@
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ContactPayload, ContactService } from 'src/app/service/contact.service';
@@ -10,7 +10,7 @@ import { ContactPayload, ContactService } from 'src/app/service/contact.service'
   templateUrl: './contact-us.component.html',
   styleUrls: ['./contact-us.component.css']
 })
-export class ContactUsComponent {
+export class ContactUsComponent implements OnInit {
   loading = false;
 
   topics = [
@@ -64,5 +64,9 @@ export class ContactUsComponent {
         this.snack.open('Network error. Please try again later.', 'Close', { duration: 3000 });
       }
     });
+  }
+
+  ngOnInit(): void {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
   }
 }

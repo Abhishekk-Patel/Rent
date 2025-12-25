@@ -7,15 +7,9 @@
   align-items: center;
   flex-wrap: wrap;
   padding: 20px 40px;
-  background: linear-gradient(135deg, #ffecd2, #fcb69f);
+  /* background: linear-gradient(135deg, #ffecd2, #fcb69f); */
 
-  /* background: url('assets/svg/footer-wave.svg') no-repeat center / cover;  */
-
-  
-
-  /* SVG background */
-  /* background: url('assets/svg/footer-wave.svg') no-repeat center / cover; */
-
+  background: url('src/assets/svg/footer.svg') no-repeat center / cover; 
   color: #333;
   font-family: 'Poppins', sans-serif;
   box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);

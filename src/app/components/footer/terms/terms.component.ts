@@ -1,12 +1,12 @@
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-terms',
   templateUrl: './terms.component.html',
   styleUrls: ['./terms.component.css']
 })
-export class TermsComponent {
+export class TermsComponent implements OnInit{
   lastUpdated = 'December 25, 2025'; // adjust as required
   companyName = 'RENT Pvt Ltd';
 
@@ -25,4 +25,7 @@ export class TermsComponent {
     { id: 'governing',   title: 'Governing Law & Dispute Resolution' },
     { id: 'contact',     title: 'Contact' }
   ];
+  ngOnInit(): void {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  }
 }

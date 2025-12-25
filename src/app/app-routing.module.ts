@@ -27,7 +27,15 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes,{
+    
+//  scrollPositionRestoration: 'top', // always scroll to top on navigation
+//  anchorScrolling: 'enabled',       // scroll to #fragment anchors if present
+//  scrollOffset: [0, 0],             // (optional) adjust offset for fixed headers
+//  onSameUrlNavigation: 'reload',    // (optional) if you need same-route reloads
+//  // initialNavigation: 'enabledBlocking' // Angular 15+ SSR/strict mode (optional)
+
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
