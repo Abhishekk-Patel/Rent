@@ -37,7 +37,7 @@ https://www.tryrentit.in/
 
 1. Build the project for production:
    ```sh
-   ng build --configuration production --output-path docs --base-href /
+    ng build --configuration production --output-path docs --base-href ./
    ```
 
 2. Commit and push the contents of the `docs` folder to the `develop` branch:
