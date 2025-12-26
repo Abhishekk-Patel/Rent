@@ -1,0 +1,11 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 180" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="listGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff"/>
+      <stop offset="100%" stop-color="#ffe9df"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="180" fill="url(#listGrad)"/>
+  <path d="M0,50 C200,120 420,0 640,50 L640,180 L0,180 Z" fill="#ffffff" opacity="0.5"/>
+</svg>
