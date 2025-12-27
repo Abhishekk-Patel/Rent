@@ -78,6 +78,7 @@ import { TermsComponent } from './components/footer/terms/terms.component';
   TermsComponent
   ],
   imports: [
+    HttpClientModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,

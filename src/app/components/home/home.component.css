@@ -1,394 +1,775 @@
-/* Ensure Google sign-in button is visible and centered on all devices */
-.google-signin-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 12px 0;
-}
+/* ============================
+   Global page styling
+   ============================ */
 
-#buttonDiv {
-  min-width: 200px;
-  min-height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-@media (max-width: 480px) {
-  .google-signin-container {
-    margin: 10px 0;
+   .page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    background:
+      radial-gradient(900px 520px at 10% 10%, rgba(212, 175, 55, 0.25), transparent 55%),
+      radial-gradient(900px 520px at 90% 85%, rgba(183, 110, 121, 0.20), transparent 60%),
+      radial-gradient(700px 420px at 80% 12%, rgba(15, 23, 42, 0.05), transparent 60%),
+      linear-gradient(130deg, #fffdf8, #fbf6ee);
+    font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: #0f172a;
   }
-  #buttonDiv {
-    min-width: 180px;
-    min-height: 40px;
-  }
-}
-/* Base container styling */
-.my-container {
-  display: flex;
-  flex-direction: column;
-  background-color: rgba(255, 255, 255, 0.2);
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 900px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  animation: slideIn 0.5s ease-in-out;
-  position: relative;
-  border: 2px solid brown;
-  margin: auto;
-}
-
-/* Modal background */
-.modal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('src/assets/svg/page-turner.svg') no-repeat center center/cover;
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-
-/* Modal content */
-.modal-content {
-  display: flex;
-  flex-direction: row;
-  background-color: #fdfaf5;
-  /* background-color: #fdfaf5; */
-  padding: 40px;
-  border-radius: 12px;
-  width: 70%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  animation: slideIn 0.5s ease-in-out;
-  position: relative;
-  border: 2px solid brown;
-}
-
-/* Section widths */
-.modal-content-rent-sell,
-.modal-content-bride-groom {
-  width: 40%;
-}
-
-/* Back arrow */
-.back-arrow {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  cursor: pointer;
-  font-size: 24px;
-  transition: transform 0.3s, color 0.3s;
-  top: 93%;
-}
-
-.back-arrow:hover {
-  transform: scale(1.2);
-  color: brown;
-}
-
-.back-arrow img {
-  width: 30px;
-  height: 30px;
-}
-
-/* Cards */
-.card {
-  flex: 1;
-  text-align: center;
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-}
-
-.card img {
-  width: 100%;
-  height: auto;
-  border-radius: 10px;
-}
-
-.card p {
-  font-size: 1.2em;
-  margin-top: 10px;
-  font-weight: 300;
-}
-
-/* Divider */
-.divider,
-.divider-vertical {
-  width: 2px;
-  background-color: grey;
-  margin: 0 20px;
-}
-
-/* Forms */
-.login-form,
-.signup-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.login-form h2,
-.signup-form h2 {
-  color: black;
-  margin-bottom: 20px;
-}
-
-.login-input,
-.signup-input {
-  width: 100%;
-  margin: 10px 0;
-}
-
-.half-width {
-  width: 48%;
-}
-
-.password-container {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
-
-.eye-icon {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: brown;
-}
-
-.login-btn,
-.signup-btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-.login-btn:hover,
-.signup-btn:hover {
-  background-color: #e6b800;
-  transform: scale(1.05);
-}
-
-.login-form p,
-.signup-form p {
-
-  margin-top: 10px;
-}
-
-.login-form a,
-.signup-form a {
-  color: #e6b800;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.login-form a:hover,
-.signup-form a:hover {
-  color: #e6b800;
-}
-
-
-.error {
-  color: red;
-  font-size: 16px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-/* About section */
-.about-section {
-  flex: 1;
-  padding-right: 20px;
-  color: black;
-}
-
-
-@media (max-width: 700px) {
-  .about-section{
-     padding-right: 0px;
-  }
-  img{
-     width: 100% !important;
-     margin: 0px !important;
-
-
-  }
-}
-
-.about-section h2 {
-  margin-bottom: 20px;
-}
-
-.about-section p {
-  font-size: 1.1em;
-  line-height: 1.6;
-  font-weight: 300;
-}
-
-.form-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-/* Angular Material overrides */
-::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
-  color: white;
-  border-color: white !important;
-}
-
-::ng-deep .mat-form-field-label {
-  color: white !important;
-}
-
-::ng-deep .mat-input-element::placeholder {
-  color: white !important;
-}
-
-::ng-deep .mat-form-field-outline-start,
-::ng-deep .mat-form-field-outline-end {
-  border-color: white !important;
-}
-
-/* Override Angular Material raised button color for this component */
-::ng-deep .mat-mdc-raised-button:not(:disabled) {
-  background-color: #3b82f6 !important;
-  color: white !important;
-  font-weight: 400 !important;
-}
-
-/* Animations */
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  .my-container {
-    width: 95%;
-    padding: 1rem;
-  }
-
-  .modal-content {
-    flex-direction: column;
-    width: 95%;
-    padding: 20px;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
-  .modal-content-rent-sell,
-  .modal-content-bride-groom {
+  
+  /* Main shell grid */
+  .shell {
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 24px;
     width: 100%;
-    margin-bottom: 1rem;
+    min-height: 620px;
+    border-radius: 24px;
+    background: rgba(255, 253, 248, 0.95);
+    border: 1.5px solid rgba(212, 175, 55, 0.22);
+    box-shadow: 0 28px 80px rgba(15, 23, 42, 0.15);
+    backdrop-filter: blur(14px);
+    overflow: hidden;
   }
-
-  .divider-vertical {
+  
+  /* ============================
+     Left branding panel
+     ============================ */
+  .brand {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #fdf8f0dd, #fffdf8);
+    display: flex;
+    flex-direction: column;
+    box-shadow: inset 0 0 80px 3px rgba(212, 175, 55, 0.11);
+    padding: 30px 32px;
+    color: #1b263b;
+  }
+  
+  .brand__background {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(700px 420px at 15% 10%, rgba(212, 175, 55, 0.27), transparent 50%),
+      radial-gradient(650px 470px at 85% 90%, rgba(183, 110, 121, 0.16), transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  .brand__content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+  
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .brand__header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .brand__logo {
+    width: 56px;
+    height: 56px;
+    padding: 10px;
+    border-radius: 18px;
+    background: rgba(251, 246, 238, 0.85);
+    border: 1.8px solid rgba(212, 175, 55, 0.25);
+    box-shadow:
+      0 13px 30px rgba(15, 23, 42, 0.12);
+    object-fit: contain;
+    user-select: none;
+  }
+  
+  .brand__text h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 900;
+    font-size: 24px;
+    line-height: 1.12;
+    letter-spacing: -0.25px;
+    margin: 0;
+    color: #0f172a;
+    user-select: none;
+  }
+  
+  .brand__text p {
+    margin-top: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.48;
+    color: rgba(15, 23, 42, 0.72);
+    max-width: 320px;
+  }
+  
+  /* Large image figure */
+  .brand__figure {
+    margin: 0;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 12px 26px rgba(15, 23, 42, 0.11);
+    border: 1.5px solid rgba(183, 110, 121, 0.1);
+  }
+  
+  .brand__figure img {
+    display: block;
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    filter: brightness(1.06) saturate(1.1);
+    transition: transform 0.35s ease;
+    border-radius: 22px;
+  }
+  
+  .brand__figure img:hover,
+  .brand__figure img:focus-visible {
+    outline: none;
+    transform: scale(1.04);
+  }
+  
+  /* Chips/tag list */
+  .brand__chips {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 14px;
+    user-select: none;
+  }
+  
+  .chip {
+    background: linear-gradient(135deg, #d4af37dd 0%, #b76e79dd 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-family: "Montserrat", sans-serif;
+    box-shadow: 0 4px 11px rgb(212 175 55 / 0.45);
+    user-select: none;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    transition: filter 0.2s ease;
+  }
+  
+  .chip:hover,
+  .chip:focus-visible {
+    filter: brightness(1.18);
+    outline: none;
+    cursor: default;
+  }
+  
+  /* ============================
+     Right authentication panel
+     ============================ */
+  .auth {
+    display: flex;
+    align-items: stretch;
+  }
+  
+  .auth__card {
+    position: relative;
+    border-radius: 28px !important;
+    background: rgba(255, 253, 248, 0.97) !important;
+    border: 1.8px solid rgba(212, 175, 55, 0.22) !important;
+    box-shadow:
+      0 28px 70px rgba(15, 23, 42, 0.15),
+      inset 0 0 75px 3px rgba(212, 175, 55, 0.12);
+    width: 100%;
+    max-width: 510px;
+    overflow: hidden;
+    backdrop-filter: blur(16px);
+  }
+  
+  /* Card header */
+  .auth__header {
+    padding: 32px 40px 22px !important;
+    margin: 0 !important;
+    background: linear-gradient(130deg, #fbf6ee, #fffdef);
+    border-bottom: 2px solid rgba(212, 175, 55, 0.35);
+    border-radius: 28px 28px 0 0;
+    box-shadow:
+      0 8px 24px rgba(212, 175, 55, 0.15),
+      inset 0 0 40px rgba(212, 175, 55, 0.09);
+    font-family: "Playfair Display", Georgia, serif;
+    color: #0f172a;
+  }
+  
+  .auth__header::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 40px;
+    right: 40px;
+    height: 2px;
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(212, 175, 55, 0.65),
+        rgba(183, 110, 121, 0.3),
+        rgba(212, 175, 55, 0.6),
+        transparent
+      );
+    opacity: 0.6;
+    pointer-events: none;
+    border-radius: 5px;
+    z-index: 5;
+  }
+  
+  /* Header typography */
+  :host ::ng-deep .auth__header .mat-mdc-card-title {
+    font-family: "Playfair Display", Georgia, serif !important;
+    font-weight: 900 !important;
+    font-size: 34px !important;
+    letter-spacing: -0.7px;
+    margin: 0;
+    color: #0f172a !important;
+    user-select: none;
+  }
+  
+  :host ::ng-deep .auth__header .mat-mdc-card-subtitle {
+    font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600;
+    letter-spacing: 0.24px;
+    margin-top: 8px !important;
+    color: rgba(15, 23, 42, 0.70) !important;
+    user-select: none;
+  }
+  
+  /* Card content padding */
+  :host ::ng-deep .auth__card .mat-mdc-card-content {
+    padding: 28px 40px 36px !important;
+  }
+  
+  /* Tabs styling */
+  :host ::ng-deep .auth__tabs.mat-mdc-tab-group {
+    --mdc-tab-indicator-active-indicator-color: transparent;
+    --mat-tab-header-active-label-text-color: #8f1515; /* rich maroon */
+    --mat-tab-header-inactive-label-text-color: rgba(15, 23, 42, 0.5);
+    font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+    font-weight: 800;
+    user-select: none;
+  }
+  
+  /* Custom tab header background */
+  :host ::ng-deep .auth__tabs .mat-mdc-tab-header {
+    background: rgba(251, 246, 238, 0.9);
+    border: 1.8px solid rgba(212, 175, 55, 0.25);
+    border-radius: 20px;
+    padding: 8px;
+    margin-bottom: 26px !important;
+    box-shadow: 0 10px 40px rgba(143, 21, 21, 0.12);
+  }
+  
+  /* Tabs container overflow */
+  :host ::ng-deep .auth__tabs .mat-mdc-tab-label-container {
+    overflow: visible;
+  }
+  
+  /* Individual tabs */
+  :host ::ng-deep .auth__tabs .mat-mdc-tab {
+    height: 46px;
+    border-radius: 20px;
+    font-weight: 900;
+    letter-spacing: 0.3px;
+    color: rgba(15, 23, 42, 0.72);
+    transition: all 0.22s ease;
+  }
+  
+  :host ::ng-deep .auth__tabs .mdc-tab--active {
+    background: linear-gradient(135deg, #fff9f8, #fbe8e7);
+    border: 1.5px solid rgba(143, 21, 21, 0.4);
+    box-shadow:
+      0 18px 30px rgba(143, 21, 21, 0.30),
+      0 0 0 3px rgba(212, 175, 55, 0.15);
+    color: #8f1515;
+  }
+  
+  /* Hide default indicator */
+  :host ::ng-deep .auth__tabs .mdc-tab-indicator {
     display: none;
   }
-
-  .login-input,
-  .signup-input {
-    margin: 5px 0;
-  }
-
-  .login-btn,
-  .signup-btn {
-    width: 100%;
-    padding: 10px;
-  }
-
-  .password-container {
+  
+  /* FORM styles */
+  .form {
+    display: flex;
     flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
   }
-
-  .half-width {
+  
+  /* Field full width */
+  .field {
     width: 100%;
   }
-}
-
-@media (max-width: 480px) {
-  .my-container {
-    padding: 0.75rem;
-    border-width: 1px;
+  
+  /* Two column form group for passwords in signup */
+  .two-col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
   }
-
-  .modal-content {
-    padding: 15px;
+  
+  /* Link row alignment */
+  .row-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -6px;
+    user-select: none;
   }
-
-  .login-form h2,
-  .signup-form h2 {
-    font-size: 1.5em;
+  
+  .forgot-password-link {
+    font-weight: 700;
+    font-size: 13px;
+    color: #8f1515;
+    text-decoration: none;
+    transition: color 0.18s ease;
+    cursor: pointer;
   }
-
-  .card p {
-    font-size: 1em;
+  
+  .forgot-password-link:hover,
+  .forgot-password-link:focus-visible {
+    color: #b72a2a;
+    text-decoration: underline;
+    outline-offset: 2px;
   }
-}
-
-/* OR separator styles */
-.or-separator {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  margin: 16px 0 8px 0;
-}
-.or-separator span {
-  background: #fff;
-  color: #888;
-  padding: 0 12px;
-  font-size: 14px;
-  font-weight: 500;
-  border-radius: 8px;
-  z-index: 1;
-}
-.or-separator:before,
-.or-separator:after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid #ccc;
-  margin: 0 8px;
-}
-
+  
+  /* Material form field overrides: rounded and glowing on focus */
+  :host ::ng-deep .auth__card .mat-mdc-form-field {
+    font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+  }
+  
+  :host ::ng-deep .auth__card .mdc-text-field--filled {
+    border-radius: 18px !important;
+    background: #fff9f7cc;
+    transition: box-shadow 0.22s ease, transform 0.25s ease;
+    box-shadow: 0 0 0 transparent;
+  }
+  
+  :host ::ng-deep .auth__card .mat-focused .mdc-text-field--filled {
+    transform: translateY(-1.25px);
+    box-shadow: 0 0 12px 4px rgba(212, 175, 55, 0.24);
+  }
+  
+  :host ::ng-deep .auth__card .mdc-text-field:hover:not(.mat-focused) {
+    box-shadow: 0 0 5px 1px rgba(183, 110, 121, 0.3);
+  }
+  
+  /* Highlight outline */
+  :host ::ng-deep .auth__card .mdc-notched-outline__leading,
+  :host ::ng-deep .auth__card .mdc-notched-outline__notch,
+  :host ::ng-deep .auth__card .mdc-notched-outline__trailing {
+    border-color: rgba(15, 23, 42, 0.12) !important;
+  }
+  
+  :host ::ng-deep .auth__card .mat-focused .mdc-notched-outline__leading,
+  :host ::ng-deep .auth__card .mat-focused .mdc-notched-outline__notch,
+  :host ::ng-deep .auth__card .mat-focused .mdc-notched-outline__trailing {
+    border-color: rgba(212, 175, 55, 0.60) !important;
+  }
+  
+  /* Floating label */
+  :host ::ng-deep .auth__card .mat-mdc-floating-label {
+    color: rgba(15, 23, 42, 0.65) !important;
+  }
+  
+  /* Input text */
+  :host ::ng-deep .auth__card .mat-mdc-input-element {
+    color: #0f172a !important;
+  }
+  
+  /* Icon buttons */
+  :host ::ng-deep .auth__card .mat-mdc-icon-button {
+    border-radius: 16px;
+    transition: background-color 0.2s ease;
+  }
+  
+  :host ::ng-deep .auth__card .mat-mdc-icon-button:hover {
+    background-color: rgba(212, 175, 55, 0.12) !important;
+  }
+  
+  /* Primary button large and bold with maroon */
+  .primary-btn {
+    font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.4px;
+    border-radius: 20px !important;
+    height: 48px;
+    width: 100%;
+    font-size: 16px;
+    transition: filter 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  :host ::ng-deep .primary-btn.mat-mdc-raised-button {
+    background: #8f1515 !important; /* deep maroon */
+    box-shadow:
+      0 20px 44px rgba(143, 21, 21, 0.32),
+      inset 0 2px 0 rgba(255, 255, 255, 0.5);
+    color: white !important;
+  }
+  
+  :host ::ng-deep .primary-btn.mat-mdc-raised-button:hover:not(:disabled) {
+    filter: brightness(1.06);
+    box-shadow:
+      0 24px 54px rgba(143, 21, 21, 0.45),
+      inset 0 0 10px rgba(255, 255, 255, 0.75);
+  }
+  
+  :host ::ng-deep .primary-btn[disabled] {
+    background: rgba(15, 23, 42, 0.12) !important;
+    color: rgba(15, 23, 42, 0.38) !important;
+    box-shadow: none !important;
+    cursor: not-allowed;
+  }
+  
+  :host ::ng-deep .primary-btn .mat-mdc-progress-spinner {
+    margin: 0 auto;
+  }
+  
+  /* Error message */
+  .error {
+    color: #8a1f1a;
+    background: rgba(180, 35, 24, 0.07);
+    border: 1.5px solid rgba(180, 35, 24, 0.18);
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 13.5px;
+    font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    user-select: none;
+    margin-top: 12px;
+    box-shadow: inset 0 0 8px rgba(180, 35, 24, 0.12);
+  }
+  
+  /* OR divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    margin: 18px 0;
+    gap: 16px;
+    user-select: none;
+  }
+  
+  .divider span {
+    display: inline-block;
+    font-weight: 800;
+    font-size: 13px;
+    color: rgba(15, 23, 42, 0.65);
+    text-transform: uppercase;
+    background: rgba(255, 253, 248, 0.98);
+    padding: 6px 20px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+  }
+  
+  .divider::before,
+  .divider::after {
+    content: "";
+    flex-grow: 1;
+    height: 1px;
+    background: rgba(212, 175, 55, 0.35);
+    border-radius: 12px;
+  }
+  
+  /* Google sign-in button container */
+  .google-signin {
+    display: flex;
+    justify-content: center;
+    padding-top: 8px;
+    user-select: none;
+  }
+  
+  #buttonDiv {
+    width: 100%;
+    max-width: 260px;
+    height: 48px;
+    border-radius: 20px !important;
+    background: transparent !important;
+    border: none !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 0 !important;
+    user-select: none;
+  }
+  
+  /* ============================
+     Logged in choices
+     ============================ */
+  
+  .shell--choices {
+    max-width: 680px;
+    width: 100%;
+    border-radius: 26px;
+    padding: 28px 34px;
+    background: rgba(255, 253, 248, 0.94);
+    border: 1.5px solid rgba(212, 175, 55, 0.22);
+    box-shadow: 0 28px 70px rgba(15, 23, 42, 0.15),
+      inset 0 0 75px 3px rgba(212, 175, 55, 0.12);
+    backdrop-filter: blur(14px);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .choices-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    user-select: none;
+  }
+  
+  .choices-title {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 900;
+    font-size: 28px;
+    margin: 0;
+    color: #0f172a;
+  }
+  
+  .choices-subtitle {
+    margin-top: 8px;
+    font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: rgba(15, 23, 42, 0.72);
+  }
+  
+  .back-btn {
+    min-width: 100px;
+    border-radius: 18px !important;
+    color: #0f172a !important;
+    border-color: rgba(212, 175, 55, 0.42) !important;
+    font-weight: 700;
+    font-size: 14px;
+    font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+    text-transform: none !important;
+    letter-spacing: 0.2px;
+    user-select: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    box-shadow: inset 0 0 12px rgba(255 255 255 / 0.3);
+  }
+  
+  .back-btn:hover,
+  .back-btn:focus-visible {
+    background-color: rgba(212, 175, 55, 0.18) !important;
+    color: #7a5b11 !important;
+    outline-offset: 2px;
+  }
+  
+  /* Grid for choices */
+  .choices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+  }
+  
+  .choice-card {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 20px 24px;
+    border-radius: 22px;
+    background: rgba(255, 253, 248, 0.88);
+    border: 1.5px solid rgba(212, 175, 55, 0.22);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.11);
+    cursor: pointer;
+    transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1), 
+      box-shadow 0.25s ease, background-color 0.2s ease, border-color 0.2s ease;
+    font-family: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: #0f172a;
+    user-select: none;
+  }
+  
+  .choice-card:hover,
+  .choice-card:focus-visible {
+    outline: none;
+    background-color: #fffdf8;
+    border-color: rgba(212, 175, 55, 0.35);
+    box-shadow: 0 28px 68px rgba(15, 23, 42, 0.18);
+    transform: translateY(-4px) scale(1.03);
+  }
+  
+  /* Icon within card */
+  .choice-card__icon {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    background: rgba(251, 246, 238, 0.88);
+    border: 1.8px solid rgba(212, 175, 55, 0.24);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+  }
+  
+  .choice-card__icon img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+  }
+  
+  /* Text content */
+  .choice-card__text h3 {
+    margin: 0 0 6px 0;
+    font-weight: 800;
+    font-size: 20px;
+    line-height: 1.1;
+    color: #6e1212;
+  }
+  
+  .choice-card__text p {
+    margin: 0;
+    font-weight: 600;
+    font-size: 14px;
+    color: rgba(15, 23, 42, 0.72);
+    user-select: none;
+  }
+  
+  /* Variants for card backgrounds */
+  .choice-card--rent:hover .choice-card__icon {
+    box-shadow: 0 0 18px rgba(212, 175, 55, 0.3);
+  }
+  
+  .choice-card--sell:hover .choice-card__icon {
+    box-shadow: 0 0 18px rgba(183, 110, 121, 0.3);
+  }
+  
+  .choice-card--groom:hover .choice-card__icon {
+    box-shadow: 0 0 22px rgba(143, 21, 21, 0.38);
+  }
+  
+  .choice-card--bride:hover .choice-card__icon {
+    box-shadow: 0 0 22px rgba(160, 55, 65, 0.38);
+  }
+  
+  /* ============================
+     Responsive tweaks for mobile
+     ============================ */
+  
+  @media (max-width: 900px) {
+    .shell {
+      grid-template-columns: 1fr !important;
+      min-height: auto !important;
+    }
+  
+    .brand {
+      border-radius: 24px 24px 0 0 !important;
+      min-height: 240px;
+      padding: 20px !important;
+      display: flex !important;
+      flex-direction: column;
+      justify-content: flex-start !important;
+    }
+  
+    .brand__content {
+      height: auto !important;
+    }
+  
+    .brand__header {
+      gap: 16px;
+    }
+  
+    .brand__logo {
+      width: 48px !important;
+      height: 48px !important;
+      padding: 8px !important;
+    }
+  
+    .brand__text h1 {
+      font-size: 20px !important;
+    }
+  
+    .brand__text p {
+      font-size: 12.5px !important;
+      max-width: 100% !important;
+    }
+  
+    .brand__figure img {
+      height: 180px !important;
+      border-radius: 16px !important;
+    }
+  
+    .brand__chips {
+      gap: 10px !important;
+      padding-top: 10px !important;
+    }
+  
+    .chip {
+      font-size: 10px !important;
+      padding: 7px 10px !important;
+    }
+  
+    .auth {
+      margin-top: 12px !important;
+    }
+  
+    .auth__card {
+      border-radius: 0 0 24px 24px !important;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.15) !important;
+      max-width: 100% !important;
+      width: 100% !important;
+    }
+  
+    .auth__header {
+      padding: 22px 24px 18px 24px !important;
+    }
+  
+    :host ::ng-deep .auth__card .mat-mdc-card-content {
+      padding: 22px 24px 28px 24px !important;
+    }
+  
+    /* Form and inputs */
+    .form {
+      gap: 14px !important;
+    }
+  
+    .field {
+      width: 100% !important;
+    }
+  
+    .two-col {
+      grid-template-columns: 1fr !important;
+      gap: 14px !important;
+    }
+  
+    /* Buttons full width */
+    .primary-btn {
+      height: 50px !important;
+      font-size: 16px !important;
+      border-radius: 16px !important;
+    }
+  
+    /* Google sign-in button */
+    #buttonDiv {
+      max-width: 100% !important;
+      min-width: 180px !important;
+      height: 44px !important;
+      border-radius: 16px !important;
+    }
+  
+    /* Reduce some padding/margin for tight mobile */
+    .row-actions {
+      margin-top: 0 !important;
+    }
+  
+    .forgot-password-link {
+      font-size: 13px !important;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .page {
+      padding: 16px;
+    }
+  }

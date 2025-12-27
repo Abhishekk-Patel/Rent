@@ -1,287 +1,324 @@
-<div class="modal" *ngIf="!isLoggedIn">
-  <div class="modal-content">
-    <div class="about-section">
-       <img src="assets/Downloads/couple.jpeg" style="width: 110%;
-  height: 115%; margin: -40px;">
-      <!-- <h2>About Us</h2> -->
-      <!-- <p>
-        Welcome to our rental platform! Our aims to provide a seamless and
-        efficient way for users to rent and sell bridal and groom products.
-        Whether you are looking for the perfect bridal lehenga, groom's
-        sherwani, or any other wedding-related items, our platform has got you
-        covered. We offer a wide range of categories and products to cater to
-        all your wedding needs. Our user-friendly interface ensures that you can
-        easily browse, search, and filter products to find exactly what you are
-        looking for. Join us today and make your wedding preparations
-        hassle-free and memorable!
+<main class="page" role="main">
+  <!-- AUTH / LANDING -->
+  <section class="shell" *ngIf="!isLoggedIn; else loggedInTpl" aria-label="Authentication and landing page" tabindex="0">
 
-      </p> -->
+    <!-- LEFT BRANDING -->
+    <aside class="brand" aria-label="Wedding marketplace highlights">
+      <div class="brand__background"></div>
 
-    </div>
-    <!-- <div class="divider-vertical"></div> -->
-    <div class="form-section">
-      <div *ngIf="showLogin">
-        <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-form">
-          <h2>Welcome Back</h2>
-          <h6>Unlock you style</h6>
-          <mat-form-field class="login-input" appearance="outline">
-            <mat-label>Email</mat-label>
-            <!-- Updated to use email -->
-            <input matInput formControlName="email" placeholder="Email" />
-            <!-- Updated to use email -->
-            <mat-error
-              *ngIf="
-                loginFormControl['email'].invalid &&
-                (loginFormControl['email'].dirty ||
-                  loginFormControl['email'].touched)
-              "
-            >
-              <small *ngIf="loginFormControl['email'].errors?.['required']"
-                >Email is required.</small
-              >
-              <small *ngIf="loginFormControl['email'].errors?.['email']"
-                >Invalid email address.</small
-              >
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field class="login-input" appearance="outline">
-            <mat-label>Password</mat-label>
-            <input
-              matInput
-              [type]="hidePassword ? 'password' : 'text'"
-              formControlName="password"
-              placeholder="Password"
-            />
-            <button
-              mat-icon-button
-              matSuffix
-              (click)="togglePasswordVisibility()"
-              type="button"
-            >
-              <mat-icon>{{
-                hidePassword ? "visibility_off" : "visibility"
-              }}</mat-icon>
-            </button>
-            <mat-error
-              *ngIf="
-                loginFormControl['password'].invalid &&
-                (loginFormControl['password'].dirty ||
-                  loginFormControl['password'].touched)
-              "
-            >
-              <small *ngIf="loginFormControl['password'].errors?.['required']"
-                >Password is required.</small
-              >
-            </mat-error>
-          </mat-form-field>
-          <button
-            mat-raised-button
-            type="submit"
-            class="login-btn"
-            [disabled]="loginForm.invalid || isLoading"
-          >
-            <ng-container *ngIf="!isLoading">Login</ng-container>
-            <ng-container *ngIf="isLoading">
-              <mat-spinner diameter="22" strokeWidth="3"></mat-spinner>
-            </ng-container>
-          </button>
-          <div *ngIf="loginError" class="error">{{ loginError }}</div>
+      <div class="brand__content">
+        <div class="brand__header">
+          <img class="brand__logo" src="assets/BigLogo.png" alt="Luxury Wedding Logo" />
 
-          <div class="or-separator">
-            <span>OR</span>
+          <div class="brand__text">
+            <h1>Curated Bridal &amp; Groom Collections</h1>
+            <p>
+              Discover premium outfits, timeless jewellery and accessories for every ceremony.
+              Rent for your big day or sell what you no longer need.
+            </p>
           </div>
-          <div class="google-signin-container">
-            <div id="buttonDiv"></div>
-          </div>
+        </div>
 
-          <p>Don't have an account? <a (click)="toggleSignUp()">Sign Up</a></p>
-        </form>
+        <figure class="brand__figure" aria-label="Bridal couple image">
+          <img src="assets/Downloads/couple.jpeg" alt="Happy wedding couple" />
+          <figcaption class="visually-hidden">&nbsp; &nbsp; &nbsp;A couple celebrating their wedding day make your day happy with <b>TryRentiT</b></figcaption>
+        </figure>
+
+        <ul class="brand__chips" role="list" aria-label="Key market segments">
+          <li class="chip">Bridal</li>
+          <li class="chip">Groom</li>
+          <li class="chip">Rent</li>
+          <li class="chip">Sell</li>
+        </ul>
       </div>
-      <div *ngIf="showSignUp">
-        <form
-          [formGroup]="signUpForm"
-          (ngSubmit)="signUp()"
-          class="signup-form"
+    </aside>
+
+    <!-- RIGHT AUTH FORM -->
+    <section class="auth" aria-label="User authentication forms">
+      <mat-card class="auth__card" role="region" aria-live="polite">
+        <!-- <mat-card-header class="auth__header">
+          <mat-card-title>Welcome back</mat-card-title>
+          <mat-card-subtitle>
+            Log in to view saved looks, track orders, and unlock exclusive wedding specials.
+          </mat-card-subtitle>
+        </mat-card-header> -->
+
+        <mat-card-content>
+          <mat-tab-group
+            class="auth__tabs"
+            [(selectedIndex)]="authTabIndex"
+            (selectedIndexChange)="onAuthTabChange($event)"
+            animationDuration="150ms"
+            aria-label="Authentication form tabs"
+          >
+            <!-- LOGIN TAB -->
+            <mat-tab label="Login" role="tabpanel" aria-label="Login form">
+              <form [formGroup]="loginForm" (ngSubmit)="login()" class="form" novalidate>
+                <mat-form-field appearance="fill" class="field" floatLabel="always">
+                  <mat-label>Email</mat-label>
+                  <input
+                    matInput
+                    formControlName="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                    aria-required="true"
+                  />
+                  <mat-hint>Use your registered email</mat-hint>
+                  <mat-error *ngIf="loginFormControl['email'].invalid && loginFormControl['email'].touched">
+                    <span *ngIf="loginFormControl['email'].errors?.['required']">Email is required.</span>
+                    <span *ngIf="loginFormControl['email'].errors?.['email']">Enter a valid email address.</span>
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="field" floatLabel="always">
+                  <mat-label>Password</mat-label>
+                  <input
+                    matInput
+                    [type]="hidePassword ? 'password' : 'text'"
+                    formControlName="password"
+                    placeholder="••••••••"
+                    autocomplete="current-password"
+                    required
+                    aria-required="true"
+                  />
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    type="button"
+                    (click)="togglePasswordVisibility()"
+                    aria-label="Toggle password visibility"
+                    tabindex="-1"
+                  >
+                    <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  </button>
+                  <mat-error *ngIf="loginFormControl['password'].invalid && loginFormControl['password'].touched">
+                    <span *ngIf="loginFormControl['password'].errors?.['required']">Password is required.</span>
+                  </mat-error>
+                </mat-form-field>
+
+                <div class="row-actions">
+                  <a href="#" class="forgot-password-link" tabindex="0">Forgot password?</a>
+                </div>
+
+                <button
+                  mat-raised-button
+                  color="primary"
+                  class="primary-btn"
+                  type="submit"
+                  [disabled]="loginForm.invalid || isLoading"
+                  [attr.aria-busy]="isLoading ? 'true' : null"
+                >
+                  <ng-container *ngIf="!isLoading">Log In</ng-container>
+                  <mat-progress-spinner *ngIf="isLoading" diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                </button>
+
+                <div *ngIf="loginError" class="error" role="alert" aria-live="assertive">{{ loginError }}</div>
+
+                <div class="divider" aria-hidden="true"><span>OR</span></div>
+
+                <div class="google-signin">
+                  <div #googleBtn id="buttonDiv" aria-label="Sign in with Google"></div>
+                </div>
+              </form>
+            </mat-tab>
+
+            <!-- REGISTER TAB -->
+            <mat-tab label="Register" role="tabpanel" aria-label="Registration form">
+              <form [formGroup]="signUpForm" (ngSubmit)="signUp()" class="form" novalidate>
+                <mat-form-field appearance="fill" class="field" floatLabel="always">
+                  <mat-label>Full Name</mat-label>
+                  <input
+                    matInput
+                    formControlName="username"
+                    placeholder="Your full name"
+                    required
+                    aria-required="true"
+                  />
+                  <mat-error *ngIf="signUpFormControl['username'].invalid && signUpFormControl['username'].touched">
+                    <span *ngIf="signUpFormControl['username'].errors?.['required']">Full name is required.</span>
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="field" floatLabel="always">
+                  <mat-label>Email</mat-label>
+                  <input
+                    matInput
+                    formControlName="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    required
+                    aria-required="true"
+                  />
+                  <mat-error *ngIf="signUpFormControl['email'].invalid && signUpFormControl['email'].touched">
+                    <span *ngIf="signUpFormControl['email'].errors?.['required']">Email is required.</span>
+                    <span *ngIf="signUpFormControl['email'].errors?.['email']">Enter a valid email address.</span>
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" class="field" floatLabel="always">
+                  <mat-label>Mobile Number</mat-label>
+                  <input
+                    matInput
+                    formControlName="mobileNumber"
+                    placeholder="10-digit number"
+                    inputmode="numeric"
+                    pattern="[0-9]{10}"
+                    required
+                    aria-required="true"
+                  />
+                  <mat-hint>No country code (e.g., 9876543210)</mat-hint>
+                  <mat-error *ngIf="signUpFormControl['mobileNumber'].invalid && signUpFormControl['mobileNumber'].touched">
+                    <span *ngIf="signUpFormControl['mobileNumber'].errors?.['required']">Mobile number is required.</span>
+                    <span *ngIf="signUpFormControl['mobileNumber'].errors?.['pattern']">Invalid mobile number.</span>
+                  </mat-error>
+                </mat-form-field>
+
+                <div class="two-col">
+                  <mat-form-field appearance="fill" class="field" floatLabel="always">
+                    <mat-label>Password</mat-label>
+                    <input
+                      matInput
+                      [type]="hidePassword ? 'password' : 'text'"
+                      formControlName="password"
+                      placeholder="Minimum 8 characters"
+                      autocomplete="new-password"
+                      required
+                      aria-required="true"
+                    />
+                    <button
+                      mat-icon-button
+                      matSuffix
+                      type="button"
+                      (click)="togglePasswordVisibility()"
+                      tabindex="-1"
+                      aria-label="Toggle password visibility"
+                    >
+                      <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
+                    <mat-error *ngIf="signUpFormControl['password'].invalid && signUpFormControl['password'].touched">
+                      <span *ngIf="signUpFormControl['password'].errors?.['required']">Password is required.</span>
+                    </mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill" class="field" floatLabel="always">
+                    <mat-label>Confirm Password</mat-label>
+                    <input
+                      matInput
+                      [type]="hideConfirmPassword ? 'password' : 'text'"
+                      formControlName="confirmPassword"
+                      placeholder="Re-enter password"
+                      required
+                      aria-required="true"
+                    />
+                    <button
+                      mat-icon-button
+                      matSuffix
+                      type="button"
+                      (click)="toggleConfirmPasswordVisibility()"
+                      tabindex="-1"
+                      aria-label="Toggle confirm password visibility"
+                    >
+                      <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                    </button>
+                    <mat-error *ngIf="signUpFormControl['confirmPassword'].invalid && signUpFormControl['confirmPassword'].touched">
+                      <span *ngIf="signUpFormControl['confirmPassword'].errors?.['required']">Confirm password is required.</span>
+                      <span *ngIf="signUpFormControl['confirmPassword'].errors?.['mustMatch']">Passwords must match.</span>
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <button
+                  mat-raised-button
+                  color="primary"
+                  class="primary-btn"
+                  type="submit"
+                  [disabled]="signUpForm.invalid || isLoading"
+                  [attr.aria-busy]="isLoading ? 'true' : null"
+                >
+                  <ng-container *ngIf="!isLoading">Create Account</ng-container>
+                  <mat-progress-spinner *ngIf="isLoading" diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                </button>
+
+                <div *ngIf="signUpError" class="error" role="alert" aria-live="assertive">{{ signUpError }}</div>
+              </form>
+            </mat-tab>
+          </mat-tab-group>
+        </mat-card-content>
+      </mat-card>
+    </section>
+  </section>
+
+  <!-- LOGGED IN CHOICES -->
+  <ng-template #loggedInTpl>
+    <section class="shell shell--choices" aria-label="Logged in user options">
+      <header class="choices-header">
+        <div>
+          <h2 class="choices-title">Choose what you want to do</h2>
+          <p class="choices-subtitle">Rent outfits or sell your products</p>
+        </div>
+
+        <button
+          mat-stroked-button
+          class="back-btn"
+          *ngIf="stage === 'rent'"
+          (click)="goBack()"
+          aria-label="Go back to choice selection"
         >
-          <h2>Sign Up</h2>
-          <mat-form-field class="signup-input" appearance="outline">
-            <mat-label>Username</mat-label>
-            <input matInput formControlName="username" placeholder="Username" />
-            <mat-error
-              *ngIf="
-                signUpFormControl['username'].invalid &&
-                (signUpFormControl['username'].dirty ||
-                  signUpFormControl['username'].touched)
-              "
-            >
-              <small *ngIf="signUpFormControl['username'].errors?.['required']"
-                >Username is required.</small
-              >
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field class="signup-input" appearance="outline">
-            <mat-label>Email</mat-label>
-            <input matInput formControlName="email" placeholder="Email" />
-            <mat-error
-              *ngIf="
-                signUpFormControl['email'].invalid &&
-                (signUpFormControl['email'].dirty ||
-                  signUpFormControl['email'].touched)
-              "
-            >
-              <small *ngIf="signUpFormControl['email'].errors?.['required']"
-                >Email is required.</small
-              >
-              <small *ngIf="signUpFormControl['email'].errors?.['email']"
-                >Invalid email address.</small
-              >
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field class="signup-input" appearance="outline">
-            <mat-label>Mobile Number</mat-label>
-            <input
-              matInput
-              formControlName="mobileNumber"
-              placeholder="Mobile Number"
-            />
-            <mat-error
-              *ngIf="
-                signUpFormControl['mobileNumber'].invalid &&
-                (signUpFormControl['mobileNumber'].dirty ||
-                  signUpFormControl['mobileNumber'].touched)
-              "
-            >
-              <small
-                *ngIf="signUpFormControl['mobileNumber'].errors?.['required']"
-                >Mobile number is required.</small
-              >
-              <small
-                *ngIf="signUpFormControl['mobileNumber'].errors?.['pattern']"
-                >Invalid mobile number.</small
-              >
-            </mat-error>
-          </mat-form-field>
-          <div class="password-container">
-            <mat-form-field
-              class="signup-input half-width"
-              appearance="outline"
-            >
-              <mat-label>Password</mat-label>
-              <input
-                matInput
-                [type]="hidePassword ? 'password' : 'text'"
-                formControlName="password"
-                placeholder="Password"
-              />
-              <button
-                mat-icon-button
-                matSuffix
-                (click)="togglePasswordVisibility()"
-                type="button"
-              >
-                <mat-icon>{{
-                  hidePassword ? "visibility_off" : "visibility"
-                }}</mat-icon>
-              </button>
-              <mat-error
-                *ngIf="
-                  signUpFormControl['password'].invalid &&
-                  (signUpFormControl['password'].dirty ||
-                    signUpFormControl['password'].touched)
-                "
-              >
-                <small
-                  *ngIf="signUpFormControl['password'].errors?.['required']"
-                  >Password is required.</small
-                >
-              </mat-error>
-            </mat-form-field>
-            <mat-form-field
-              class="signup-input half-width"
-              appearance="outline"
-            >
-              <mat-label>Confirm Password</mat-label>
-              <input
-                matInput
-                [type]="hideConfirmPassword ? 'password' : 'text'"
-                formControlName="confirmPassword"
-                placeholder="Confirm Password"
-              />
-              <button
-                mat-icon-button
-                matSuffix
-                (click)="toggleConfirmPasswordVisibility()"
-                type="button"
-              >
-                <mat-icon>{{
-                  hideConfirmPassword ? "visibility_off" : "visibility"
-                }}</mat-icon>
-              </button>
-              <mat-error
-                *ngIf="
-                  signUpFormControl['confirmPassword'].invalid &&
-                  (signUpFormControl['confirmPassword'].dirty ||
-                    signUpFormControl['confirmPassword'].touched)
-                "
-              >
-                <small
-                  *ngIf="signUpFormControl['confirmPassword'].errors?.['required']"
-                  >Confirm password is required.</small
-                >
-                <small
-                  *ngIf="signUpFormControl['confirmPassword'].errors?.['mustMatch']"
-                  >Passwords must match.</small
-                >
-              </mat-error>
-            </mat-form-field>
-          </div>
-          <button
-            mat-raised-button
-            color="primary"
-            type="submit"
-            class="signup-btn"
-            [disabled]="signUpForm.invalid || isLoading"
-          >
-            <ng-container *ngIf="!isLoading">Sign Up</ng-container>
-            <ng-container *ngIf="isLoading">
-              <mat-spinner diameter="22" strokeWidth="3"></mat-spinner>
-            </ng-container>
-          </button>
-          <div *ngIf="signUpError" class="error">{{ signUpError }}</div>
-          <p>Already have an account? <a (click)="toggleLogin()">Login</a></p>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+          <mat-icon aria-hidden="true">arrow_back</mat-icon>
+          Back
+        </button>
+      </header>
 
-<div class="modal" *ngIf="isLoggedIn">
-  <div class="modal-content modal-content-rent-sell" *ngIf="!showRentOptions">
-    <div class="card rent" (click)="navigateToRent()">
-      <img src="./assets/BigLogo.png" alt="Rent" />
-      <p>RentiT</p>
-    </div>
-    <div class="divider"></div>
-    <div class="card sell" (click)="navigateToSell()">
-      <img
-        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI1m0tsDlTqxr3knGTCXiC5D0IrSHh8xqA4w&s"
-        alt="Sell"
-      />
-      <p>Sell</p>
-    </div>
-  </div>
-  <div class="modal-content modal-content-bride-groom" *ngIf="showRentOptions">
-    <div class="card groom" (click)="navigateTo('Groom')">
-      <img src="./assets/groom.png" alt="Groom" />
-      <p>Groom</p>
-    </div>
-    <div class="divider"></div>
-    <div class="card bride" (click)="navigateTo('Bride')">
-      <img src="./assets/bride.png" alt="Bride" />
-      <p>Bride</p>
-    </div>
-    <div class="back-arrow" (click)="goBack()">
-      <mat-icon>arrow_back</mat-icon>
-    </div>
-  </div>
-</div>
+      <!-- Rent/Sell SELECTION -->
+      <div class="choices-grid" *ngIf="stage === 'choose'">
+        <button class="choice-card choice-card--rent" (click)="navigateToRent()" aria-label="Rent wedding outfits">
+          <div class="choice-card__icon">
+            <img src="assets/BigLogo.png" alt="Rent icon" />
+          </div>
+          <div class="choice-card__text">
+            <h3>Rent</h3>
+            <p>Browse premium wedding wear for your big day.</p>
+          </div>
+        </button>
+
+        <button class="choice-card choice-card--sell" (click)="navigateToSell()" aria-label="Sell your products">
+          <div class="choice-card__icon">
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI1m0tsDlTqxr3knGTCXiC5D0IrSHh8xqA4w&s"
+              alt="Sell icon"
+            />
+          </div>
+          <div class="choice-card__text">
+            <h3>Sell</h3>
+            <p>List your products and reach more customers.</p>
+          </div>
+        </button>
+      </div>
+
+      <!-- Groom/Bride SELECTION -->
+      <div class="choices-grid" *ngIf="stage === 'rent'">
+        <button class="choice-card choice-card--groom" (click)="navigateTo('Groom')" aria-label="Browse Groom collection">
+          <div class="choice-card__icon">
+            <img src="assets/groom.png" alt="Groom icon" />
+          </div>
+          <div class="choice-card__text">
+            <h3>Groom</h3>
+            <p>Sherwani, suits and more.</p>
+          </div>
+        </button>
+
+        <button class="choice-card choice-card--bride" (click)="navigateTo('Bride')" aria-label="Browse Bride collection">
+          <div class="choice-card__icon">
+            <img src="assets/bride.png" alt="Bride icon" />
+          </div>
+          <div class="choice-card__text">
+            <h3>Bride</h3>
+            <p>Lehenga, saree and more.</p>
+          </div>
+        </button>
+      </div>
+    </section>
+  </ng-template>
+</main>
