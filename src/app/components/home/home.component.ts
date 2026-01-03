@@ -74,30 +74,45 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private http: HttpClient
   ) {}
 
-  ngOnInit(): void {
-    this.loginForm = this.fb.group({
+  
+ngOnInit(): void {
+  this.loginForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
+  });
+
+  this.signUpForm = this.fb.group(
+    {
+      username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
+      mobileNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
       password: ['', Validators.required],
-    });
+      confirmPassword: ['', Validators.required],
+    },
+    { validators: [this.passwordMatchValidator] }
+  );
 
-    this.signUpForm = this.fb.group(
-      {
-        username: ['', Validators.required],
-        email: ['', [Validators.required, Validators.email]],
-        mobileNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-        password: ['', Validators.required],
-        confirmPassword: ['', Validators.required],
-      },
-      { validators: [this.passwordMatchValidator] }
-    );
+  // ✅ Convert login email to lowercase
+  this.loginForm.get('email')?.valueChanges.subscribe((value) => {
+    if (value && value !== value.toLowerCase()) {
+      this.loginForm.get('email')?.setValue(value.toLowerCase(), { emitEvent: false });
+    }
+  });
 
-    this.sub.add(
-      this.authService.authState.subscribe((user) => {
-        this.user = user;
-        this.loggedIn = !!user;
-      })
-    );
-  }
+  // ✅ Convert signup email to lowercase
+  this.signUpForm.get('email')?.valueChanges.subscribe((value) => {
+    if (value && value !== value.toLowerCase()) {
+      this.signUpForm.get('email')?.setValue(value.toLowerCase(), { emitEvent: false });
+    }
+  });
+
+  this.sub.add(
+    this.authService.authState.subscribe((user) => {
+      this.user = user;
+      this.loggedIn = !!user;
+    })
+  );
+}
 
   ngAfterViewInit(): void {
     // Render google button initially if login tab is selected

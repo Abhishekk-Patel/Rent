@@ -172,6 +172,7 @@
   }
   
   .auth__card {
+    padding: 20px;
     position: relative;
     border-radius: 28px !important;
     background: rgba(255, 253, 248, 0.97) !important;
@@ -260,7 +261,7 @@
   /* Custom tab header background */
   :host ::ng-deep .auth__tabs .mat-mdc-tab-header {
     background: rgba(251, 246, 238, 0.9);
-    border: 1.8px solid rgba(212, 175, 55, 0.25);
+    /* border: 1.8px solid rgba(212, 175, 55, 0.25); */
     border-radius: 20px;
     padding: 8px;
     margin-bottom: 26px !important;
