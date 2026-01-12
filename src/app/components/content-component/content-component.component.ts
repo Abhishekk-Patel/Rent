@@ -61,6 +61,8 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   private scrollSubscription!: Subscription;
 
   productData$ = this.store.select('productData');
+  defaultImg = 'assets/Downloads/MissingProduct.webp';
+
 
   constructor(
     public mycartService: MyCartServiceService,
@@ -437,7 +439,7 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
 
   onRatingChange(newRating: number, reward: any) {
     reward.rating = newRating;
-    this.userService.updateRating(reward.pk, newRating, reward.userId).subscribe((res: any) => {});
+    this.userService.updateRating(reward.pk, newRating, reward.userId).subscribe((res: any) => { });
   }
 
   openMessageDialog(product: any) {
@@ -452,16 +454,20 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     //   data: { product }
     // });
 
-    
- this.router.navigate(['/messenger'], {
-  queryParams: {
-    productId: product.pk || product._id,
-    ownerId: product.userId,
-    name: product.name,
-    image: product.display_img_urls?.[0] || product.imageUrl || ''
-  }
-});
 
+    this.router.navigate(['/messenger'], {
+      queryParams: {
+        productId: product.pk || product._id,
+        ownerId: product.userId,
+        name: product.name,
+        image: product.display_img_urls?.[0] || product.imageUrl || ''
+      }
+    });
+
+  }
+  onImgError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    img.src = this.defaultImg;
   }
 
   closeSortPanel() {

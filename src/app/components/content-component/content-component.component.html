@@ -221,15 +221,13 @@
           (mouseleave)="reward._hover = false"
         >
           <div class="media">
-            <img
-              [src]="
-                reward._hover && reward.display_img_urls[1]
-                  ? reward.display_img_urls[1]
-                  : reward.display_img_urls[0]
-              "
-              [alt]="reward.name"
-              loading="lazy"
-            />
+        <img [src]="
+            reward._hover && reward.display_img_urls?.[1]
+              ? reward.display_img_urls[1]
+              : reward.display_img_urls?.[0] || defaultImg
+          " [alt]="reward.name" loading="lazy" (error)="onImgError($event)"
+/>
+
 
             <button
               class="wish"

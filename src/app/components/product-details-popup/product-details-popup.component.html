@@ -6,12 +6,13 @@
         <button class="nav-btn left" (click)="prevImage()">
           <mat-icon>chevron_left</mat-icon>
         </button>
-        <img [src]="getProductDetails()?.display_img_urls?.[getProductDetails()?.currentImageIndex ?? 0] || getProductDetails()[0]?.images?.[getProductDetails()[0]?.currentImageIndex ?? 0]?.url || 'assets/placeholder.png'"
+        <img [src]="getProductDetails()?.display_img_urls?.[getProductDetails()?.currentImageIndex ?? 0] || getProductDetails()[0]?.images?.[getProductDetails()[0]?.currentImageIndex ?? 0]?.url || this.defaultImg"
              alt="{{ getProductDetails()?.name }}"
              class="main-image zoomable-image"
              (mousemove)="onZoomMove($event)"
              (mouseleave)="onZoomLeave()"
              (mouseenter)="onZoomEnter($event)"
+             (error)="onImgError($event)"
              #mainImg>
         <div *ngIf="showZoomPreview"
              class="zoom-preview-box"
@@ -32,11 +33,13 @@
       </div>
       <div class="thumbs-row" *ngIf="getProductDetails()?.display_img_urls?.length > 1 || getProductDetails()[0]?.images?.length > 1">
         <img *ngFor="let img of (getProductDetails()?.display_img_urls || getProductDetails()[0]?.images); let idx = index"
-             [src]="img.url || img"
+             [src]="img.url || img || this.defaultImg"
              [class.selected-thumb]="idx === (getProductDetails()?.currentImageIndex ?? getProductDetails()[0]?.currentImageIndex ?? 0)"
              (click)="selectImage(idx)"
              class="thumb-image"
-             alt="Thumbnail">
+             alt="Thumbnail"
+              (error)="onImgError($event)">
+             
       </div>
     </div>
     <div class="modal-details-area">
@@ -55,6 +58,15 @@
             <button class="fav-btn" (click)="toggleFavorite(product)" [attr.aria-pressed]="product.isFavorite">
               <mat-icon color="warn">{{ product.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
             </button>
+            <button
+  mat-icon-button
+  color="primary"
+  aria-label="Share product"
+  (click)="shareProduct(product)"
+>
+  <mat-icon>share</mat-icon>
+</button>
+
           </div>
         </div>
       </ng-container>

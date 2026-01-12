@@ -1,4 +1,3 @@
-
 <!-- Unified Chat Shell -->
 <div class="chat-shell" [class.mobile]="isMobileScreen" [class.desktop]="!isMobileScreen">
 
@@ -37,25 +36,28 @@
     </section>
 
     <!-- Mobile: Chat Panel -->
-    <section *ngIf="selectedChat" class="chat-panel-mobile panel card">
+    <section *ngIf="selectedChat as sc" class="chat-panel-mobile panel card">
 
       <!-- Mobile Panel Header -->
       <header class="panel-header">
         <button class="icon-btn" (click)="selectedChat = null; showChatList = true" aria-label="Back">
           <mat-icon>arrow_back</mat-icon>
         </button>
-        <img [src]="selectedChat?.productImage || defaultAvatar" class="panel-img" alt="product">
+
+        <img [src]="sc.productImage || defaultAvatar" class="panel-img" alt="product">
+
         <div class="panel-titles">
-          <div class="panel-product">{{ selectedChat?.productName }}</div>
-          <div class="panel-owner">with {{ selectedChat?.ownerName }}</div>
+          <div class="panel-product">{{ sc.productName ?? 'Untitled' }}</div>
+          <div class="panel-owner">with {{ sc.ownerName ?? '' }}</div>
         </div>
-        <button class="icon-btn" [disabled]="!selectedChat || isInCall" (click)="startCall(false)" aria-label="Voice call">
+
+        <button class="icon-btn" [disabled]="isInCall" (click)="startCall(false)" aria-label="Voice call">
           <mat-icon>call</mat-icon>
         </button>
-        <button class="icon-btn" [disabled]="!selectedChat || isInCall" (click)="startCall(true)" aria-label="Video call">
+        <button class="icon-btn" [disabled]="isInCall" (click)="startCall(true)" aria-label="Video call">
           <mat-icon>videocam</mat-icon>
         </button>
-        <button class="icon-btn" (click)="openProfilePanel(selectedChat); showProfilePanel = true" aria-label="Profile">
+        <button class="icon-btn" (click)="openProfilePanel(sc); showProfilePanel = true" aria-label="Profile">
           <mat-icon>person</mat-icon>
         </button>
       </header>
@@ -120,16 +122,19 @@
         <div *ngIf="showEmojiPicker" class="emoji-popup" (click)="$event.stopPropagation()">
           <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">{{ emoji }}</span>
         </div>
+
         <button class="icon-btn" mat-icon-button [disabled]="!selectedChat || isInCall" (click)="startCall(false)" aria-label="Voice">
           <mat-icon>call</mat-icon>
         </button>
         <button class="icon-btn" mat-icon-button [disabled]="!selectedChat || isInCall" (click)="startCall(true)" aria-label="Video">
           <mat-icon>videocam</mat-icon>
         </button>
+
         <label class="attach">
           <input type="file" (change)="onFileSelected($event)" [disabled]="!selectedChat">
           <mat-icon>attach_file</mat-icon>
         </label>
+
         <input #mobileInput
                type="text"
                [(ngModel)]="newMessage"
@@ -137,6 +142,7 @@
                placeholder="Type your message..."
                [disabled]="!selectedChat"
                autocomplete="off">
+
         <button class="send" (click)="sendMessage()" [disabled]="!selectedChat || !canSend" aria-label="Send">
           <mat-icon>send</mat-icon>
         </button>
@@ -170,12 +176,14 @@
               <img [src]="chat.productImage || defaultAvatar" alt="User Avatar" class="avatar"
                    (click)="openProfilePanel(chat); $event.stopPropagation()" tabindex="0">
               <span *ngIf="chat.hasNewMessage" class="dot new"></span>
-              <span class="dot status" [ngClass]="getOnlineStatusClass(chat.ownerId)" title="{{ getOnlineStatusText(chat.ownerId) }}"></span>
+              <span class="dot status"
+                    [ngClass]="getOnlineStatusClass(chat.ownerId)"
+                    title="{{ getOnlineStatusText(chat.ownerId) }}"></span>
             </div>
             <div class="item-info">
-              <div class="item-title">{{ chat.productName }}</div>
+              <div class="item-title">{{ chat.productName || 'Untitled' }}</div>
               <div class="item-sub">
-                with {{ chat.ownerName }}
+                with {{ chat.ownerName || '' }}
                 <span class="status-text" [ngClass]="getOnlineStatusClass(chat.ownerId)"></span>
               </div>
               <div class="item-last">{{ chat.lastMessage }}</div>
@@ -199,105 +207,112 @@
 
         <!-- Chat content -->
         <ng-template #hasChat>
-          <header class="panel-header">
-            <img [src]="selectedChat?.productImage || defaultAvatar" alt="Product" class="panel-img">
-            <div class="panel-titles">
-              <div class="panel-product">{{ selectedChat?.productName }}</div>
-              <div class="panel-owner">with {{ selectedChat?.ownerName }}</div>
-            </div>
+          <ng-container *ngIf="selectedChat as sc">
 
-            <!-- Mobile-only buttons hidden by CSS -->
-            <button class="icon-btn mobile-only" (click)="showChatList = true" aria-label="Back">
-              <mat-icon>arrow_back</mat-icon>
-            </button>
-            <button class="icon-btn mobile-only" (click)="showProfilePanel = true" aria-label="Profile">
-              <mat-icon>person</mat-icon>
-            </button>
-          </header>
+            <header class="panel-header">
+              <img [src]="sc.productImage || defaultAvatar" alt="Product" class="panel-img">
 
-          <mat-progress-bar *ngIf="isMessagesLoading" mode="indeterminate" color="accent" class="progress"></mat-progress-bar>
-
-          <div class="messages" #messagesContainer>
-            <ng-container *ngIf="messages.length > 0; else noMessages">
-              <ng-container *ngFor="let msg of messages; trackBy: trackByMsg">
-
-                <!-- System messages -->
-                <ng-container *ngIf="msg.systemType; else normalMsg">
-                  <div class="sys-msg" [ngClass]="msg.systemType">
-                    <span class="sys-icon">
-                      {{ msg.systemType === 'call-ended' ? '📞' :
-                         msg.systemType === 'missed-call' ? (msg.senderId === currentUserId ? '⏰' : '❌') :
-                         msg.systemType === 'call-rejected' ? (msg.senderId === currentUserId ? '🚫' : '❎') : 'ℹ️' }}
-                    </span>
-                    <span class="sys-text">
-                      {{ msg.systemType === 'call-ended' ? 'Call ended' :
-                         msg.systemType === 'missed-call' ? (msg.senderId === currentUserId ? 'You missed a call' : 'Missed call') :
-                         msg.systemType === 'call-rejected' ? (msg.senderId === currentUserId ? 'You rejected the call' : 'Call was rejected') :
-                         msg.text }}
-                    </span>
-                    <span class="sys-time">{{ msg.time }}</span>
-                  </div>
-                </ng-container>
-
-                <!-- Normal message -->
-                <ng-template #normalMsg>
-                  <div class="msg" [ngClass]="msg.senderId === currentUserId ? 'self' : 'user'">
-                    <span class="msg-text">{{ msg.text }}</span>
-                    <ng-container *ngIf="msg.attachmentUrl">
-                      <div *ngIf="msg.attachmentType === 'image'">
-                        <img [src]="msg.attachmentUrl" alt="attachment" class="msg-img">
-                      </div>
-                      <div *ngIf="msg.attachmentType === 'file'">
-                        <a [href]="msg.attachmentUrl" target="_blank" class="msg-file">Download Attachment</a>
-                      </div>
-                    </ng-container>
-                    <span class="msg-time">{{ msg.time }}</span>
-                  </div>
-                </ng-template>
-
-              </ng-container>
-            </ng-container>
-
-            <ng-template #noMessages>
-              <div class="empty-state">
-                <mat-icon class="empty-icon">mark_chat_unread</mat-icon>
-                <div class="empty-title">No messages yet</div>
-                <div class="empty-desc">Start the conversation by sending a message.</div>
+              <div class="panel-titles">
+                <div class="panel-product">{{ sc.productName ?? 'Untitled' }}</div>
+                <div class="panel-owner">with {{ sc.ownerName ?? '' }}</div>
               </div>
-            </ng-template>
-          </div>
 
-          <footer class="input-bar">
-            <button type="button" class="icon-btn emoji" (click)="toggleEmoji()" [disabled]="!selectedChat" aria-label="Emoji">😊</button>
-            <div *ngIf="showEmojiPicker" class="emoji-popup">
-              <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">{{ emoji }}</span>
+              <!-- Mobile-only buttons hidden by CSS -->
+              <button class="icon-btn mobile-only" (click)="showChatList = true" aria-label="Back">
+                <mat-icon>arrow_back</mat-icon>
+              </button>
+              <button class="icon-btn mobile-only" (click)="showProfilePanel = true" aria-label="Profile">
+                <mat-icon>person</mat-icon>
+              </button>
+            </header>
+
+            <mat-progress-bar *ngIf="isMessagesLoading" mode="indeterminate" color="accent" class="progress"></mat-progress-bar>
+
+            <div class="messages" #messagesContainer>
+              <ng-container *ngIf="messages.length > 0; else noMessages">
+                <ng-container *ngFor="let msg of messages; trackBy: trackByMsg">
+
+                  <!-- System messages -->
+                  <ng-container *ngIf="msg.systemType; else normalMsg">
+                    <div class="sys-msg" [ngClass]="msg.systemType">
+                      <span class="sys-icon">
+                        {{ msg.systemType === 'call-ended' ? '📞' :
+                           msg.systemType === 'missed-call' ? (msg.senderId === currentUserId ? '⏰' : '❌') :
+                           msg.systemType === 'call-rejected' ? (msg.senderId === currentUserId ? '🚫' : '❎') : 'ℹ️' }}
+                      </span>
+                      <span class="sys-text">
+                        {{ msg.systemType === 'call-ended' ? 'Call ended' :
+                           msg.systemType === 'missed-call' ? (msg.senderId === currentUserId ? 'You missed a call' : 'Missed call') :
+                           msg.systemType === 'call-rejected' ? (msg.senderId === currentUserId ? 'You rejected the call' : 'Call was rejected') :
+                           msg.text }}
+                      </span>
+                      <span class="sys-time">{{ msg.time }}</span>
+                    </div>
+                  </ng-container>
+
+                  <!-- Normal message -->
+                  <ng-template #normalMsg>
+                    <div class="msg" [ngClass]="msg.senderId === currentUserId ? 'self' : 'user'">
+                      <span class="msg-text">{{ msg.text }}</span>
+
+                      <ng-container *ngIf="msg.attachmentUrl">
+                        <div *ngIf="msg.attachmentType === 'image'">
+                          <img [src]="msg.attachmentUrl" alt="attachment" class="msg-img">
+                        </div>
+                        <div *ngIf="msg.attachmentType === 'file'">
+                          <a [href]="msg.attachmentUrl" target="_blank" class="msg-file">Download Attachment</a>
+                        </div>
+                      </ng-container>
+
+                      <span class="msg-time">{{ msg.time }}</span>
+                    </div>
+                  </ng-template>
+
+                </ng-container>
+              </ng-container>
+
+              <ng-template #noMessages>
+                <div class="empty-state">
+                  <mat-icon class="empty-icon">mark_chat_unread</mat-icon>
+                  <div class="empty-title">No messages yet</div>
+                  <div class="empty-desc">Start the conversation by sending a message.</div>
+                </div>
+              </ng-template>
             </div>
 
-            <button class="icon-btn" mat-icon-button aria-label="Voice Call" [disabled]="!selectedChat || isInCall" (click)="startCall(false)">
-              <mat-icon>call</mat-icon>
-            </button>
-            <button class="icon-btn" mat-icon-button aria-label="Video Call" [disabled]="!selectedChat || isInCall" (click)="startCall(true)">
-              <mat-icon>videocam</mat-icon>
-            </button>
+            <footer class="input-bar">
+              <button type="button" class="icon-btn emoji" (click)="toggleEmoji()" [disabled]="!selectedChat" aria-label="Emoji">😊</button>
+              <div *ngIf="showEmojiPicker" class="emoji-popup">
+                <span *ngFor="let emoji of emojis" (click)="addEmoji(emoji)">{{ emoji }}</span>
+              </div>
 
-            <label class="attach">
-              <input type="file" (change)="onFileSelected($event)" [disabled]="!selectedChat">
-              <mat-icon>attach_file</mat-icon>
-            </label>
+              <button class="icon-btn" mat-icon-button aria-label="Voice Call" [disabled]="!selectedChat || isInCall" (click)="startCall(false)">
+                <mat-icon>call</mat-icon>
+              </button>
+              <button class="icon-btn" mat-icon-button aria-label="Video Call" [disabled]="!selectedChat || isInCall" (click)="startCall(true)">
+                <mat-icon>videocam</mat-icon>
+              </button>
 
-            <input type="text"
-                   class="text-input"
-                   placeholder="Type your message..."
-                   [(ngModel)]="newMessage"
-                   (keydown)="onInputKeydown($event)"
-                   aria-label="Type your message"
-                   [disabled]="!selectedChat"
-                   autocomplete="off">
+              <label class="attach">
+                <input type="file" (change)="onFileSelected($event)" [disabled]="!selectedChat">
+                <mat-icon>attach_file</mat-icon>
+              </label>
 
-            <button class="send" aria-label="Send" (click)="sendMessage()" [disabled]="!selectedChat || !canSend">
-              <mat-icon>send</mat-icon>
-            </button>
-          </footer>
+              <input type="text"
+                     class="text-input"
+                     placeholder="Type your message..."
+                     [(ngModel)]="newMessage"
+                     (keydown)="onInputKeydown($event)"
+                     aria-label="Type your message"
+                     [disabled]="!selectedChat"
+                     autocomplete="off">
+
+              <button class="send" aria-label="Send" (click)="sendMessage()" [disabled]="!selectedChat || !canSend">
+                <mat-icon>send</mat-icon>
+              </button>
+            </footer>
+
+          </ng-container>
         </ng-template>
       </main>
 

@@ -11,6 +11,7 @@ import { ContactUsComponent } from './components/footer/contact-us/contact-us.co
 import { PrivacyComponent } from './components/footer/privacy/privacy.component';
 import { TermsComponent } from './components/footer/terms/terms.component';
 import { UnifiedChatComponent } from './components/unified-chat.component';
+import { ProductDetailsPopupComponent } from './components/product-details-popup/product-details-popup.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -24,6 +25,8 @@ const routes: Routes = [
   { path: 'contact', component: ContactUsComponent },
   {path: 'privacy', component: PrivacyComponent },
   {path: 'terms', component: TermsComponent },
+  { path: 'product-details/:id', component: ProductDetailsPopupComponent },
+
 
 
   

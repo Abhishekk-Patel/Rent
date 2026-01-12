@@ -184,9 +184,14 @@ export class MyCartServiceService {
     return this.httpClient.post(`${this.url}/upload`, formData);
   }
 
+  // openProductDetails(response: any): void {
+  //   this.dialog.open(ProductDetailsPopupComponent, { data: { response } });
+  // }
   openProductDetails(response: any): void {
-    this.dialog.open(ProductDetailsPopupComponent, { data: { response } });
-  }
+    console.log(response)
+  this.router.navigate(['/product-details', response], { state: { response } });
+
+}
 
   addProductDetailsApi(formData: FormData) {
     this.httpClient.post(`${this.url}/upload`, formData).subscribe(

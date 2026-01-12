@@ -101,6 +101,7 @@
   flex-direction: column;
   font-family: 'Segoe UI', Arial, sans-serif;
   overflow-y: auto;
+  padding-top:100px
 }
 
 .close-btn {
