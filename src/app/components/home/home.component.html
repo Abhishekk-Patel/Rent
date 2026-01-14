@@ -1,51 +1,77 @@
-<main class="page" role="main">
+<main class="home" role="main">
   <!-- AUTH / LANDING -->
-  <section class="shell" *ngIf="!isLoggedIn; else loggedInTpl" aria-label="Authentication and landing page" tabindex="0">
+  <section
+    class="layout"
+    *ngIf="!isLoggedIn; else loggedInTpl"
+    aria-label="Authentication and landing page"
+    tabindex="0"
+  >
+    <!-- LEFT HERO / BRAND -->
+    <aside class="hero" aria-label="Wedding marketplace highlights">
+      <div class="hero__bg" aria-hidden="true"></div>
 
-    <!-- LEFT BRANDING -->
-    <aside class="brand" aria-label="Wedding marketplace highlights">
-      <div class="brand__background"></div>
-
-      <div class="brand__content">
-        <div class="brand__header">
-          <img class="brand__logo" src="assets/BigLogo.png" alt="Luxury Wedding Logo" />
-
-          <div class="brand__text">
-            <h1>Curated Bridal &amp; Groom Collections</h1>
-            <p>
-              Discover premium outfits, timeless jewellery and accessories for every ceremony.
-              Rent for your big day or sell what you no longer need.
+      <div class="hero__top">
+        <div class="hero__brand">
+          <img class="hero__logo" src="assets/BigLogo.png" alt="Luxury Wedding Logo" />
+          <div class="hero__brandText">
+            <p class="hero__kicker">Luxury wedding marketplace</p>
+            <h1 class="hero__title">Curated Bridal &amp; Groom Collections</h1>
+            <p class="hero__desc">
+              Premium outfits, timeless jewellery, and accessories for every ceremony.
+              <span class="hero__em">Rent</span> for your big day or <span class="hero__em">sell</span> what you no longer need.
             </p>
           </div>
         </div>
 
-        <figure class="brand__figure" aria-label="Bridal couple image">
-          <img src="assets/Downloads/couple.jpeg" alt="Happy wedding couple" />
-          <figcaption class="visually-hidden">&nbsp; &nbsp; &nbsp;A couple celebrating their wedding day make your day happy with <b>TryRentiT</b></figcaption>
-        </figure>
+        <div class="hero__meta">
+          <div class="pill" aria-label="Trusted by customers">
+            <span class="pill__dot"></span>
+            <span>Trusted • Verified Sellers</span>
+          </div>
 
-        <ul class="brand__chips" role="list" aria-label="Key market segments">
-          <li class="chip">Bridal</li>
-          <li class="chip">Groom</li>
-          <li class="chip">Rent</li>
-          <li class="chip">Sell</li>
-        </ul>
+          <div class="stats" aria-label="Marketplace stats">
+            <div class="stat">
+              <div class="stat__num">1K+</div>
+              <div class="stat__label">Outfits</div>
+            </div>
+            <div class="stat">
+              <div class="stat__num">4.8</div>
+              <div class="stat__label">Avg rating</div>
+            </div>
+            <div class="stat">
+              <div class="stat__num">24/7</div>
+              <div class="stat__label">Support</div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <figure class="hero__figure" aria-label="Bridal couple image">
+        <img src="assets/Downloads/couple.jpeg" alt="Happy wedding couple" />
+        <figcaption class="visually-hidden">
+          A couple celebrating their wedding day make your day happy with <b>TryRentiT</b>
+        </figcaption>
+      </figure>
+
+      <ul class="hero__chips" role="list" aria-label="Key market segments">
+        <li class="chip chip--gold">Bridal</li>
+        <li class="chip chip--rose">Groom</li>
+        <li class="chip chip--ink">Rent</li>
+        <li class="chip chip--cream">Sell</li>
+      </ul>
     </aside>
 
-    <!-- RIGHT AUTH FORM -->
-    <section class="auth" aria-label="User authentication forms">
-      <mat-card class="auth__card" role="region" aria-live="polite">
-        <!-- <mat-card-header class="auth__header">
-          <mat-card-title>Welcome back</mat-card-title>
-          <mat-card-subtitle>
-            Log in to view saved looks, track orders, and unlock exclusive wedding specials.
-          </mat-card-subtitle>
-        </mat-card-header> -->
+    <!-- RIGHT AUTH -->
+    <section class="panel" aria-label="User authentication forms">
+      <mat-card class="panel__card" role="region" aria-live="polite">
+        <mat-card-content class="panel__content">
+          <div class="panel__header">
+            <h2 class="panel__title">Welcome</h2>
+            <p class="panel__subtitle">Sign in or create an account to continue.</p>
+          </div>
 
-        <mat-card-content>
           <mat-tab-group
-            class="auth__tabs"
+            class="panel__tabs"
             [(selectedIndex)]="authTabIndex"
             (selectedIndexChange)="onAuthTabChange($event)"
             animationDuration="150ms"
@@ -54,7 +80,7 @@
             <!-- LOGIN TAB -->
             <mat-tab label="Login" role="tabpanel" aria-label="Login form">
               <form [formGroup]="loginForm" (ngSubmit)="login()" class="form" novalidate>
-                <mat-form-field appearance="fill" class="field" floatLabel="always">
+                <mat-form-field appearance="outline" class="field" floatLabel="always">
                   <mat-label>Email</mat-label>
                   <input
                     matInput
@@ -72,7 +98,7 @@
                   </mat-error>
                 </mat-form-field>
 
-                <mat-form-field appearance="fill" class="field" floatLabel="always">
+                <mat-form-field appearance="outline" class="field" floatLabel="always">
                   <mat-label>Password</mat-label>
                   <input
                     matInput
@@ -98,28 +124,48 @@
                   </mat-error>
                 </mat-form-field>
 
-                <div class="row-actions">
-                  <a href="#" class="forgot-password-link" tabindex="0">Forgot password?</a>
-                </div>
+                <!-- <div class="row-actions">
+                  <a href="#" class="link">Forgot password?</a>
+                </div> -->
+<div class="row-actions">
+  <a
+    class="link forgot-link"
+    role="button"
+    tabindex="0"
+    aria-label="Forgot your password"
+    [routerLink]="['/forgot-password']"
+  >
+    Forgot password?
+  </a>
+</div>
 
                 <button
                   mat-raised-button
                   color="primary"
-                  class="primary-btn"
+                  class="btn btn--primary"
                   type="submit"
                   [disabled]="loginForm.invalid || isLoading"
                   [attr.aria-busy]="isLoading ? 'true' : null"
                 >
                   <ng-container *ngIf="!isLoading">Log In</ng-container>
-                  <mat-progress-spinner *ngIf="isLoading" diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                  <mat-progress-spinner
+                    *ngIf="isLoading"
+                    diameter="22"
+                    strokeWidth="3"
+                    mode="indeterminate"
+                  ></mat-progress-spinner>
                 </button>
 
-                <div *ngIf="loginError" class="error" role="alert" aria-live="assertive">{{ loginError }}</div>
+                <div *ngIf="loginError" class="alert alert--error" role="alert" aria-live="assertive">
+                  {{ loginError }}
+                </div>
 
-                <div class="divider" aria-hidden="true"><span>OR</span></div>
+                <div class="divider" aria-hidden="true"><span>Or continue with</span></div>
 
-                <div class="google-signin">
-                  <div #googleBtn id="buttonDiv" aria-label="Sign in with Google"></div>
+                <div class="social">
+                  <div class="social__google">
+                    <div #googleBtn id="buttonDiv" aria-label="Sign in with Google"></div>
+                  </div>
                 </div>
               </form>
             </mat-tab>
@@ -127,56 +173,45 @@
             <!-- REGISTER TAB -->
             <mat-tab label="Register" role="tabpanel" aria-label="Registration form">
               <form [formGroup]="signUpForm" (ngSubmit)="signUp()" class="form" novalidate>
-                <mat-form-field appearance="fill" class="field" floatLabel="always">
-                  <mat-label>Full Name</mat-label>
-                  <input
-                    matInput
-                    formControlName="username"
-                    placeholder="Your full name"
-                    required
-                    aria-required="true"
-                  />
-                  <mat-error *ngIf="signUpFormControl['username'].invalid && signUpFormControl['username'].touched">
-                    <span *ngIf="signUpFormControl['username'].errors?.['required']">Full name is required.</span>
-                  </mat-error>
-                </mat-form-field>
+                <div class="grid2">
+                  <mat-form-field appearance="outline" class="field" floatLabel="always">
+                    <mat-label>Full Name</mat-label>
+                    <input matInput formControlName="username" placeholder="Your full name" required aria-required="true" />
+                    <mat-error *ngIf="signUpFormControl['username'].invalid && signUpFormControl['username'].touched">
+                      <span *ngIf="signUpFormControl['username'].errors?.['required']">Full name is required.</span>
+                    </mat-error>
+                  </mat-form-field>
 
-                <mat-form-field appearance="fill" class="field" floatLabel="always">
+                  <mat-form-field appearance="outline" class="field" floatLabel="always">
+                    <mat-label>Mobile Number</mat-label>
+                    <input
+                      matInput
+                      formControlName="mobileNumber"
+                      placeholder="9800000000"
+                      inputmode="numeric"
+                      pattern="[0-9]{10}"
+                      required
+                      aria-required="true"
+                    />
+                    <mat-hint>No country code</mat-hint>
+                    <mat-error *ngIf="signUpFormControl['mobileNumber'].invalid && signUpFormControl['mobileNumber'].touched">
+                      <span *ngIf="signUpFormControl['mobileNumber'].errors?.['required']">Mobile number is required.</span>
+                      <span *ngIf="signUpFormControl['mobileNumber'].errors?.['pattern']">Invalid mobile number.</span>
+                    </mat-error>
+                  </mat-form-field>
+                </div>
+
+                <mat-form-field appearance="outline" class="field" floatLabel="always">
                   <mat-label>Email</mat-label>
-                  <input
-                    matInput
-                    formControlName="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    required
-                    aria-required="true"
-                  />
+                  <input matInput formControlName="email" type="email" placeholder="you@example.com" required aria-required="true" />
                   <mat-error *ngIf="signUpFormControl['email'].invalid && signUpFormControl['email'].touched">
                     <span *ngIf="signUpFormControl['email'].errors?.['required']">Email is required.</span>
                     <span *ngIf="signUpFormControl['email'].errors?.['email']">Enter a valid email address.</span>
                   </mat-error>
                 </mat-form-field>
 
-                <mat-form-field appearance="fill" class="field" floatLabel="always">
-                  <mat-label>Mobile Number</mat-label>
-                  <input
-                    matInput
-                    formControlName="mobileNumber"
-                    placeholder="10-digit number"
-                    inputmode="numeric"
-                    pattern="[0-9]{10}"
-                    required
-                    aria-required="true"
-                  />
-                  <mat-hint>No country code (e.g., 9876543210)</mat-hint>
-                  <mat-error *ngIf="signUpFormControl['mobileNumber'].invalid && signUpFormControl['mobileNumber'].touched">
-                    <span *ngIf="signUpFormControl['mobileNumber'].errors?.['required']">Mobile number is required.</span>
-                    <span *ngIf="signUpFormControl['mobileNumber'].errors?.['pattern']">Invalid mobile number.</span>
-                  </mat-error>
-                </mat-form-field>
-
-                <div class="two-col">
-                  <mat-form-field appearance="fill" class="field" floatLabel="always">
+                <div class="grid2">
+                  <mat-form-field appearance="outline" class="field" floatLabel="always">
                     <mat-label>Password</mat-label>
                     <input
                       matInput
@@ -202,7 +237,7 @@
                     </mat-error>
                   </mat-form-field>
 
-                  <mat-form-field appearance="fill" class="field" floatLabel="always">
+                  <mat-form-field appearance="outline" class="field" floatLabel="always">
                     <mat-label>Confirm Password</mat-label>
                     <input
                       matInput
@@ -232,19 +267,30 @@
                 <button
                   mat-raised-button
                   color="primary"
-                  class="primary-btn"
+                  class="btn btn--primary"
                   type="submit"
                   [disabled]="signUpForm.invalid || isLoading"
                   [attr.aria-busy]="isLoading ? 'true' : null"
                 >
                   <ng-container *ngIf="!isLoading">Create Account</ng-container>
-                  <mat-progress-spinner *ngIf="isLoading" diameter="22" strokeWidth="3" mode="indeterminate"></mat-progress-spinner>
+                  <mat-progress-spinner
+                    *ngIf="isLoading"
+                    diameter="22"
+                    strokeWidth="3"
+                    mode="indeterminate"
+                  ></mat-progress-spinner>
                 </button>
 
-                <div *ngIf="signUpError" class="error" role="alert" aria-live="assertive">{{ signUpError }}</div>
+                <div *ngIf="signUpError" class="alert alert--error" role="alert" aria-live="assertive">
+                  {{ signUpError }}
+                </div>
               </form>
             </mat-tab>
           </mat-tab-group>
+
+          <p class="panel__fineprint">
+            By continuing, you agree to our <a class="link" href="#">Terms</a> &amp; <a class="link" href="#">Privacy</a>.
+          </p>
         </mat-card-content>
       </mat-card>
     </section>
@@ -252,16 +298,16 @@
 
   <!-- LOGGED IN CHOICES -->
   <ng-template #loggedInTpl>
-    <section class="shell shell--choices" aria-label="Logged in user options">
-      <header class="choices-header">
+    <section class="actions" aria-label="Logged in user options">
+      <header class="actions__header">
         <div>
-          <h2 class="choices-title">Choose what you want to do</h2>
-          <p class="choices-subtitle">Rent outfits or sell your products</p>
+          <h2 class="actions__title">Choose what you want to do</h2>
+          <p class="actions__subtitle">Rent outfits or sell your products</p>
         </div>
 
         <button
           mat-stroked-button
-          class="back-btn"
+          class="btn btn--ghost"
           *ngIf="stage === 'rent'"
           (click)="goBack()"
           aria-label="Go back to choice selection"
@@ -272,51 +318,55 @@
       </header>
 
       <!-- Rent/Sell SELECTION -->
-      <div class="choices-grid" *ngIf="stage === 'choose'">
-        <button class="choice-card choice-card--rent" (click)="navigateToRent()" aria-label="Rent wedding outfits">
-          <div class="choice-card__icon">
+      <div class="cards" *ngIf="stage === 'choose'">
+        <button class="card card--rent" (click)="navigateToRent()" aria-label="Rent wedding outfits">
+          <div class="card__icon">
             <img src="assets/BigLogo.png" alt="Rent icon" />
           </div>
-          <div class="choice-card__text">
+          <div class="card__text">
             <h3>Rent</h3>
             <p>Browse premium wedding wear for your big day.</p>
           </div>
+          <div class="card__chev" aria-hidden="true">→</div>
         </button>
 
-        <button class="choice-card choice-card--sell" (click)="navigateToSell()" aria-label="Sell your products">
-          <div class="choice-card__icon">
+        <button class="card card--sell" (click)="navigateToSell()" aria-label="Sell your products">
+          <div class="card__icon">
             <img
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI1m0tsDlTqxr3knGTCXiC5D0IrSHh8xqA4w&s"
               alt="Sell icon"
             />
           </div>
-          <div class="choice-card__text">
+          <div class="card__text">
             <h3>Sell</h3>
             <p>List your products and reach more customers.</p>
           </div>
+          <div class="card__chev" aria-hidden="true">→</div>
         </button>
       </div>
 
       <!-- Groom/Bride SELECTION -->
-      <div class="choices-grid" *ngIf="stage === 'rent'">
-        <button class="choice-card choice-card--groom" (click)="navigateTo('Groom')" aria-label="Browse Groom collection">
-          <div class="choice-card__icon">
+      <div class="cards" *ngIf="stage === 'rent'">
+        <button class="card card--groom" (click)="navigateTo('Groom')" aria-label="Browse Groom collection">
+          <div class="card__icon">
             <img src="assets/groom.png" alt="Groom icon" />
           </div>
-          <div class="choice-card__text">
+          <div class="card__text">
             <h3>Groom</h3>
             <p>Sherwani, suits and more.</p>
           </div>
+          <div class="card__chev" aria-hidden="true">→</div>
         </button>
 
-        <button class="choice-card choice-card--bride" (click)="navigateTo('Bride')" aria-label="Browse Bride collection">
-          <div class="choice-card__icon">
+        <button class="card card--bride" (click)="navigateTo('Bride')" aria-label="Browse Bride collection">
+          <div class="card__icon">
             <img src="assets/bride.png" alt="Bride icon" />
           </div>
-          <div class="choice-card__text">
+          <div class="card__text">
             <h3>Bride</h3>
             <p>Lehenga, saree and more.</p>
           </div>
+          <div class="card__chev" aria-hidden="true">→</div>
         </button>
       </div>
     </section>

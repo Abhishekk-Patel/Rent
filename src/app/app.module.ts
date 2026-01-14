@@ -55,6 +55,7 @@ import { AboutUsComponent } from './components/footer/about-us/about-us.componen
 import { ContactUsComponent } from './components/footer/contact-us/contact-us.component';
 import { PrivacyComponent } from './components/footer/privacy/privacy.component';
 import { TermsComponent } from './components/footer/terms/terms.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 
 @NgModule({
   declarations: [
@@ -75,7 +76,8 @@ import { TermsComponent } from './components/footer/terms/terms.component';
   AboutUsComponent,
   ContactUsComponent,
   PrivacyComponent,
-  TermsComponent
+  TermsComponent,
+  ForgotPasswordComponent
   ],
   imports: [
     HttpClientModule,

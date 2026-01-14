@@ -1,9 +1,7 @@
-
 <app-header *ngIf="showHeaderFooter"></app-header>
 
 <div class="main-content">
   <router-outlet></router-outlet>
 </div>
 
-<!-- Footer is NEVER shown on mobile screens, and also hidden on home route via showHeaderFooter -->
 <app-footer *ngIf="showHeaderFooter && !isMobileScreen"></app-footer>

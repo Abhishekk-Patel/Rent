@@ -1,8 +1,13 @@
 <app-partner-brand-slider *ngIf="!searchValue"></app-partner-brand-slider>
 
-<section class="catalog" [ngClass]="{ 'catalog-mobile': isMobileView }">
-  <div *ngIf="isMobileView" class="mobile-top">
-    <div class="filters-header mobile-role-center">
+<section
+  class="catalog catalog--lux"
+  [ngClass]="{ 'catalog-mobile': isMobileView }"
+>
+  <!-- ======= MOBILE TOP BAR (keeps same features) ======= -->
+  <div *ngIf="isMobileView" class="mobile-top glass">
+    <!-- Role Toggle -->
+    <div class="mobile-role-wrap">
       <fieldset class="role-puck" aria-label="User Role">
         <mat-button-toggle-group
           [(ngModel)]="userRole"
@@ -14,18 +19,21 @@
             value="Bride"
             class="mobile-role-toggle"
             aria-label="Bride"
-            >Bride</mat-button-toggle
           >
+            Bride
+          </mat-button-toggle>
           <mat-button-toggle
             value="Groom"
             class="mobile-role-toggle"
             aria-label="Groom"
-            >Groom</mat-button-toggle
           >
+            Groom
+          </mat-button-toggle>
         </mat-button-toggle-group>
       </fieldset>
     </div>
 
+    <!-- Mobile Categories (modern chips + icons) -->
     <div class="mobile-categories-wrapper">
       <div class="mobile-categories-row">
         <ul class="mobile-categories-list">
@@ -46,43 +54,80 @@
               ]
             "
             (click)="selectCategory({ name: c })"
+            tabindex="0"
           >
-            <div class="category-circle">
-              <mat-icon [ngSwitch]="c">
-                <ng-container *ngSwitchCase="'Dress'">checkroom</ng-container>
-                <ng-container *ngSwitchCase="'Suites'">man</ng-container>
-                <ng-container *ngSwitchCase="'Jewelry'">diamond</ng-container>
-                <ng-container *ngSwitchCase="'Accessories'"
-                  >card_accessories</ng-container
-                >
-                <ng-container *ngSwitchCase="'Lehenga'"
-                  >celebration</ng-container
-                >
-                <ng-container *ngSwitchCase="'Saree'"
-                  >local_florist</ng-container
-                >
-                <ng-container *ngSwitchCase="'Tops'">checkroom</ng-container>
-                <ng-container *ngSwitchCase="'Bottoms'"
-                  >open_in_browser</ng-container
-                >
-                <ng-container *ngSwitchCase="'Shoes'"
-                  >directions_walk</ng-container
-                >
-                <ng-container *ngSwitchCase="'Bags'">work</ng-container>
-                <ng-container *ngSwitchDefault>category</ng-container>
-              </mat-icon>
+            <div class="category-chip">
+              <span class="chip-icon">
+                <mat-icon [ngSwitch]="c">
+                  <ng-container *ngSwitchCase="'Dress'">checkroom</ng-container>
+                  <ng-container *ngSwitchCase="'Suites'">man</ng-container>
+                  <ng-container *ngSwitchCase="'Jewelry'">diamond</ng-container>
+                  <ng-container *ngSwitchCase="'Accessories'"
+                    >card_accessories</ng-container
+                  >
+                  <ng-container *ngSwitchCase="'Lehenga'"
+                    >celebration</ng-container
+                  >
+                  <ng-container *ngSwitchCase="'Saree'"
+                    >local_florist</ng-container
+                  >
+                  <ng-container *ngSwitchCase="'Tops'">checkroom</ng-container>
+                  <ng-container *ngSwitchCase="'Bottoms'"
+                    >open_in_browser</ng-container
+                  >
+                  <ng-container *ngSwitchCase="'Shoes'"
+                    >directions_walk</ng-container
+                  >
+                  <ng-container *ngSwitchCase="'Bags'">work</ng-container>
+                  <ng-container *ngSwitchDefault>category</ng-container>
+                </mat-icon>
+              </span>
+              <span class="chip-title">{{ c }}</span>
             </div>
-            <span class="cat-title">{{ c }}</span>
           </li>
         </ul>
       </div>
     </div>
+
+    <!-- Mobile mini applied bar (same features, cleaner) -->
+    <div class="mobile-applied" *ngIf="searchValue || userRole">
+      <div class="applied-left">
+        <span class="mini-pill mini-pill--role" *ngIf="userRole">
+          <mat-icon class="role-icon" aria-hidden="true">
+            {{ userRole === "Bride" ? "female" : "male" }}
+          </mat-icon>
+          <span class="role-text">{{ userRole }}</span>
+        </span>
+        <span class="mini-pill mini-pill--input" *ngIf="searchValue">
+          {{ searchValue }}
+          <button
+            class="mini-x"
+            mat-icon-button
+            (click)="clear()"
+            aria-label="Clear search"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </span>
+      </div>
+
+      <button class="mobile-sort-btn" mat-flat-button (click)="openSortPanel()">
+        <mat-icon>tune</mat-icon>
+        <span>Filters</span>
+      </button>
+    </div>
   </div>
-  <div class="catalog-inner">
+
+  <!-- ======= DESKTOP / MAIN LAYOUT ======= -->
+  <div class="catalog-shell">
     <!-- Left Filters (desktop) -->
-    <aside class="filters-panel" *ngIf="!isMobileView">
-      <div class="filters-header">
-        <div class="title">Filters</div>
+    <aside class="filters-panel glass" *ngIf="!isMobileView">
+      <div class="filters-top">
+        <div class="filters-title">
+          <div class="title">Refine</div>
+          <div class="subtitle">Find the perfect look</div>
+        </div>
+
         <mat-button-toggle-group
           [(ngModel)]="userRole"
           (change)="onUserRoleChange($event)"
@@ -95,11 +140,12 @@
       </div>
 
       <mat-accordion class="filters-accordion">
-        <!-- Category from your categories array -->
+        <!-- Categories -->
         <mat-expansion-panel expanded>
           <mat-expansion-panel-header>
             <mat-panel-title>Categories</mat-panel-title>
           </mat-expansion-panel-header>
+
           <ul class="category-list" role="list">
             <li
               class="category-item"
@@ -108,9 +154,15 @@
               role="listitem"
               tabindex="0"
             >
-              <mat-icon class="status">{{
-                category.isSelected ? "check_box" : "check_box_outline_blank"
-              }}</mat-icon>
+              <span class="check">
+                <mat-icon class="status">
+                  {{
+                    category.isSelected
+                      ? "check_box"
+                      : "check_box_outline_blank"
+                  }}
+                </mat-icon>
+              </span>
               <span class="cat-title">{{ category.name }}</span>
             </li>
           </ul>
@@ -121,6 +173,7 @@
           <mat-expansion-panel-header>
             <mat-panel-title>Price</mat-panel-title>
           </mat-expansion-panel-header>
+
           <div class="price-filter">
             <mat-slider
               min="0"
@@ -141,6 +194,7 @@
           <mat-expansion-panel-header>
             <mat-panel-title>Location</mat-panel-title>
           </mat-expansion-panel-header>
+
           <mat-form-field appearance="outline" class="w-100">
             <mat-icon matPrefix>location_on</mat-icon>
             <input
@@ -157,6 +211,7 @@
           <mat-expansion-panel-header>
             <mat-panel-title>Size</mat-panel-title>
           </mat-expansion-panel-header>
+
           <div class="sizes">
             <button
               mat-stroked-button
@@ -173,6 +228,7 @@
           <mat-expansion-panel-header>
             <mat-panel-title>Occasion</mat-panel-title>
           </mat-expansion-panel-header>
+
           <div class="chips">
             <mat-chip-listbox>
               <mat-chip-option>Wedding</mat-chip-option>
@@ -187,24 +243,46 @@
 
     <!-- Right: Products -->
     <main class="products">
-      <!-- Applied filters row -->
-      <div class="applied" *ngIf="searchValue || userRole">
-        <div class="chips" >
-          <mat-chip-set>
-            <mat-chip *ngIf="userRole" class="applied-chip"
-              >Role: {{ userRole }}</mat-chip
-            >
-            <mat-chip *ngIf="searchValue" class="applied-chip"
-              >{{ searchValue }}
-              <button mat-icon-button (click)="clear()" matChipRemove>
-                <mat-icon>cancel</mat-icon>
-              </button>
-            </mat-chip>
-          </mat-chip-set>
+      <!-- Desktop: header row with applied filters + sort -->
+      <div class="top-row glass" *ngIf="!isMobileView">
+        <div class="heading">
+          <div class="h-title">Explore</div>
+          <div class="h-sub">
+            {{ userRole }} picks
+            <span class="dot">•</span>
+            {{ filteredRewards?.length || 0 }} shown
+          </div>
         </div>
-        <div class="sort">
-          <button mat-stroked-button (click)="openSortPanel()">
-            <mat-icon>sort</mat-icon> <span *ngIf="!isMobileView">Sort / Filter</span>
+
+        <div class="applied-actions">
+          <div class="chips">
+            <mat-chip-set>
+              <mat-chip
+                *ngIf="userRole"
+                class="mini-pill mini-pill--role"
+                selected
+              >
+                <mat-icon matChipAvatar class="role-icon" aria-hidden="true">
+                  {{ userRole === "Bride" ? "female" : "male" }}
+                </mat-icon>
+
+                <span class="role-text">
+                  {{ userRole }}
+                </span>
+              </mat-chip>
+
+              <mat-chip *ngIf="searchValue" class="applied-chip">
+                {{ searchValue }}
+                <button mat-icon-button (click)="clear()" matChipRemove>
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+            </mat-chip-set>
+          </div>
+
+          <button class="sort-btn" mat-stroked-button (click)="openSortPanel()">
+            <mat-icon>tune</mat-icon>
+            <span>Sort / Filter</span>
           </button>
         </div>
       </div>
@@ -220,15 +298,20 @@
           (mouseenter)="reward._hover = true"
           (mouseleave)="reward._hover = false"
         >
+          <!-- Image -->
           <div class="media">
-        <img [src]="
-            reward._hover && reward.display_img_urls?.[1]
-              ? reward.display_img_urls[1]
-              : reward.display_img_urls?.[0] || defaultImg
-          " [alt]="reward.name" loading="lazy" (error)="onImgError($event)"
-/>
+            <img
+              [src]="
+                reward._hover && reward.display_img_urls?.[1]
+                  ? reward.display_img_urls[1]
+                  : reward.display_img_urls?.[0] || defaultImg
+              "
+              [alt]="reward.name"
+              loading="lazy"
+              (error)="onImgError($event)"
+            />
 
-
+            <!-- Wishlist -->
             <button
               class="wish"
               mat-mini-fab
@@ -236,31 +319,37 @@
               (click)="toggleFavorite(reward)"
               aria-label="Add to wishlist"
             >
-              <mat-icon>{{ reward.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+              <mat-icon>{{
+                reward.isFavorite ? "favorite" : "favorite_border"
+              }}</mat-icon>
             </button>
 
-            <div class="media-overlay">
-              <div
-                class="left"
+            <!-- Prev / next -->
+            <div class="media-nav">
+              <button
+                class="nav-btn"
                 (click)="prevImage(reward)"
                 matTooltip="Previous image"
+                aria-label="Previous"
               >
                 <mat-icon>chevron_left</mat-icon>
-              </div>
-              <div
-                class="right"
+              </button>
+              <button
+                class="nav-btn"
                 (click)="nextImage(reward)"
                 matTooltip="Next image"
+                aria-label="Next"
               >
                 <mat-icon>chevron_right</mat-icon>
-              </div>
+              </button>
             </div>
 
-            <!-- Rating + City badge (bottom-left) -->
-            <div class="rating-row">
+            <!-- City + rating -->
+            <div class="bottom-badges">
               <div class="city">
                 <mat-icon>location_on</mat-icon>{{ reward.city }}
               </div>
+
               <app-product-rating
                 [rating]="
                   reward.ProductRatings[0] ? reward.ProductRatings[0].rating : 0
@@ -276,17 +365,21 @@
             </div>
           </div>
 
+          <!-- Content -->
           <div class="meta">
             <div class="name">{{ reward.name }}</div>
+
             <div class="sub">
               Listed on {{ reward.valid_until | date : "mediumDate" }}
             </div>
+
             <div class="price-row">
               <div class="rent">₹{{ reward.Rent }} <span>/day</span></div>
               <div class="size" *ngIf="reward.size">
                 Size: {{ reward.size }}
               </div>
             </div>
+
             <div
               class="badge"
               *ngIf="reward.quantity && reward.quantity <= reward.low_quantity"
@@ -295,23 +388,26 @@
             </div>
           </div>
 
+          <!-- Actions -->
           <div class="actions">
             <button
               mat-stroked-button
               color="primary"
-              class="btn"
+              class="btn btn-ghost"
               [disabled]="
                 reward.quantity === 0 ||
                 reward.ProductOwnerEmail === userService.getUserDetails().email
               "
               (click)="productDetails(reward.pk)"
             >
-              <b>...</b>
+              <mat-icon>info</mat-icon>
+              <span class="hide-xs">Details</span>
             </button>
+
             <button
               mat-flat-button
               color="primary"
-              class="btn"
+              class="btn btn-primary"
               [disabled]="
                 reward.quantity === 0 ||
                 reward.ProductOwnerEmail === userService.getUserDetails().email
@@ -319,8 +415,9 @@
               (click)="addToCart(reward.pk)"
             >
               <mat-icon>add_shopping_cart</mat-icon>
-
+              <span class="hide-xs">Add</span>
             </button>
+
             <button
               mat-icon-button
               color="warn"
@@ -375,6 +472,4 @@
   >
     <mat-icon>arrow_upward</mat-icon>
   </button>
-  
-
 </section>

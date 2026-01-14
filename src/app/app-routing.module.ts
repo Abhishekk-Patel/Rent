@@ -12,6 +12,7 @@ import { PrivacyComponent } from './components/footer/privacy/privacy.component'
 import { TermsComponent } from './components/footer/terms/terms.component';
 import { UnifiedChatComponent } from './components/unified-chat.component';
 import { ProductDetailsPopupComponent } from './components/product-details-popup/product-details-popup.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -26,6 +27,9 @@ const routes: Routes = [
   {path: 'privacy', component: PrivacyComponent },
   {path: 'terms', component: TermsComponent },
   { path: 'product-details/:id', component: ProductDetailsPopupComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+
+  
 
 
 

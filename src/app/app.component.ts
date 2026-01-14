@@ -1,4 +1,3 @@
-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd, Event as RouterEvent } from '@angular/router';
 import { filter, takeUntil } from 'rxjs/operators';
@@ -9,13 +8,13 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'RentiT';
   isLoggedIn = false;
 
-  /** Controls header visibility (hidden on home route '/') */
+  /** Controls header/footer visibility */
   showHeaderFooter = true;
 
   /** True when device is handset/mobile */
@@ -34,40 +33,40 @@ export class AppComponent implements OnInit, OnDestroy {
     this.breakpointObserver
       .observe([Breakpoints.Handset])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(result => {
+      .subscribe((result) => {
         this.isMobileScreen = result.matches;
       });
 
     // Track login status
     this.userService.isLoggedIn$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(loggedIn => {
+      .subscribe((loggedIn) => {
         this.isLoggedIn = loggedIn;
       });
 
-    // Hide header on home route only, and use a type predicate to narrow to NavigationEnd
+    // Hide header/footer on:
+    // 1) Home route '/'
+    // 2) Forgot password route '/forgot-password' (hash routing also supported)
     this.router.events
       .pipe(
-        filter((event: RouterEvent): event is NavigationEnd => event instanceof NavigationEnd),
+        filter(
+          (event: RouterEvent): event is NavigationEnd =>
+            event instanceof NavigationEnd
+        ),
         takeUntil(this.destroy$)
       )
       .subscribe((event: NavigationEnd) => {
-        this.showHeaderFooter = event.urlAfterRedirects !== '/';
+        const url = event.urlAfterRedirects || '';
+
+        const isHome = url === '/' || url === '/#/' || url === '/#';
+        const isForgotPassword = url.includes('forgot-password');
+
+        this.showHeaderFooter = !(isHome || isForgotPassword);
       });
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  // Optional: viewport-based helper if you want to use strictly width checks
-  isMobile(): boolean {
-    return window.matchMedia('(max-width: 767px)').matches;
-  }
-
-  // Optional: manual check method (not needed when using BreakpointObserver)
-  checkMobileView() {
-    this.isMobileScreen = this.isMobile();
   }
 }

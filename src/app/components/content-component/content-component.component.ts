@@ -335,8 +335,8 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     }
   }
 
-  applyPriceFilter(priceRange: { min: number; max: number }) {
-    this.filteredRewards = this.rewards.filter((reward) => {
+  applyPriceFilter(priceRange: { min: any; max: any }) {
+    this.filteredRewards = this.rewards.filter((reward:any) => {
       return reward.Rent >= priceRange.min && reward.Rent <= priceRange.max;
     });
   }
