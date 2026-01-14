@@ -7,7 +7,8 @@ import {
   OnInit,
   OnDestroy,
   ChangeDetectorRef,
-  HostListener
+  HostListener,
+  TemplateRef
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -20,6 +21,8 @@ import { OrderService } from 'src/app/service/order.service';
 import { UserService } from 'src/app/service/user.service';
 import { UnifiedChatComponent } from '../unified-chat.component';
 import { Category_LIST } from 'src/mock-data';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
+
 
 @Component({
   selector: 'app-content-component',
@@ -62,6 +65,8 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
 
   productData$ = this.store.select('productData');
   defaultImg = 'assets/Downloads/MissingProduct.webp';
+  @ViewChild('howItWorksSheet') howItWorksSheetTpl!: TemplateRef<any>;
+private howSheetRef?: MatBottomSheetRef;
 
 
   constructor(
@@ -72,7 +77,8 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     public userService: UserService,
     private store: Store<{ productData: any }>,
     private cdr: ChangeDetectorRef,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+      private bottomSheet: MatBottomSheet 
   ) {
     this.store.dispatch({ type: 'LoadProductData' });
   }
@@ -147,6 +153,25 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     // Initial page load
     this.loadMoreRewards();
   }
+  openHowItWorksSheet(): void {
+  if (!this.howItWorksSheetTpl) return;
+
+  this.howSheetRef = this.bottomSheet.open(this.howItWorksSheetTpl, {
+    panelClass: 'how-sheet-panel',
+    hasBackdrop: true,
+    backdropClass: 'how-sheet-backdrop',
+  });
+}
+
+closeHowItWorksSheet(): void {
+  this.howSheetRef?.dismiss();
+}
+
+goToProductsFromSheet(): void {
+  this.closeHowItWorksSheet();
+  setTimeout(() => this.scrollToCatalog(), 120);
+}
+
 
   ngAfterViewInit() {
     // Debounced search input

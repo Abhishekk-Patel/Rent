@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, EventEmitter, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Subscription } from 'rxjs';
@@ -9,7 +9,15 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./partner-brand-slider.component.css'],
 })
 export class PartnerBrandSliderComponent implements OnInit, OnDestroy {
-  brands = [{ name: 'Brannd10', imageUrl: './assets/gpt.png' }];
+  brands = [
+    { name: 'Brannd10', imageUrl: './assets/gpt.png' },
+    // add more slides if needed
+     { name: 'Brand2', imageUrl: './assets/download.jpeg' },
+    
+
+  ];
+  @Output() howItWorksClick = new EventEmitter<void>();
+
 
   currentIndex = 0;
   isMobileView = false;
@@ -47,24 +55,12 @@ export class PartnerBrandSliderComponent implements OnInit, OnDestroy {
     if (this.sliderIntervalId) clearInterval(this.sliderIntervalId);
   }
 
-  // Optional: pause slider when user is interacting
-  @HostListener('mouseenter') onEnter() {
+  pauseSlider(): void {
     this.paused = true;
   }
-  @HostListener('mouseleave') onLeave() {
+
+  resumeSlider(): void {
     this.paused = false;
-  }
-
-  scrollToCatalog(): void {
-    setTimeout(() => {
-      document.querySelector('.catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
-  }
-
-  scrollToHowItWorks(): void {
-    setTimeout(() => {
-      document.querySelector('.how-it-works')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
   }
 
   goToSlide(index: number): void {
@@ -77,6 +73,24 @@ export class PartnerBrandSliderComponent implements OnInit, OnDestroy {
 
   prevSlide(): void {
     this.currentIndex = (this.currentIndex - 1 + this.brands.length) % this.brands.length;
+  }
+
+  scrollToCatalog(): void {
+    setTimeout(() => {
+      document.querySelector('.catalog')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }, 50);
+  }
+
+  scrollToHowItWorks(): void {
+    setTimeout(() => {
+      document.querySelector('.how-it-works')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }, 50);
   }
 
   addNewProduct(): void {

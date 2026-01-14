@@ -1,84 +1,114 @@
-<div
-  class="brand"
-  *ngFor="let brand of brands; let i = index"
-  [class.active]="i === currentIndex"
->
-  <section class="hero-slide" role="banner">
-    <img [src]="brand.imageUrl" [alt]="brand.name" class="hero-img" />
+<div class="brand-slider" role="region" aria-label="Partner brand slider">
+  <section
+    class="brand"
+    *ngFor="let brand of brands; let i = index"
+    [class.active]="i === currentIndex"
+    [attr.aria-hidden]="i !== currentIndex"
+  >
+    <div
+      class="hero-slide"
+      (mouseenter)="pauseSlider()"
+      (mouseleave)="resumeSlider()"
+    >
+      <!-- Background image fills container (container controls height) -->
+      <img
+        class="hero-img"
+        [src]="brand.imageUrl"
+        [alt]="brand.name"
+        loading="lazy"
+        decoding="async"
+      />
 
-    <!-- overlays for premium feel -->
-    <div class="hero-overlay"></div>
-    <div class="hero-grain" aria-hidden="true"></div>
+      <!-- overlays -->
+      <div class="hero-overlay" aria-hidden="true"></div>
+      <div class="hero-grain" aria-hidden="true"></div>
 
-    <div class="hero-content">
-      <!-- Trust / badge row -->
-      <div class="hero-top">
-        <span class="badge">
-          <mat-icon class="badge-ic">verified</mat-icon>
-          Trusted rentals • Hygienically cleaned • Doorstep delivery
-        </span>
+      <!-- content drives height (no clipping) -->
+      <div class="hero-content">
+        <!-- Top trust row -->
+        <div class="hero-top">
+          <span class="badge">
+            <mat-icon class="badge-ic">verified</mat-icon>
+            Trusted rentals • Hygienically cleaned • Doorstep delivery
+          </span>
 
-        <div class="rating" aria-label="Rating">
-          <mat-icon>star</mat-icon>
-          <span class="rating-text">4.9</span>
-          <span class="rating-sub">/5 • 10k+ customers</span>
+          <div class="rating" aria-label="Rating">
+            <mat-icon>star</mat-icon>
+            <span class="rating-text">4.9</span>
+            <span class="rating-sub">/5 • 10k+ customers</span>
+          </div>
         </div>
-      </div>
 
-      <!-- Copy -->
-      <h1 class="hero-title">
-        Luxury wedding wear,
-        <span class="accent">without the commitment.</span>
-      </h1>
+        <!-- Headline -->
+        <h1 class="hero-title">
+          Luxury wedding wear,
+          <span class="accent">without the commitment.</span>
+        </h1>
 
-      <p class="hero-subtitle">
-        Rent premium lehengas & sherwanis, get perfect-fit assistance, and return
-        with ease. Designed for modern weddings.
-      </p>
+        <!-- Subtitle -->
+        <p class="hero-subtitle">
+          Rent premium lehengas & sherwanis, get perfect-fit assistance, and
+          return with ease. Designed for modern weddings.
+        </p>
 
-      <!-- Actions -->
-      <div class="hero-actions">
-        <button mat-raised-button class="cta-btn primary" (click)="scrollToCatalog()">
-          <mat-icon>collections_bookmark</mat-icon>
-          <span>Browse Collection</span>
-        </button>
+        <!-- Actions -->
+        <div class="hero-actions">
+          <button
+            mat-raised-button
+            class="cta-btn primary"
+            (click)="scrollToCatalog()"
+          >
+            <mat-icon>collections_bookmark</mat-icon>
+            <span>Browse Collection</span>
+          </button>
 
-        <button mat-stroked-button class="cta-btn secondary" (click)="scrollToHowItWorks()">
-          <mat-icon>play_circle</mat-icon>
-          <span>How it works</span>
-        </button>
+          <!-- <button mat-stroked-button class="cta-btn secondary" (click)="scrollToHowItWorks()">
+            <mat-icon>play_circle</mat-icon>
+            <span>How it works</span>
+          </button> -->
+          <button
+            mat-stroked-button
+            class="cta-btn secondary"
+            type="button"
+            (click)="howItWorksClick.emit()"
+          >
+            <mat-icon>play_circle</mat-icon>
+            <span>How it works</span>
+          </button>
 
-        <button mat-button class="cta-btn tertiary" (click)="addNewProduct()">
-          <mat-icon>add_circle</mat-icon>
-          <span>List your outfit</span>
-        </button>
-      </div>
-
-      <!-- Assurance row -->
-      <div class="hero-meta">
-        <div class="meta-item">
-          <mat-icon>local_shipping</mat-icon>
-          <span>Fast delivery</span>
+          <button mat-button class="cta-btn tertiary" (click)="addNewProduct()">
+            <mat-icon>add_circle</mat-icon>
+            <span>List your outfit</span>
+          </button>
         </div>
-        <div class="meta-item">
-          <mat-icon>shield</mat-icon>
-          <span>Secure payments</span>
-        </div>
-        <div class="meta-item">
-          <mat-icon>checkroom</mat-icon>
-          <span>Quality checked</span>
-        </div>
-      </div>
 
-      <!-- Optional: slide dots -->
-      <div class="hero-dots" *ngIf="brands.length > 1">
-        <button
-          class="dot"
-          *ngFor="let _ of brands; let idx = index"
-          [class.active]="idx === currentIndex"
-          (click)="goToSlide(idx)"
-          [attr.aria-label]="'Go to slide ' + (idx + 1)"
-        ></button>
+        <!-- meta chips -->
+        <div class="hero-meta">
+          <div class="meta-item">
+            <mat-icon>local_shipping</mat-icon>
+            <span>Fast delivery</span>
+          </div>
+          <div class="meta-item">
+            <mat-icon>shield</mat-icon>
+            <span>Secure payments</span>
+          </div>
+          <div class="meta-item">
+            <mat-icon>checkroom</mat-icon>
+            <span>Quality checked</span>
+          </div>
+        </div>
+
+        <!-- dots -->
+        <div class="hero-dots" *ngIf="brands.length > 1">
+          <button
+            class="dot"
+            *ngFor="let _ of brands; let idx = index"
+            [class.active]="idx === currentIndex"
+            (click)="goToSlide(idx)"
+            [attr.aria-label]="'Go to slide ' + (idx + 1)"
+            type="button"
+          ></button>
+        </div>
       </div>
     </div>
   </section>

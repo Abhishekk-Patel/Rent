@@ -568,6 +568,260 @@
   100%{ background-position: -200% 0; }
 }
 
+/* HOW IT WORKS */
+.how-it-works {
+  padding: clamp(18px, 3.5vw, 44px) 0;
+  scroll-margin-top: 90px; /* important if you have sticky header */
+}
+
+.how-wrap {
+  width: min(1200px, 92%);
+  margin: 0 auto;
+}
+
+.how-head h2 {
+  margin: 0;
+  font-size: clamp(22px, 2.3vw, 34px);
+  letter-spacing: -0.02em;
+}
+
+.how-subtitle {
+  margin: 8px 0 0 0;
+  color: rgba(0,0,0,0.68);
+  max-width: 60ch;
+  line-height: 1.5;
+}
+
+.how-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.how-card {
+  position: relative;
+  border-radius: 16px;
+  padding: 16px 16px 14px 16px;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+  backdrop-filter: blur(10px);
+}
+
+.how-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(184,135,70,0.14);
+  border: 1px solid rgba(184,135,70,0.25);
+  margin-bottom: 10px;
+}
+
+.how-num {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  font-weight: 800;
+  opacity: 0.25;
+  font-size: 18px;
+}
+
+.how-card h3 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+}
+
+.how-card p {
+  margin: 0;
+  color: rgba(0,0,0,0.68);
+  line-height: 1.45;
+  font-size: 14px;
+}
+
+.how-assurance {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.assurance-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.06);
+  font-weight: 650;
+  font-size: 13px;
+}
+
+.assurance-pill mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+/* ===========================
+   Premium Bottom Sheet styles
+   (local, no global styles needed)
+   =========================== */
+
+:host ::ng-deep .how-sheet-panel .mat-bottom-sheet-container{
+  padding: 0 !important;
+  border-top-left-radius: 22px !important;
+  border-top-right-radius: 22px !important;
+  box-shadow: 0 -30px 80px rgba(15,23,42,0.18) !important;
+  background: rgba(255,255,255,0.88) !important;
+  backdrop-filter: blur(18px);
+}
+
+:host ::ng-deep .how-sheet-backdrop{
+  background: rgba(15,23,42,0.35) !important;
+}
+
+.how-sheet{
+  padding: 16px 16px 14px;
+}
+
+.how-sheet-top{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.how-sheet-top h2{
+  margin: 0;
+  font-size: 22px;
+  font-weight: 1000;
+  letter-spacing: -0.02em;
+}
+
+.how-sheet-top p{
+  margin: 6px 0 0 0;
+  opacity: .75;
+  line-height: 1.45;
+}
+
+.how-sheet-top .x{
+  border-radius: 999px !important;
+}
+
+.how-sheet-grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.how-sheet-card{
+  position: relative;
+  border-radius: 16px;
+  padding: 14px;
+  background: rgba(255,255,255,0.70);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+}
+
+.how-sheet-icon{
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(184,135,70,0.14);
+  border: 1px solid rgba(184,135,70,0.25);
+  margin-bottom: 10px;
+}
+
+.how-sheet-num{
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  font-weight: 1000;
+  opacity: 0.22;
+}
+
+.how-sheet-card h3{
+  margin: 0 0 6px 0;
+  font-size: 15px;
+  font-weight: 1000;
+}
+
+.how-sheet-card p{
+  margin: 0;
+  opacity: 0.72;
+  line-height: 1.45;
+  font-size: 13px;
+}
+
+.how-sheet-assurance{
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.how-pill{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.06);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.how-pill mat-icon{
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+.how-sheet-actions{
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.how-btn{
+  border-radius: 999px !important;
+  font-weight: 1000 !important;
+}
+
+.how-btn.primary{
+  background: linear-gradient(135deg, rgba(143,21,21,1), rgba(183,110,121,1)) !important;
+  color: #fff !important;
+}
+
+@media (max-width: 520px){
+  .how-sheet-grid{ grid-template-columns: 1fr; }
+  .how-sheet-actions{ justify-content: stretch; }
+  .how-sheet-actions .how-btn{ flex: 1; }
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .how-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .how-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 /* Scroll to top */
 .scroll-to-top-btn{
   position: fixed;

@@ -1,4 +1,17 @@
-/* HERO SLIDE */
+/* Wrapper */
+.brand-slider {
+  width: 100%;
+}
+
+/* Only show active slide (prevents stacking / extra height) */
+.brand {
+  display: none;
+}
+.brand.active {
+  display: block;
+}
+
+/* HERO CONTAINER: content-driven height (NO CLIPPING) */
 .hero-slide {
   position: relative;
   width: 100%;
@@ -6,19 +19,25 @@
   overflow: hidden;
   isolation: isolate;
   box-shadow: 0 18px 50px rgba(0,0,0,0.22);
+
+  /* key: minimum hero size, but can grow if content grows */
+  min-height: clamp(420px, 60vh, 640px);
+  height: auto;
 }
 
-/* IMAGE */
+/* Background image fills the container */
 .hero-img {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: clamp(360px, 60vh, 560px);
+  height: 100%;
+  display: block;
   object-fit: cover;
   object-position: right center;
-  display: block;
   transform: scale(1.02);
 }
 
-/* Premium overlay: vignette + left gradient */
+/* Premium overlay */
 .hero-overlay {
   position: absolute;
   inset: 0;
@@ -28,7 +47,7 @@
     linear-gradient(90deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.40) 42%, rgba(0,0,0,0.00) 75%);
 }
 
-/* Subtle grain for “luxury” feel */
+/* Grain */
 .hero-grain {
   position: absolute;
   inset: 0;
@@ -38,19 +57,22 @@
   pointer-events: none;
 }
 
-/* CONTENT (glass panel) */
+/* CONTENT: relative so it participates in layout (no clipping) */
 .hero-content {
-  position: absolute;
-  inset: 0;
+  position: relative;
   z-index: 3;
-  padding: clamp(18px, 4vw, 56px);
+
+  /* let the content define height */
+  min-height: inherit;
   display: flex;
   flex-direction: column;
   justify-content: center;
+
+  padding: clamp(18px, 4vw, 56px);
   max-width: 54%;
 }
 
-/* top row */
+/* Top row */
 .hero-top {
   display: flex;
   align-items: center;
@@ -107,7 +129,7 @@
   font-size: 13px;
 }
 
-/* TITLE */
+/* Title */
 .hero-title {
   margin: 0 0 12px 0;
   color: #fff;
@@ -131,7 +153,7 @@
   line-height: 1.45;
 }
 
-/* BUTTONS */
+/* Buttons */
 .hero-actions {
   display: flex;
   gap: 12px;
@@ -154,43 +176,37 @@
   margin: 0 !important;
 }
 
-/* Primary */
 .cta-btn.primary {
   background: #B88746 !important;
   color: #fff !important;
   box-shadow: 0 14px 34px rgba(0,0,0,0.28);
 }
-
 .cta-btn.primary:hover {
   transform: translateY(-1px);
   box-shadow: 0 18px 45px rgba(0,0,0,0.34);
   background: #A77C3D !important;
 }
 
-/* Secondary */
 .cta-btn.secondary {
   background: rgba(255,255,255,0.08) !important;
   color: #fff !important;
   border: 1.5px solid rgba(255,255,255,0.70) !important;
   box-shadow: 0 10px 24px rgba(0,0,0,0.20);
 }
-
 .cta-btn.secondary:hover {
   transform: translateY(-1px);
   background: rgba(255,255,255,0.14) !important;
 }
 
-/* Tertiary (text-like) */
 .cta-btn.tertiary {
   color: rgba(255,255,255,0.92) !important;
   background: transparent !important;
 }
-
 .cta-btn.tertiary:hover {
   background: rgba(255,255,255,0.10) !important;
 }
 
-/* META ROW */
+/* Meta chips */
 .hero-meta {
   display: flex;
   gap: 14px;
@@ -218,7 +234,7 @@
   width: 18px;
 }
 
-/* Dots */
+/* dots */
 .hero-dots {
   margin-top: 18px;
   display: flex;
@@ -242,29 +258,54 @@
   border-color: rgba(255,255,255,0.65);
 }
 
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .hero-content {
+    max-width: 68%;
+  }
+  .hero-title {
+    font-size: clamp(30px, 4.2vw, 52px);
+  }
+}
+
 /* MOBILE */
 @media (max-width: 768px) {
+  .hero-slide {
+    min-height: 520px; /* ensures enough room for buttons + chips */
+  }
+
+  /* Change overlay direction on mobile (bottom readability) */
+  .hero-overlay {
+    background:
+      linear-gradient(0deg, rgba(0,0,0,0.76) 0%, rgba(0,0,0,0.26) 55%, rgba(0,0,0,0) 100%);
+  }
+
   .hero-content {
     max-width: 100%;
     justify-content: flex-end;
-    padding-bottom: 22px;
-  }
-
-  .hero-overlay {
-    background:
-      linear-gradient(0deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.22) 55%, rgba(0,0,0,0) 100%);
+    padding: 18px 16px 18px 16px;
   }
 
   .hero-title {
     font-size: 34px;
   }
 
+  .hero-subtitle {
+    max-width: 46ch;
+  }
+
   .hero-actions {
-    width: 100%;
     gap: 10px;
   }
 
+  /* Buttons stay readable on small screens */
   .cta-btn {
     padding: 10px 14px !important;
   }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+  .hero-title { font-size: 30px; }
+  .badge, .rating, .meta-item { font-size: 12px; }
 }

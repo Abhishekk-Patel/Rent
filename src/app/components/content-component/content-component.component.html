@@ -1,5 +1,76 @@
-<app-partner-brand-slider *ngIf="!searchValue"></app-partner-brand-slider>
+<app-partner-brand-slider
+  *ngIf="!searchValue"
+  (howItWorksClick)="openHowItWorksSheet()"
+></app-partner-brand-slider>
 <app-social-feedback></app-social-feedback>
+<!-- HOW IT WORKS (scroll target) -->
+<!-- ===========================
+     HOW IT WORKS: Bottom Sheet
+     (NO new component)
+     =========================== -->
+<ng-template #howItWorksSheet>
+  <div class="how-sheet">
+    <div class="how-sheet-top">
+      <div>
+        <h2>How it works</h2>
+        <p>Renting luxury wedding wear is simple, secure, and stress-free.</p>
+      </div>
+
+      <button mat-icon-button class="x" (click)="closeHowItWorksSheet()" aria-label="Close">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="how-sheet-grid">
+      <article class="how-sheet-card">
+        <div class="how-sheet-icon"><mat-icon>search</mat-icon></div>
+        <div class="how-sheet-num">01</div>
+        <h3>Browse & choose</h3>
+        <p>Explore curated lehengas, sherwanis, jewelry, and accessories.</p>
+      </article>
+
+      <article class="how-sheet-card">
+        <div class="how-sheet-icon"><mat-icon>straighten</mat-icon></div>
+        <div class="how-sheet-num">02</div>
+        <h3>Perfect fit assistance</h3>
+        <p>Share measurements or get styling help for a confident fit.</p>
+      </article>
+
+      <article class="how-sheet-card">
+        <div class="how-sheet-icon"><mat-icon>local_shipping</mat-icon></div>
+        <div class="how-sheet-num">03</div>
+        <h3>Doorstep delivery</h3>
+        <p>Professionally cleaned, quality-checked, delivered before your event.</p>
+      </article>
+
+      <article class="how-sheet-card">
+        <div class="how-sheet-icon"><mat-icon>assignment_return</mat-icon></div>
+        <div class="how-sheet-num">04</div>
+        <h3>Wear & return</h3>
+        <p>Enjoy your day. Return easily with pickup or drop-off options.</p>
+      </article>
+    </div>
+
+    <div class="how-sheet-assurance">
+      <span class="how-pill"><mat-icon>verified</mat-icon> Quality checked</span>
+      <span class="how-pill"><mat-icon>shield</mat-icon> Secure payments</span>
+      <span class="how-pill"><mat-icon>support_agent</mat-icon> Support throughout</span>
+    </div>
+
+    <div class="how-sheet-actions">
+      <button mat-stroked-button class="how-btn ghost" type="button" (click)="closeHowItWorksSheet()">
+        <mat-icon>keyboard_arrow_down</mat-icon>
+        Close
+      </button>
+
+      <button mat-flat-button color="primary" class="how-btn primary" type="button" (click)="goToProductsFromSheet()">
+        <mat-icon>shopping_bag</mat-icon>
+        Browse products
+      </button>
+    </div>
+  </div>
+</ng-template>
+
 
 <section
   class="catalog catalog--lux"

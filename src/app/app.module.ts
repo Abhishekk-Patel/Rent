@@ -60,6 +60,7 @@ import { FeedbackButtonComponent } from './components/feedback/feedback-button/f
 import { FeedbackModalComponent } from './components/feedback/feedback-modal/feedback-modal.component';
 import { SocialFeedbackComponent } from './components/feedback/social-feedback/social-feedback.component';
 import { FeedbackDashboardComponent } from './components/feedback/feedback-dashboard/feedback-dashboard.component';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 
 @NgModule({
   declarations: [
@@ -118,6 +119,7 @@ import { FeedbackDashboardComponent } from './components/feedback/feedback-dashb
     MatOptionModule,
     MatButtonToggleModule,
     HttpClientModule,
+    MatBottomSheetModule,
   MatTabsModule,
   MatCheckboxModule,
     SocialLoginModule,
