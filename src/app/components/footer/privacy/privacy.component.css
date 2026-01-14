@@ -1,164 +1,178 @@
-
 :host {
-    display: block;
-    font-family: 'Poppins', sans-serif;
-  }
-  
-  /* Hero Section */
+  display: block;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* -------------------- Hero Section -------------------- */
+.privacy-hero {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #ffecd2, #fcb69f);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Hero content */
+.privacy-hero .hero-content {
+  flex: 1 1 50%;
+}
+
+.privacy-hero .hero-content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #2b2b2b;
+}
+
+.privacy-hero .hero-content p {
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.privacy-hero .hero-content .hero-meta {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.privacy-hero .hero-content .hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Hero art */
+.privacy-hero .hero-art img {
+  max-width: 300px;
+  width: 100%;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12));
+}
+
+/* Hero responsive */
+@media (max-width: 900px) {
   .privacy-hero {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    padding: 40px 20px;
-    background: linear-gradient(135deg, #ffecd2, #fcb69f);
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  
-    .hero-content {
-      flex: 1 1 50%;
-      h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 12px;
-        color: #2b2b2b;
-      }
-      p {
-        font-size: 1.1rem;
-        color: #444;
-        margin-bottom: 16px;
-        line-height: 1.6;
-      }
-      .hero-meta {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
-      }
-      .hero-actions {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-    }
-  
-    .hero-art img {
-      max-width: 300px;
-      width: 100%;
-      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12));
-    }
-  
-    @media (max-width: 900px) {
-      flex-direction: column;
-      text-align: center;
-      .hero-actions, .hero-meta {
-        justify-content: center;
-      }
-      .hero-art {
-        margin-top: 20px;
-      }
-    }
+    flex-direction: column;
+    text-align: center;
   }
-  
-  /* Layout for TOC and Content */
+
+  .privacy-hero .hero-content .hero-actions,
+  .privacy-hero .hero-content .hero-meta {
+    justify-content: center;
+  }
+
+  .privacy-hero .hero-art {
+    margin-top: 20px;
+  }
+}
+
+/* -------------------- Layout for TOC and Content -------------------- */
+.privacy-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+@media (max-width: 900px) {
   .privacy-layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 24px;
-    margin-top: 24px;
-  
-    @media (max-width: 900px) {
-      grid-template-columns: 1fr;
-      .toc {
-        position: static;
-        margin-bottom: 20px;
-      }
-    }
+    grid-template-columns: 1fr;
   }
-  
-  /* Table of Contents */
-  .toc {
-    position: sticky;
-    top: 20px;
-  
-    .toc-card {
-      border-radius: 12px;
-      padding: 16px;
-      background: #fff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  
-      mat-card-title {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 12px;
-      }
-  
-      mat-nav-list a.mat-list-item {
-        border-radius: 8px;
-        padding: 10px;
-        font-size: 15px;
-        color: #333;
-        transition: background 0.3s ease, color 0.3s ease;
-  
-        &:hover {
-          background: #fcb69f33;
-          color: #ff6f61;
-        }
-  
-        mat-icon {
-          color: #ff6f61;
-        }
-      }
-    }
+
+  .privacy-layout .toc {
+    position: static;
+    margin-bottom: 20px;
   }
-  
-  /* Content Sections */
-  .content {
-    display: grid;
-    gap: 20px;
-  
-    .section-card {
-      border-radius: 12px;
-      padding: 16px;
-      background: #fff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  
-      mat-card-title {
-        font-size: 20px;
-        font-weight: 600;
-        margin-bottom: 8px;
-      }
-  
-      mat-card-content {
-        font-size: 16px;
-        line-height: 1.6;
-        color: #555;
-  
-        p {
-          margin-bottom: 12px;
-        }
-  
-        ul.bullets {
-          padding-left: 20px;
-          margin: 8px 0;
-          li {
-            margin-bottom: 6px;
-            list-style: disc;
-          }
-        }
-      }
-    }
+}
+
+/* -------------------- Table of Contents -------------------- */
+.toc {
+  position: sticky;
+  top: 20px;
+}
+
+.toc .toc-card {
+  border-radius: 12px;
+  padding: 16px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.toc .toc-card mat-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.toc .toc-card mat-nav-list a.mat-list-item {
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 15px;
+  color: #333;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.toc .toc-card mat-nav-list a.mat-list-item:hover {
+  background: #fcb69f33;
+  color: #ff6f61;
+}
+
+.toc .toc-card mat-nav-list a.mat-list-item mat-icon {
+  color: #ff6f61;
+}
+
+/* -------------------- Content Sections -------------------- */
+.content {
+  display: grid;
+  gap: 20px;
+}
+
+.content .section-card {
+  border-radius: 12px;
+  padding: 16px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.content .section-card mat-card-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.content .section-card mat-card-content {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #555;
+}
+
+.content .section-card mat-card-content p {
+  margin-bottom: 12px;
+}
+
+.content .section-card mat-card-content ul.bullets {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+
+.content .section-card mat-card-content ul.bullets li {
+  margin-bottom: 6px;
+  list-style: disc;
+}
+
+/* -------------------- Responsive adjustments -------------------- */
+@media (max-width: 768px) {
+  .toc .toc-card {
+    max-width: 100%;
+    padding: 12px;
   }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .toc .toc-card {
-      max-width: 100%;
-      padding: 12px;
-    }
-  
-    .content .section-card {
-      padding: 12px;
-    }
+
+  .content .section-card {
+    padding: 12px;
   }
-  
+}
