@@ -1,58 +1,85 @@
-<section class="partner-brands-slider" fxLayout="column" fxLayoutAlign="start stretch">
-  <!-- Hero Banner Section -->
-  <div class="main-slider" fxLayout="row" fxLayoutAlign="start center">
-    <div class="brand" *ngFor="let brand of brands; let i = index" [class.active]="i === currentIndex">
-      <div class="cta-img-wrapper">
-        <div class="img-btn-container">
-          <img [src]="brand.imageUrl" [alt]="brand.name" class="brand-img" />
-          <!-- Call-to-Action Buttons -->
-          <div class="button-wrapper img-overlay-btns" *ngIf="!isMobileView">
-            <!-- <button mat-raised-button color="primary" class="cta-btn" (click)="scrollToContent()">
-              <span>Browse Collection</span>
-              <mat-icon>touch_app</mat-icon>
-            </button> -->
-            <button mat-raised-button color="primary" class="cta-btn browse-catalog-btn" (click)="scrollToCatalog()">
-              <span>Browse Collection</span>
-              <mat-icon>collections_bookmark</mat-icon>
-            </button>
-            <button mat-raised-button color="accent" class="cta-btn product-btn" (click)="addNewProduct()">
-              <span>Add a Product</span>
-              <mat-icon>add_circle</mat-icon>
-            </button>
-          </div>
+<div
+  class="brand"
+  *ngFor="let brand of brands; let i = index"
+  [class.active]="i === currentIndex"
+>
+  <section class="hero-slide" role="banner">
+    <img [src]="brand.imageUrl" [alt]="brand.name" class="hero-img" />
+
+    <!-- overlays for premium feel -->
+    <div class="hero-overlay"></div>
+    <div class="hero-grain" aria-hidden="true"></div>
+
+    <div class="hero-content">
+      <!-- Trust / badge row -->
+      <div class="hero-top">
+        <span class="badge">
+          <mat-icon class="badge-ic">verified</mat-icon>
+          Trusted rentals • Hygienically cleaned • Doorstep delivery
+        </span>
+
+        <div class="rating" aria-label="Rating">
+          <mat-icon>star</mat-icon>
+          <span class="rating-text">4.9</span>
+          <span class="rating-sub">/5 • 10k+ customers</span>
         </div>
       </div>
+
+      <!-- Copy -->
+      <h1 class="hero-title">
+        Luxury wedding wear,
+        <span class="accent">without the commitment.</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Rent premium lehengas & sherwanis, get perfect-fit assistance, and return
+        with ease. Designed for modern weddings.
+      </p>
+
+      <!-- Actions -->
+      <div class="hero-actions">
+        <button mat-raised-button class="cta-btn primary" (click)="scrollToCatalog()">
+          <mat-icon>collections_bookmark</mat-icon>
+          <span>Browse Collection</span>
+        </button>
+
+        <button mat-stroked-button class="cta-btn secondary" (click)="scrollToHowItWorks()">
+          <mat-icon>play_circle</mat-icon>
+          <span>How it works</span>
+        </button>
+
+        <button mat-button class="cta-btn tertiary" (click)="addNewProduct()">
+          <mat-icon>add_circle</mat-icon>
+          <span>List your outfit</span>
+        </button>
+      </div>
+
+      <!-- Assurance row -->
+      <div class="hero-meta">
+        <div class="meta-item">
+          <mat-icon>local_shipping</mat-icon>
+          <span>Fast delivery</span>
+        </div>
+        <div class="meta-item">
+          <mat-icon>shield</mat-icon>
+          <span>Secure payments</span>
+        </div>
+        <div class="meta-item">
+          <mat-icon>checkroom</mat-icon>
+          <span>Quality checked</span>
+        </div>
+      </div>
+
+      <!-- Optional: slide dots -->
+      <div class="hero-dots" *ngIf="brands.length > 1">
+        <button
+          class="dot"
+          *ngFor="let _ of brands; let idx = index"
+          [class.active]="idx === currentIndex"
+          (click)="goToSlide(idx)"
+          [attr.aria-label]="'Go to slide ' + (idx + 1)"
+        ></button>
+      </div>
     </div>
-  </div>
-
-  <!-- Navigation Dots -->
-  <div class="nav-dots">
-    <div *ngFor="let brand of brands; let i = index" class="nav-dot" [class.active]="i === currentIndex" (click)="goToSlide(i)"></div>
-  </div>
-
-  <!-- Bottom Navigation (Mobile Only) -->
-  <!-- <nav *ngIf="isMobileView" class="mobile-nav-fancy">
-    <ul class="nav-list">
-      <li class="nav-item" routerLinkActive="active" [routerLink]="['/home']" aria-label="Home">
-        <span class="icon-bg"><mat-icon>home</mat-icon></span>
-        <span class="nav-label">Home</span>
-      </li>
-      <li class="nav-item" routerLinkActive="active" [routerLink]="['/search']" aria-label="Search">
-        <span class="icon-bg"><mat-icon>search</mat-icon></span>
-        <span class="nav-label">Search</span>
-      </li>
-      <li class="nav-item add-center" routerLinkActive="active" [routerLink]="['/add']" aria-label="Add">
-        <span class="icon-bg add-bg"><mat-icon>add</mat-icon></span>
-        <span class="nav-label">Add</span>
-      </li>
-      <li class="nav-item" routerLinkActive="active" [routerLink]="['/profile']" aria-label="Profile">
-        <span class="icon-bg"><mat-icon>person</mat-icon></span>
-        <span class="nav-label">Profile</span>
-      </li>
-      <li class="nav-item" routerLinkActive="active" [routerLink]="['/menu']" aria-label="Menu">
-        <span class="icon-bg"><mat-icon>menu</mat-icon></span>
-        <span class="nav-label">Menu</span>
-      </li>
-    </ul>
-  </nav> -->
-</section>
+  </section>
+</div>

@@ -1,0 +1,62 @@
+<div class="page">
+  <div class="header">
+    <h1>Feedback Dashboard</h1>
+    <p>Approve/reject feedback and control what appears publicly.</p>
+  </div>
+
+  <div class="tabs">
+    <button (click)="switchTab('PENDING')" [class.active]="tab==='PENDING'">Pending</button>
+    <button (click)="switchTab('APPROVED')" [class.active]="tab==='APPROVED'">Approved</button>
+    <button (click)="switchTab('REJECTED')" [class.active]="tab==='REJECTED'">Rejected</button>
+  </div>
+
+  <div *ngIf="loading" class="state">Loading…</div>
+  <div *ngIf="!loading && error" class="state error">{{ error }}</div>
+
+  <div *ngIf="!loading && !error && items.length===0" class="state">
+    No items in {{ tab.toLowerCase() }}.
+  </div>
+
+  <div class="list" *ngIf="!loading && !error && items.length>0">
+    <div class="card" *ngFor="let it of items">
+      <div class="row1">
+        <div class="pill">{{ it.type }}</div>
+        <div class="meta">
+          <span *ngIf="it.screen">Screen: <b>{{ it.screen }}</b></span>
+          <span *ngIf="it.appVersion"> · v{{ it.appVersion }}</span>
+          <span *ngIf="it.platform"> · {{ it.platform }}</span>
+          <span> · {{ it.createdAt | date:'short' }}</span>
+        </div>
+      </div>
+
+      <div class="message">“{{ it.message }}”</div>
+
+      <div class="rating" *ngIf="it.rating">
+        Rating: <b>{{ it.rating }}/5</b>
+      </div>
+
+      <label class="label">Admin note</label>
+      <input [(ngModel)]="noteById[it._id]" placeholder="Optional note…" />
+
+      <div class="publicBox" *ngIf="it.type !== 'BUG'">
+        <label class="chk">
+          <input type="checkbox" [(ngModel)]="publicById[it._id]" />
+          Allow public display
+        </label>
+
+        <input
+          *ngIf="publicById[it._id]"
+          [(ngModel)]="nameById[it._id]"
+          placeholder="Display name (optional)"
+        />
+
+        <button class="mini" (click)="savePublic(it)">Save public settings</button>
+      </div>
+
+      <div class="actions">
+        <button class="reject" (click)="reject(it)">Reject</button>
+        <button class="approve" (click)="approve(it)">Approve</button>
+      </div>
+    </div>
+  </div>
+</div>

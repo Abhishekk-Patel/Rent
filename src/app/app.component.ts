@@ -25,7 +25,8 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private userService: UserService,
     private router: Router,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+   
   ) {}
 
   ngOnInit() {

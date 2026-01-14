@@ -1,0 +1,85 @@
+<section class="wrap">
+  <div class="head">
+    <div>
+      <h2>What users say about RentIt</h2>
+      <p>Real app experience feedback (approved).</p>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="state">Loading…</div>
+  <div *ngIf="!loading && error" class="state error">{{ error }}</div>
+
+  <div *ngIf="!loading && !error && items.length === 0" class="state">
+    No testimonials yet.
+  </div>
+
+  <!-- Carousel -->
+  <div
+    *ngIf="!loading && !error && items.length > 0"
+    class="viewport"
+    (mouseenter)="pause()"
+    (mouseleave)="resume()">
+
+    <div class="track" #track>
+      <article class="card" *ngFor="let it of (isMobile ? items.slice(0,1) : items)">
+        <div class="top">
+          <div class="avatar">{{ initials(it.displayName) }}</div>
+
+          <div class="meta">
+            <div class="name">
+              {{ it.displayName?.trim() ? it.displayName : 'Anonymous' }}
+              <span class="city" *ngIf="it.city">· {{ it.city }}</span>
+            </div>
+
+            <div class="stars" *ngIf="it.rating">
+              <span *ngFor="let s of stars(it.rating)">★</span>
+              <span class="rating">{{ it.rating }}/5</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="msg">“{{ it.message }}”</p>
+
+        <div class="date">
+          {{ it.createdAt | date:'mediumDate' }}
+        </div>
+      </article>
+    </div>
+
+    <!-- Desktop arrows -->
+   <button
+  class="nav prev"
+  mat-icon-button
+  *ngIf="!isMobile && items.length > 1"
+  (click)="prev()"
+  aria-label="Previous feedback">
+
+  <mat-icon>chevron_left</mat-icon>
+</button>
+
+<button
+  class="nav next"
+  mat-icon-button
+  *ngIf="!isMobile && items.length > 1"
+  (click)="next()"
+  aria-label="Next feedback">
+
+  <mat-icon>chevron_right</mat-icon>
+</button>
+
+    <!-- Desktop dots -->
+    <div class="dots" *ngIf="!isMobile && items.length > 1">
+      <button
+        class="dot"
+        *ngFor="let _ of items; let i = index"
+        [class.active]="i === activeIndex"
+        (click)="goTo(i)">
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile CTA -->
+  <a class="view-all" *ngIf="isMobile">
+    View all feedback →
+  </a>
+</section>

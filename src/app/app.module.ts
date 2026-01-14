@@ -56,6 +56,10 @@ import { ContactUsComponent } from './components/footer/contact-us/contact-us.co
 import { PrivacyComponent } from './components/footer/privacy/privacy.component';
 import { TermsComponent } from './components/footer/terms/terms.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { FeedbackButtonComponent } from './components/feedback/feedback-button/feedback-button.component';
+import { FeedbackModalComponent } from './components/feedback/feedback-modal/feedback-modal.component';
+import { SocialFeedbackComponent } from './components/feedback/social-feedback/social-feedback.component';
+import { FeedbackDashboardComponent } from './components/feedback/feedback-dashboard/feedback-dashboard.component';
 
 @NgModule({
   declarations: [
@@ -77,7 +81,11 @@ import { ForgotPasswordComponent } from './components/forgot-password/forgot-pas
   ContactUsComponent,
   PrivacyComponent,
   TermsComponent,
-  ForgotPasswordComponent
+  ForgotPasswordComponent,
+  FeedbackButtonComponent,
+  FeedbackModalComponent,
+  SocialFeedbackComponent,
+  FeedbackDashboardComponent
   ],
   imports: [
     HttpClientModule,

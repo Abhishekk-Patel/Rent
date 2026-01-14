@@ -1,0 +1,123 @@
+.page{
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 22px 14px;
+}
+
+.header h1{ margin: 0; }
+.header p{ margin: 6px 0 14px; color: #666; }
+
+.tabs{
+  display: flex;
+  gap: 10px;
+  margin: 10px 0 18px;
+}
+.tabs button{
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.tabs button.active{
+  background: #8b2d2d;
+  border-color: #8b2d2d;
+  color: #fff;
+}
+
+.state{ color: #666; padding: 8px 0; }
+.state.error{ color: #b00020; }
+
+.list{
+  display: grid;
+  gap: 12px;
+}
+
+.card{
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 14px;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.row1{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pill{
+  background: #f5f5f5;
+  border: 1px solid #eaeaea;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.meta{ color: #666; font-size: 12px; font-weight: 600; }
+
+.message{
+  margin: 10px 0 8px;
+  font-size: 14px;
+}
+
+.rating{ margin-bottom: 10px; }
+
+.label{ display:block; font-weight: 800; margin: 10px 0 6px; }
+
+input{
+  width: 100%;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  padding: 10px 12px;
+  outline: none;
+}
+
+.publicBox{
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #eee;
+}
+
+.chk{ display:flex; gap:8px; align-items:center; font-weight: 700; color:#333; }
+
+.mini{
+  margin-top: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.approve{
+  border: none;
+  background: #1b7f3a;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.reject{
+  border: none;
+  background: #b00020;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+}

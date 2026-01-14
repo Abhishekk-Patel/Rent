@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Subscription } from 'rxjs';
@@ -9,50 +9,62 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./partner-brand-slider.component.css'],
 })
 export class PartnerBrandSliderComponent implements OnInit, OnDestroy {
-
-  brands = [
-    { name: 'Brannd10', imageUrl: './assets/CTALow2.png' },
-  ];
+  brands = [{ name: 'Brannd10', imageUrl: './assets/gpt.png' }];
 
   currentIndex = 0;
   isMobileView = false;
 
   private breakpointSub?: Subscription;
   private sliderIntervalId?: any;
+  private paused = false;
 
   constructor(
     public readonly router: Router,
     private breakpointObserver: BreakpointObserver
   ) {
-    // ✅ Reliable breakpoint check (instead of Handset/Tablet which can miss matches)
     this.breakpointSub = this.breakpointObserver
       .observe(['(max-width: 768px)'])
-      .subscribe(state => {
-        this.isMobileView = state.matches;
-
-        // Debug (remove if you want)
-        console.log('isMobileView:', this.isMobileView, 'width:', window.innerWidth);
-      });
+      .subscribe((state) => (this.isMobileView = state.matches));
   }
 
   ngOnInit(): void {
-    // Auto-slide every 5 seconds
-    this.sliderIntervalId = setInterval(() => this.nextSlide(), 5000);
+    this.startAutoSlide();
   }
 
   ngOnDestroy(): void {
-    // ✅ Prevent memory leaks
-    if (this.breakpointSub) this.breakpointSub.unsubscribe();
+    this.breakpointSub?.unsubscribe();
+    this.stopAutoSlide();
+  }
+
+  private startAutoSlide(): void {
+    this.stopAutoSlide();
+    this.sliderIntervalId = setInterval(() => {
+      if (!this.paused) this.nextSlide();
+    }, 5000);
+  }
+
+  private stopAutoSlide(): void {
     if (this.sliderIntervalId) clearInterval(this.sliderIntervalId);
+  }
+
+  // Optional: pause slider when user is interacting
+  @HostListener('mouseenter') onEnter() {
+    this.paused = true;
+  }
+  @HostListener('mouseleave') onLeave() {
+    this.paused = false;
   }
 
   scrollToCatalog(): void {
     setTimeout(() => {
-      const catalogEl = document.querySelector('.catalog');
-      if (catalogEl) {
-        (catalogEl as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
+      document.querySelector('.catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  }
+
+  scrollToHowItWorks(): void {
+    setTimeout(() => {
+      document.querySelector('.how-it-works')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
   }
 
   goToSlide(index: number): void {
@@ -69,12 +81,5 @@ export class PartnerBrandSliderComponent implements OnInit, OnDestroy {
 
   addNewProduct(): void {
     this.router.navigate(['/add-product']);
-  }
-
-  scrollToContent(): void {
-    const contentSection = document.querySelector('.catalog');
-    if (contentSection) {
-      (contentSection as HTMLElement).scrollIntoView({ behavior: 'smooth' });
-    }
   }
 }

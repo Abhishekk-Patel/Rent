@@ -1,0 +1,68 @@
+<div class="overlay" *ngIf="open" (click)="close()"></div>
+
+<div class="modal" *ngIf="open" role="dialog" aria-modal="true">
+  <button class="x" (click)="close()" aria-label="Close">✕</button>
+
+  <!-- STEP 1: choose type -->
+  <div *ngIf="step === 'TYPE'">
+    <h2>How’s your experience?</h2>
+    <p class="sub">Help us improve the RentIt app.</p>
+
+    <button class="row" (click)="chooseType('BUG')">🐞 Report a Bug</button>
+    <button class="row" (click)="chooseType('UX')">😕 Something is confusing</button>
+    <button class="row" (click)="chooseType('SUGGESTION')">💡 Suggest an improvement</button>
+    <button class="row" (click)="chooseType('RATING')">⭐ Rate overall app experience</button>
+
+    <div class="actions">
+      <button class="ghost" (click)="close()">Not now</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: form -->
+  <div *ngIf="step === 'FORM'">
+    <h2>
+      <span *ngIf="type==='BUG'">🐞 Report a Bug</span>
+      <span *ngIf="type==='UX'">😕 UX Feedback</span>
+      <span *ngIf="type==='SUGGESTION'">💡 Suggestion</span>
+      <span *ngIf="type==='RATING'">⭐ Rate Experience</span>
+    </h2>
+
+    <div *ngIf="type==='RATING'" class="rating">
+      <label>Rating</label>
+      <select [(ngModel)]="rating">
+        <option *ngFor="let r of [5,4,3,2,1]" [value]="r">{{r}}</option>
+      </select>
+    </div>
+
+    <label class="label">Tell us more</label>
+    <textarea [(ngModel)]="message" rows="4" placeholder="Describe the issue or suggestion..."></textarea>
+
+    <div class="public" *ngIf="type !== 'BUG'">
+      <label class="chk">
+        <input type="checkbox" [(ngModel)]="allowPublic" />
+        Allow us to feature this feedback publicly
+      </label>
+
+      <div *ngIf="allowPublic" class="name">
+        <label class="label">Name (optional)</label>
+        <input [(ngModel)]="displayName" placeholder="e.g., Aditi (Bangalore)" />
+      </div>
+    </div>
+
+    <p class="err" *ngIf="error">{{ error }}</p>
+
+    <div class="actions">
+      <button class="ghost" (click)="back()" [disabled]="loading">Back</button>
+      <button class="primary" (click)="submit()" [disabled]="loading">
+        {{ loading ? 'Submitting...' : 'Submit' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 3: thanks -->
+  <div *ngIf="step === 'THANKS'" class="thanks">
+    <h2>Thank you! ❤️</h2>
+    <p>We read every feedback and use it to improve RentIt.</p>
+    <button class="primary" (click)="close()">Close</button>
+  </div>
+</div>
