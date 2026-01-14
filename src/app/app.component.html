@@ -4,4 +4,4 @@
   <router-outlet></router-outlet>
 </div>
 <app-footer *ngIf="showHeaderFooter && !isMobileScreen"></app-footer>
-<app-feedback-button></app-feedback-button>
+<app-feedback-button *ngIf="showHeaderFooter"></app-feedback-button>

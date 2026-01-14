@@ -14,6 +14,7 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'RentiT';
   isLoggedIn = false;
 
+
   /** Controls header/footer visibility */
   showHeaderFooter = true;
 
@@ -60,7 +61,10 @@ export class AppComponent implements OnInit, OnDestroy {
         const url = event.urlAfterRedirects || '';
 
         const isHome = url === '/' || url === '/#/' || url === '/#';
-        const isForgotPassword = url.includes('forgot-password');
+       
+        const isForgotPassword =
+  url.includes('forgot-password') || url.includes('');
+
 
         this.showHeaderFooter = !(isHome || isForgotPassword);
       });
