@@ -825,7 +825,7 @@
 /* Scroll to top */
 .scroll-to-top-btn{
   position: fixed;
-  bottom: 20px;
+  bottom: 80px;
   right: 20px;
   background: linear-gradient(135deg, rgba(143,21,21,1), rgba(183,110,121,1)) !important;
   color: #fff !important;
@@ -848,7 +848,7 @@
 }
 
 @media (max-width: 600px){
-  .scroll-to-top-btn{ bottom: 78px; }
+  .scroll-to-top-btn{ bottom: 145px; }
   .grid{
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;

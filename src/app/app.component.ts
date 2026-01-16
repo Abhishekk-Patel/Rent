@@ -63,7 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
         const isHome = url === '/' || url === '/#/' || url === '/#';
        
         const isForgotPassword =
-  url.includes('forgot-password') || url.includes('');
+  url.includes('forgot-password');
 
 
         this.showHeaderFooter = !(isHome || isForgotPassword);

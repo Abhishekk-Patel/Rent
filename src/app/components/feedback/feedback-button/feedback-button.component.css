@@ -16,4 +16,9 @@
   box-shadow: 0 10px 24px rgba(0,0,0,0.18);
 }
 
+@media (max-width: 600px){
+  .fab{
+    bottom: 90px;
+  }
+}
 .fab:hover { filter: brightness(1.05); }

@@ -11,19 +11,16 @@ import { Subscription } from 'rxjs';
 export class PartnerBrandSliderComponent implements OnInit, OnDestroy {
   brands = [
     { name: 'Brannd10', imageUrl: './assets/gpt.png' },
-    // add more slides if needed
-     { name: 'Brand2', imageUrl: './assets/download.jpeg' },
-    
-
+    { name: 'Brand2', imageUrl: './assets/download.jpeg' },
   ];
-  @Output() howItWorksClick = new EventEmitter<void>();
 
+  @Output() howItWorksClick = new EventEmitter<void>();
 
   currentIndex = 0;
   isMobileView = false;
 
   private breakpointSub?: Subscription;
-  private sliderIntervalId?: any;
+  private sliderIntervalId?: ReturnType<typeof setInterval>;
   private paused = false;
 
   constructor(
@@ -72,21 +69,13 @@ export class PartnerBrandSliderComponent implements OnInit, OnDestroy {
   }
 
   prevSlide(): void {
-    this.currentIndex = (this.currentIndex - 1 + this.brands.length) % this.brands.length;
+    this.currentIndex =
+      (this.currentIndex - 1 + this.brands.length) % this.brands.length;
   }
 
   scrollToCatalog(): void {
     setTimeout(() => {
       document.querySelector('.catalog')?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }, 50);
-  }
-
-  scrollToHowItWorks(): void {
-    setTimeout(() => {
-      document.querySelector('.how-it-works')?.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
       });
