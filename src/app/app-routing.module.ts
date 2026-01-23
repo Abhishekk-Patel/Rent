@@ -14,22 +14,24 @@ import { UnifiedChatComponent } from './components/unified-chat.component';
 import { ProductDetailsPopupComponent } from './components/product-details-popup/product-details-popup.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { FeedbackDashboardComponent } from './components/feedback/feedback-dashboard/feedback-dashboard.component';
+import { HeaderComponent } from './components/header/header.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'content', component: ContentComponentComponent },
-  { path: 'add-product', component: AddProductComponent }, //canActivate: [AuthGuard]
-  { path: 'my-account', component: MyAccountComponent }, //canActivate: [AuthGuard]
-  { path: 'MyCart', component: MyCartComponent }, //canActivate: [AuthGuard]
-  { path: 'messenger', component: UnifiedChatComponent },
+  {path:'HeaderComponent', component:HeaderComponent,canActivate: [AuthGuard]},
+  { path: 'content', component: ContentComponentComponent,canActivate: [AuthGuard] },
+  { path: 'add-product', component: AddProductComponent,canActivate: [AuthGuard] }, //canActivate: [AuthGuard]
+  { path: 'my-account', component: MyAccountComponent,canActivate: [AuthGuard] }, //canActivate: [AuthGuard]
+  { path: 'MyCart', component: MyCartComponent,canActivate: [AuthGuard] }, //canActivate: [AuthGuard]
+  { path: 'messenger', component: UnifiedChatComponent,canActivate: [AuthGuard] },
 
-  { path: 'about', component: AboutUsComponent },
-  { path: 'contact', component: ContactUsComponent },
+  { path: 'about', component: AboutUsComponent,canActivate: [AuthGuard] },
+  { path: 'contact', component: ContactUsComponent,canActivate: [AuthGuard] },
   { path: 'privacy', component: PrivacyComponent },
   { path: 'terms', component: TermsComponent },
-  { path: 'product-details/:id', component: ProductDetailsPopupComponent },
+  { path: 'product-details/:id', component: ProductDetailsPopupComponent,canActivate: [AuthGuard] },
   { path: 'forgot-password', component: ForgotPasswordComponent },
-  { path: 'admin/feedback', component: FeedbackDashboardComponent },
+  { path: 'admin/feedback', component: FeedbackDashboardComponent,canActivate: [AuthGuard] },
 
   { path: '**', redirectTo: '', pathMatch: 'full' }, // Redirect any unknown paths to HomeComponent
 ];

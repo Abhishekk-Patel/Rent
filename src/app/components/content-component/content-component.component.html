@@ -1,12 +1,13 @@
+<!-- Top brand slider + social feedback -->
 <app-partner-brand-slider
   *ngIf="!searchValue"
   (howItWorksClick)="openHowItWorksSheet()"
 ></app-partner-brand-slider>
+
 <app-social-feedback></app-social-feedback>
-<!-- HOW IT WORKS (scroll target) -->
+
 <!-- ===========================
      HOW IT WORKS: Bottom Sheet
-     (NO new component)
      =========================== -->
 <ng-template #howItWorksSheet>
   <div class="how-sheet">
@@ -16,7 +17,12 @@
         <p>Renting luxury wedding wear is simple, secure, and stress-free.</p>
       </div>
 
-      <button mat-icon-button class="x" (click)="closeHowItWorksSheet()" aria-label="Close">
+      <button
+        mat-icon-button
+        class="x"
+        (click)="closeHowItWorksSheet()"
+        aria-label="Close"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -58,12 +64,23 @@
     </div>
 
     <div class="how-sheet-actions">
-      <button mat-stroked-button class="how-btn ghost" type="button" (click)="closeHowItWorksSheet()">
+      <button
+        mat-stroked-button
+        class="how-btn ghost"
+        type="button"
+        (click)="closeHowItWorksSheet()"
+      >
         <mat-icon>keyboard_arrow_down</mat-icon>
         Close
       </button>
 
-      <button mat-flat-button color="primary" class="how-btn primary" type="button" (click)="goToProductsFromSheet()">
+      <button
+        mat-flat-button
+        color="primary"
+        class="how-btn primary"
+        type="button"
+        (click)="goToProductsFromSheet()"
+      >
         <mat-icon>shopping_bag</mat-icon>
         Browse products
       </button>
@@ -71,12 +88,12 @@
   </div>
 </ng-template>
 
+<!-- ===========================
+     CATALOG
+     =========================== -->
+<section class="catalog catalog--lux" [ngClass]="{ 'catalog-mobile': isMobileView }">
 
-<section
-  class="catalog catalog--lux"
-  [ngClass]="{ 'catalog-mobile': isMobileView }"
->
-  <!-- ======= MOBILE TOP BAR (keeps same features) ======= -->
+  <!-- ======= MOBILE TOP BAR ======= -->
   <div *ngIf="isMobileView" class="mobile-top glass">
     <!-- Role Toggle -->
     <div class="mobile-role-wrap">
@@ -87,81 +104,61 @@
           class="user-role-toggle"
           aria-label="User Role"
         >
-          <mat-button-toggle
-            value="Bride"
-            class="mobile-role-toggle"
-            aria-label="Bride"
-          >
-            Bride
-          </mat-button-toggle>
-          <mat-button-toggle
-            value="Groom"
-            class="mobile-role-toggle"
-            aria-label="Groom"
-          >
-            Groom
-          </mat-button-toggle>
+          <mat-button-toggle value="Bride" class="mobile-role-toggle">Bride</mat-button-toggle>
+          <mat-button-toggle value="Groom" class="mobile-role-toggle">Groom</mat-button-toggle>
         </mat-button-toggle-group>
       </fieldset>
     </div>
 
-    <!-- Mobile Categories (modern chips + icons) -->
+    <!-- Premium mobile search -->
+    <div class="mobile-search">
+      <mat-form-field appearance="outline" class="w-100 search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          #searchInput
+          matInput
+          placeholder="Search products, city, category…"
+          [(ngModel)]="searchValue"
+          (keyup.enter)="search(); scrollToFirstMatch()"
+        />
+        <button
+          *ngIf="searchValue"
+          mat-icon-button
+          matSuffix
+          aria-label="Clear"
+          (click)="clear()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <!-- Mobile Categories -->
     <div class="mobile-categories-wrapper">
       <div class="mobile-categories-row">
         <ul class="mobile-categories-list">
           <li
             class="category-item-mobile"
-            *ngFor="
-              let c of [
-                'Dress',
-                'Suites',
-                'Jewelry',
-                'Accessories',
-                'Lehenga',
-                'Saree',
-                'Tops',
-                'Bottoms',
-                'Shoes',
-                'Bags'
-              ]
-            "
-            (click)="selectCategory({ name: c })"
+            *ngFor="let category of categories"
+            (click)="selectCategory(category)"
             tabindex="0"
+            role="button"
+            [attr.aria-pressed]="category.isSelected"
           >
-            <div class="category-chip">
+            <div class="category-chip" [class.active]="category.isSelected">
               <span class="chip-icon">
-                <mat-icon [ngSwitch]="c">
-                  <ng-container *ngSwitchCase="'Dress'">checkroom</ng-container>
-                  <ng-container *ngSwitchCase="'Suites'">man</ng-container>
-                  <ng-container *ngSwitchCase="'Jewelry'">diamond</ng-container>
-                  <ng-container *ngSwitchCase="'Accessories'"
-                    >card_accessories</ng-container
-                  >
-                  <ng-container *ngSwitchCase="'Lehenga'"
-                    >celebration</ng-container
-                  >
-                  <ng-container *ngSwitchCase="'Saree'"
-                    >local_florist</ng-container
-                  >
-                  <ng-container *ngSwitchCase="'Tops'">checkroom</ng-container>
-                  <ng-container *ngSwitchCase="'Bottoms'"
-                    >open_in_browser</ng-container
-                  >
-                  <ng-container *ngSwitchCase="'Shoes'"
-                    >directions_walk</ng-container
-                  >
-                  <ng-container *ngSwitchCase="'Bags'">work</ng-container>
-                  <ng-container *ngSwitchDefault>category</ng-container>
+                <mat-icon>
+                  {{ category.isSelected ? 'check' : 'category' }}
                 </mat-icon>
               </span>
-              <span class="chip-title">{{ c }}</span>
+              <span class="chip-title">{{ category.name }}</span>
             </div>
           </li>
         </ul>
       </div>
     </div>
 
-    <!-- Mobile mini applied bar (same features, cleaner) -->
+    <!-- Mobile applied -->
     <div class="mobile-applied" *ngIf="searchValue || userRole">
       <div class="applied-left">
         <span class="mini-pill mini-pill--role" *ngIf="userRole">
@@ -170,14 +167,10 @@
           </mat-icon>
           <span class="role-text">{{ userRole }}</span>
         </span>
+
         <span class="mini-pill mini-pill--input" *ngIf="searchValue">
           {{ searchValue }}
-          <button
-            class="mini-x"
-            mat-icon-button
-            (click)="clear()"
-            aria-label="Clear search"
-          >
+          <button class="mini-x" mat-icon-button (click)="clear()" aria-label="Clear search">
             <mat-icon>close</mat-icon>
           </button>
         </span>
@@ -192,6 +185,7 @@
 
   <!-- ======= DESKTOP / MAIN LAYOUT ======= -->
   <div class="catalog-shell">
+
     <!-- Left Filters (desktop) -->
     <aside class="filters-panel glass" *ngIf="!isMobileView">
       <div class="filters-top">
@@ -209,6 +203,32 @@
           <mat-button-toggle value="Bride">Bride</mat-button-toggle>
           <mat-button-toggle value="Groom">Groom</mat-button-toggle>
         </mat-button-toggle-group>
+
+        <!-- Desktop search (premium) -->
+        <mat-form-field appearance="outline" class="w-100 search-field desktop-search">
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            #searchInput
+            matInput
+            placeholder="Search products, city, category…"
+            [(ngModel)]="searchValue"
+            (keyup.enter)="search(); scrollToFirstMatch()"
+          />
+          <button
+            *ngIf="searchValue"
+            mat-icon-button
+            matSuffix
+            aria-label="Clear"
+            (click)="clear()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button mat-stroked-button class="how-cta" type="button" (click)="openHowItWorksSheet()">
+          <mat-icon>info</mat-icon>
+          How it works
+        </button>
       </div>
 
       <mat-accordion class="filters-accordion">
@@ -228,11 +248,7 @@
             >
               <span class="check">
                 <mat-icon class="status">
-                  {{
-                    category.isSelected
-                      ? "check_box"
-                      : "check_box_outline_blank"
-                  }}
+                  {{ category.isSelected ? "check_box" : "check_box_outline_blank" }}
                 </mat-icon>
               </span>
               <span class="cat-title">{{ category.name }}</span>
@@ -285,11 +301,7 @@
           </mat-expansion-panel-header>
 
           <div class="sizes">
-            <button
-              mat-stroked-button
-              *ngFor="let s of ['XS', 'S', 'M', 'L', 'XL', 'XXL']"
-              class="size-chip"
-            >
+            <button mat-stroked-button *ngFor="let s of ['XS','S','M','L','XL','XXL']" class="size-chip">
               {{ s }}
             </button>
           </div>
@@ -315,7 +327,7 @@
 
     <!-- Right: Products -->
     <main class="products">
-      <!-- Desktop: header row with applied filters + sort -->
+      <!-- Desktop header row -->
       <div class="top-row glass" *ngIf="!isMobileView">
         <div class="heading">
           <div class="h-title">Explore</div>
@@ -329,18 +341,11 @@
         <div class="applied-actions">
           <div class="chips">
             <mat-chip-set>
-              <mat-chip
-                *ngIf="userRole"
-                class="mini-pill mini-pill--role"
-                selected
-              >
+              <mat-chip *ngIf="userRole" class="mini-pill mini-pill--role" selected>
                 <mat-icon matChipAvatar class="role-icon" aria-hidden="true">
                   {{ userRole === "Bride" ? "female" : "male" }}
                 </mat-icon>
-
-                <span class="role-text">
-                  {{ userRole }}
-                </span>
+                <span class="role-text">{{ userRole }}</span>
               </mat-chip>
 
               <mat-chip *ngIf="searchValue" class="applied-chip">
@@ -352,9 +357,32 @@
             </mat-chip-set>
           </div>
 
-          <button class="sort-btn" mat-stroked-button (click)="openSortPanel()">
+          <div class="top-actions">
+            <button class="sort-btn" mat-stroked-button (click)="openSortPanel()">
+              <mat-icon>tune</mat-icon>
+              <span>Sort / Filter</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Premium empty state -->
+      <div class="empty glass" *ngIf="!isLoading && filteredRewards.length === 0">
+        <div class="empty-icon">
+          <mat-icon>search_off</mat-icon>
+        </div>
+        <div class="empty-title">No matches found</div>
+        <div class="empty-sub">
+          Try changing category, clearing search, or adjusting filters.
+        </div>
+        <div class="empty-actions">
+          <button mat-stroked-button class="pill-btn" (click)="clear()">
+            <mat-icon>refresh</mat-icon>
+            Clear search
+          </button>
+          <button mat-flat-button color="primary" class="pill-btn primary" (click)="openSortPanel()">
             <mat-icon>tune</mat-icon>
-            <span>Sort / Filter</span>
+            Open filters
           </button>
         </div>
       </div>
@@ -391,9 +419,7 @@
               (click)="toggleFavorite(reward)"
               aria-label="Add to wishlist"
             >
-              <mat-icon>{{
-                reward.isFavorite ? "favorite" : "favorite_border"
-              }}</mat-icon>
+              <mat-icon>{{ reward.isFavorite ? "favorite" : "favorite_border" }}</mat-icon>
             </button>
 
             <!-- Prev / next -->
@@ -403,14 +429,17 @@
                 (click)="prevImage(reward)"
                 matTooltip="Previous image"
                 aria-label="Previous"
+                type="button"
               >
                 <mat-icon>chevron_left</mat-icon>
               </button>
+
               <button
                 class="nav-btn"
                 (click)="nextImage(reward)"
                 matTooltip="Next image"
                 aria-label="Next"
+                type="button"
               >
                 <mat-icon>chevron_right</mat-icon>
               </button>
@@ -418,28 +447,23 @@
 
             <!-- City + rating -->
             <div class="bottom-badges">
-              <div class="city">
+              <div class="city" [matTooltip]="reward.city">
                 <mat-icon>location_on</mat-icon>{{ reward.city }}
               </div>
 
               <app-product-rating
-                [rating]="
-                  reward.ProductRatings[0] ? reward.ProductRatings[0].rating : 0
-                "
+                [rating]="reward.ProductRatings[0] ? reward.ProductRatings[0].rating : 0"
                 [avgRating]="reward.avgRating"
                 [totalUsers]="reward.totalUserRated"
                 (ratingChange)="onRatingChange($event, reward)"
-                [disabled]="
-                  this.userService.getUserDetails().userId === reward.userId
-                "
-              >
-              </app-product-rating>
+                [disabled]="this.userService.getUserDetails().userId === reward.userId"
+              ></app-product-rating>
             </div>
           </div>
 
           <!-- Content -->
           <div class="meta">
-            <div class="name">{{ reward.name }}</div>
+            <div class="name" [matTooltip]="reward.name">{{ reward.name }}</div>
 
             <div class="sub">
               Listed on {{ reward.valid_until | date : "mediumDate" }}
@@ -447,15 +471,10 @@
 
             <div class="price-row">
               <div class="rent">₹{{ reward.Rent }} <span>/day</span></div>
-              <div class="size" *ngIf="reward.size">
-                Size: {{ reward.size }}
-              </div>
+              <div class="size" *ngIf="reward.size">Size: {{ reward.size }}</div>
             </div>
 
-            <div
-              class="badge"
-              *ngIf="reward.quantity && reward.quantity <= reward.low_quantity"
-            >
+            <div class="badge" *ngIf="reward.quantity && reward.quantity <= reward.low_quantity">
               High Demand · Only {{ reward.quantity }} left
             </div>
           </div>
@@ -466,11 +485,9 @@
               mat-stroked-button
               color="primary"
               class="btn btn-ghost"
-              [disabled]="
-                reward.quantity === 0 ||
-                reward.ProductOwnerEmail === userService.getUserDetails().email
-              "
+              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
               (click)="productDetails(reward.pk)"
+              type="button"
             >
               <mat-icon>info</mat-icon>
               <span class="hide-xs">Details</span>
@@ -480,11 +497,9 @@
               mat-flat-button
               color="primary"
               class="btn btn-primary"
-              [disabled]="
-                reward.quantity === 0 ||
-                reward.ProductOwnerEmail === userService.getUserDetails().email
-              "
+              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
               (click)="addToCart(reward.pk)"
+              type="button"
             >
               <mat-icon>add_shopping_cart</mat-icon>
               <span class="hide-xs">Add</span>
@@ -494,12 +509,10 @@
               mat-icon-button
               color="warn"
               class="btn-icon"
-              [disabled]="
-                reward.quantity === 0 ||
-                reward.ProductOwnerEmail === userService.getUserDetails().email
-              "
+              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
               (click)="openMessageDialog(reward)"
               aria-label="Message"
+              type="button"
             >
               <mat-icon>message</mat-icon>
             </button>
@@ -508,10 +521,7 @@
 
         <!-- Skeletons -->
         <ng-container *ngIf="isLoading">
-          <div
-            class="skeleton"
-            *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-          ></div>
+          <div class="skeleton" *ngFor="let i of [1,2,3,4,5,6,7,8]"></div>
         </ng-container>
       </div>
 

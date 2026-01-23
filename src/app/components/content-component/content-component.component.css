@@ -1,6 +1,5 @@
 /* =========================
-   Content Component - NEW Modern Luxury UI
-   (Same TS + same features)
+   Premium Luxury UI (refined)
    ========================= */
 
 :root{
@@ -33,10 +32,9 @@
     radial-gradient(980px 560px at 88% 86%, rgba(183,110,121,.15), transparent 60%),
     radial-gradient(700px 420px at 70% 15%, rgba(15,23,42,.06), transparent 62%),
     linear-gradient(135deg, var(--bg0), var(--bg1));
-  padding-bottom: 50px;
+  padding-bottom: 60px;
 }
 
-/* Keep your mobile container rounding feel */
 .catalog-mobile{
   border-top-left-radius: 40px;
   border-top-right-radius: 40px;
@@ -47,20 +45,38 @@
 
 /* Glass utility */
 .glass{
-  background: rgba(255,255,255,.62);
+  background: rgba(255,255,255,.66);
   border: 1px solid rgba(15,23,42,.10);
   box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(16px);
 }
 
 /* ===== Layout Shell ===== */
 .catalog-shell{
-  max-width: 1280px;
+  max-width: 1320px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 340px 1fr;
   gap: 18px;
   padding: clamp(12px, 2vw, 22px);
+}
+
+/* ===== Search field polish (Material) ===== */
+.search-field{
+  border-radius: 18px;
+}
+:host ::ng-deep .search-field .mat-mdc-text-field-wrapper{
+  border-radius: 18px !important;
+}
+:host ::ng-deep .search-field .mat-mdc-form-field-infix{
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+:host ::ng-deep .search-field .mat-mdc-form-field-flex{
+  background: rgba(255,255,255,.72);
+}
+.desktop-search{
+  margin-top: 8px;
 }
 
 /* ===== Mobile top ===== */
@@ -80,10 +96,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 160px;
+  width: 170px;
   height: 62px;
   border-radius: 999px;
-  background: rgba(255,255,255,.65);
+  background: rgba(255,255,255,.68);
   border: 1px solid rgba(15,23,42,.10);
   box-shadow: 0 12px 22px rgba(15,23,42,.08);
 }
@@ -115,7 +131,11 @@
   justify-content: center;
 }
 
-/* ===== Mobile categories (new chips) ===== */
+.mobile-search{
+  padding: 0 12px 12px;
+}
+
+/* ===== Mobile categories ===== */
 .mobile-categories-wrapper{
   padding: 10px 10px 12px;
   border-top: 1px solid rgba(15,23,42,.06);
@@ -139,18 +159,25 @@
 }
 
 .category-item-mobile{ cursor: pointer; }
+
 .category-chip{
   display: inline-flex;
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
   border-radius: 999px;
-  background: rgba(255,255,255,.62);
+  background: rgba(255,255,255,.68);
   border: 1px solid rgba(15,23,42,.10);
   box-shadow: 0 10px 18px rgba(15,23,42,.08);
-  transition: transform .18s ease, border-color .18s ease;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
   white-space: nowrap;
 }
+
+.category-chip.active{
+  border-color: rgba(212,175,55,.30);
+  background: rgba(212,175,55,.10);
+}
+
 .category-item-mobile:hover .category-chip,
 .category-item-mobile:active .category-chip{
   transform: translateY(-2px);
@@ -167,6 +194,7 @@
   background: linear-gradient(135deg, rgba(143,21,21,1), rgba(183,110,121,1));
   box-shadow: 0 12px 26px rgba(143,21,21,.18);
 }
+
 .chip-title{
   font-weight: 950;
   font-size: 12px;
@@ -179,7 +207,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 10px;
+  padding: 10px 12px 12px;
   border-top: 1px solid rgba(15,23,42,.06);
 }
 
@@ -207,7 +235,7 @@
 }
 
 .mini-pill--input{
-  background: rgba(255,255,255,.55);
+  background: rgba(255,255,255,.60);
   border: 1px solid rgba(15,23,42,.10);
 }
 
@@ -252,6 +280,11 @@
   margin-top: 2px;
 }
 
+.how-cta{
+  border-radius: 999px !important;
+  font-weight: 950 !important;
+}
+
 /* Accordion polish */
 .filters-accordion{ margin-top: 10px; }
 
@@ -259,7 +292,7 @@
   border-radius: 18px !important;
   overflow: hidden;
   border: 1px solid rgba(15,23,42,.08);
-  background: rgba(255,255,255,.55);
+  background: rgba(255,255,255,.60);
   box-shadow: 0 10px 20px rgba(15,23,42,.08);
   margin-bottom: 10px;
 }
@@ -325,7 +358,7 @@
 
 .top-row{
   border-radius: var(--r28);
-  padding: 12px 14px;
+  padding: 14px 16px;
   margin-bottom: 14px;
   display: flex;
   align-items: center;
@@ -367,6 +400,49 @@
   height: 40px !important;
 }
 
+/* ===== Empty state ===== */
+.empty{
+  border-radius: var(--r28);
+  padding: 18px;
+  margin-bottom: 14px;
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+.empty-icon{
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+  background: rgba(212,175,55,.14);
+  border: 1px solid rgba(212,175,55,.22);
+}
+.empty-title{
+  font-weight: 1000;
+  color: rgba(15,23,42,.92);
+}
+.empty-sub{
+  font-weight: 850;
+  color: rgba(15,23,42,.62);
+}
+.empty-actions{
+  margin-top: 6px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.pill-btn{
+  border-radius: 999px !important;
+  font-weight: 950 !important;
+}
+.pill-btn.primary{
+  background: linear-gradient(135deg, rgba(143,21,21,1), rgba(183,110,121,1)) !important;
+  color: #fff !important;
+}
+
 /* ===== Grid ===== */
 .grid{
   display: grid;
@@ -381,7 +457,7 @@
 
 /* ===== Card ===== */
 .product-card{
-  background: rgba(255,255,255,.62);
+  background: rgba(255,255,255,.66);
   border-radius: var(--r22);
   overflow: hidden;
   border: 1px solid rgba(15,23,42,.10);
@@ -395,7 +471,7 @@
 .product-card:hover{
   transform: translateY(-4px);
   box-shadow: var(--shadow-md);
-  border-color: rgba(212,175,55,.25);
+  border-color: rgba(212,175,55,.28);
 }
 
 /* media */
@@ -420,7 +496,7 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  background: rgba(255,255,255,.80) !important;
+  background: rgba(255,255,255,.84) !important;
   border: 1px solid rgba(15,23,42,.10);
   box-shadow: 0 12px 24px rgba(15,23,42,.12);
   z-index: 2;
@@ -463,19 +539,43 @@
   bottom: 10px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+
+  max-width: calc(100% - 16px);
+  min-width: 0;
+  flex-wrap: nowrap;
 }
 
-.city{
-  background: rgba(15,23,42,.72);
-  color: #fff;
-  border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 12px;
-  font-weight: 950;
+.bottom-badges .city{
   display: inline-flex;
   align-items: center;
   gap: 4px;
+
+  max-width: 65%;
+  min-width: 0;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  padding: 6px 10px;
+  border-radius: 999px;
+
+  background: rgba(15,23,42,.72);
+  color: #fff;
+
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.bottom-badges .city mat-icon{
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.bottom-badges app-product-rating{
+  flex-shrink: 0;
+  max-width: 35%;
 }
 
 /* meta */
@@ -540,7 +640,6 @@
   font-weight: 1000 !important;
 }
 
-.btn-ghost mat-icon{ font-size: 18px; }
 .btn-primary{
   background: linear-gradient(135deg, rgba(143,21,21,1), rgba(183,110,121,1)) !important;
   color: #fff !important;
@@ -556,7 +655,7 @@
 
 /* skeleton */
 .skeleton{
-  height: 320px;
+  height: 330px;
   background: linear-gradient(90deg, rgba(15,23,42,.06) 25%, rgba(15,23,42,.03) 50%, rgba(15,23,42,.06) 75%);
   background-size: 200% 100%;
   animation: sk 1.2s infinite;
@@ -568,106 +667,8 @@
   100%{ background-position: -200% 0; }
 }
 
-/* HOW IT WORKS */
-.how-it-works {
-  padding: clamp(18px, 3.5vw, 44px) 0;
-  scroll-margin-top: 90px; /* important if you have sticky header */
-}
-
-.how-wrap {
-  width: min(1200px, 92%);
-  margin: 0 auto;
-}
-
-.how-head h2 {
-  margin: 0;
-  font-size: clamp(22px, 2.3vw, 34px);
-  letter-spacing: -0.02em;
-}
-
-.how-subtitle {
-  margin: 8px 0 0 0;
-  color: rgba(0,0,0,0.68);
-  max-width: 60ch;
-  line-height: 1.5;
-}
-
-.how-grid {
-  margin-top: 18px;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.how-card {
-  position: relative;
-  border-radius: 16px;
-  padding: 16px 16px 14px 16px;
-  background: rgba(255,255,255,0.7);
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.06);
-  backdrop-filter: blur(10px);
-}
-
-.how-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  background: rgba(184,135,70,0.14);
-  border: 1px solid rgba(184,135,70,0.25);
-  margin-bottom: 10px;
-}
-
-.how-num {
-  position: absolute;
-  right: 14px;
-  top: 14px;
-  font-weight: 800;
-  opacity: 0.25;
-  font-size: 18px;
-}
-
-.how-card h3 {
-  margin: 0 0 6px 0;
-  font-size: 16px;
-}
-
-.how-card p {
-  margin: 0;
-  color: rgba(0,0,0,0.68);
-  line-height: 1.45;
-  font-size: 14px;
-}
-
-.how-assurance {
-  margin-top: 14px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.assurance-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 999px;
-  background: rgba(0,0,0,0.04);
-  border: 1px solid rgba(0,0,0,0.06);
-  font-weight: 650;
-  font-size: 13px;
-}
-
-.assurance-pill mat-icon {
-  font-size: 18px;
-  height: 18px;
-  width: 18px;
-}
 /* ===========================
    Premium Bottom Sheet styles
-   (local, no global styles needed)
    =========================== */
 
 :host ::ng-deep .how-sheet-panel .mat-bottom-sheet-container{
@@ -675,7 +676,7 @@
   border-top-left-radius: 22px !important;
   border-top-right-radius: 22px !important;
   box-shadow: 0 -30px 80px rgba(15,23,42,0.18) !important;
-  background: rgba(255,255,255,0.88) !important;
+  background: rgba(255,255,255,0.90) !important;
   backdrop-filter: blur(18px);
 }
 
@@ -683,9 +684,7 @@
   background: rgba(15,23,42,0.35) !important;
 }
 
-.how-sheet{
-  padding: 16px 16px 14px;
-}
+.how-sheet{ padding: 16px 16px 14px; }
 
 .how-sheet-top{
   display: flex;
@@ -708,9 +707,7 @@
   line-height: 1.45;
 }
 
-.how-sheet-top .x{
-  border-radius: 999px !important;
-}
+.how-sheet-top .x{ border-radius: 999px !important; }
 
 .how-sheet-grid{
   display: grid;
@@ -723,7 +720,7 @@
   position: relative;
   border-radius: 16px;
   padding: 14px;
-  background: rgba(255,255,255,0.70);
+  background: rgba(255,255,255,0.72);
   border: 1px solid rgba(0,0,0,0.06);
   box-shadow: 0 12px 28px rgba(0,0,0,0.06);
 }
@@ -808,20 +805,6 @@
   .how-sheet-actions .how-btn{ flex: 1; }
 }
 
-/* Responsive */
-@media (max-width: 992px) {
-  .how-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 520px) {
-  .how-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-
 /* Scroll to top */
 .scroll-to-top-btn{
   position: fixed;
@@ -839,7 +822,7 @@
 /* ===== Responsive ===== */
 @media (max-width: 1200px){
   .grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .catalog-shell{ grid-template-columns: 300px 1fr; }
+  .catalog-shell{ grid-template-columns: 320px 1fr; }
 }
 
 @media (max-width: 900px){
@@ -872,101 +855,8 @@
   .btn{ height: 34px; padding: 0 10px !important; border-radius: 14px !important; }
   .btn-icon{ width: 36px; height: 36px; border-radius: 14px !important; }
 
-  .role-puck{ width: 150px; height: 58px; }
+  .role-puck{ width: 160px; height: 58px; }
   .mobile-role-toggle{ width: 66px; height: 50px; }
-}
-
-@media (max-width: 360px){
-  .media img{ height: 120px; }
-  .chip-icon{ width: 32px; height: 32px; }
-  .chip-title{ font-size: 11px; }
-}
-/* Wishlist FAB: keep visible + consistent on both states */
-:host ::ng-deep .product-card .media .wish.mat-mdc-mini-fab{
-  /* keep your glass look */
-  background: rgba(255,255,255,.85) !important;
-  border: 1px solid rgba(15,23,42,.12) !important;
-}
-
-/* Default (not favorite): outline heart */
-:host ::ng-deep .product-card .media .wish.mat-mdc-mini-fab mat-icon{
-  color: rgba(143,21,21,.95) !important; /* maroon */
-}
-
-/* When favorite is ON -> button has mat-warn class */
-:host ::ng-deep .product-card .media .wish.mat-mdc-mini-fab.mat-warn{
-  background: rgba(143,21,21,.12) !important;   /* subtle red tint */
-  border-color: rgba(143,21,21,.20) !important;
-}
-
-/* Make the heart ALWAYS visible when ON */
-:host ::ng-deep .product-card .media .wish.mat-mdc-mini-fab.mat-warn mat-icon{
-  color: rgba(143,21,21,1) !important; /* strong maroon (not white) */
-}
-
-/* Optional: hover */
-:host ::ng-deep .product-card .media .wish.mat-mdc-mini-fab:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 14px 28px rgba(15,23,42,.14);
-}
-/* =====================================================
-   FIX: Responsive bottom-badges (city + rating)
-   ===================================================== */
-
-/* Container */
-.bottom-badges{
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  max-width: calc(100% - 16px);
-  min-width: 0;
-
-  flex-wrap: nowrap;          /* keep single row */
-}
-
-/* City pill (truncate safely) */
-.bottom-badges .city{
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-
-  max-width: 65%;             /* 🔑 prevents overflow */
-  min-width: 0;              /* 🔑 allow shrinking */
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-  padding: 6px 10px;
-  border-radius: 999px;
-
-  background: rgba(15,23,42,.72);
-  color: #fff;
-
-  font-size: 12px;
-  font-weight: 950;
-}
-
-/* Location icon stays fixed */
-.bottom-badges .city mat-icon{
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-/* Rating must never shrink */
-.bottom-badges app-product-rating{
-  flex-shrink: 0;
-  max-width: 35%;
-}
-
-/* ===============================
-   Mobile tuning
-   =============================== */
-@media (max-width: 600px){
-  .bottom-badges{
-    gap: 4px;
-  }
 
   .bottom-badges .city{
     max-width: 60%;
@@ -976,7 +866,28 @@
 }
 
 @media (max-width: 360px){
-  .bottom-badges .city{
-    max-width: 55%;
-  }
+  .media img{ height: 120px; }
+  .chip-icon{ width: 32px; height: 32px; }
+  .chip-title{ font-size: 11px; }
+  .bottom-badges .city{ max-width: 55%; }
+}
+
+/* Wishlist FAB visibility consistency */
+:host ::ng-deep .product-card .media .wish.mat-mdc-mini-fab{
+  background: rgba(255,255,255,.85) !important;
+  border: 1px solid rgba(15,23,42,.12) !important;
+}
+:host ::ng-deep .product-card .media .wish.mat-mdc-mini-fab mat-icon{
+  color: rgba(143,21,21,.95) !important;
+}
+:host ::ng-deep .product-card .media .wish.mat-mdc-mini-fab.mat-warn{
+  background: rgba(143,21,21,.12) !important;
+  border-color: rgba(143,21,21,.20) !important;
+}
+:host ::ng-deep .product-card .media .wish.mat-mdc-mini-fab.mat-warn mat-icon{
+  color: rgba(143,21,21,1) !important;
+}
+:host ::ng-deep .product-card .media .wish.mat-mdc-mini-fab:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(15,23,42,.14);
 }

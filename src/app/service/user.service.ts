@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { FormGroup } from '@angular/forms';
@@ -20,30 +19,13 @@ export class UserService {
 
   private activeCategorySubject = new BehaviorSubject<string>('All');
   activeCategory$ = this.activeCategorySubject.asObservable();
-
-  setActiveCategory(category: string) {
-    this.activeCategorySubject.next(category);
-  }
-
-  setUserRole(role: string) {
-    this.userRoleSubject.next(role);
-  }
-
-  // Send OTP to user's email
-  sendOtpToEmail(email: string): Observable<any> {
-    return this.http.post<any>(`${this.url}/users/send-otp`, { email });
-  }
-
-  // Verify OTP for user's email
-  verifyOtp(email: string, otp: string): Observable<any> {
-    return this.http.post<any>(`${this.url}/users/verify-otp`, { email, otp });
-  }
-
   public user: any = null;
   private userHistory: any[] = [];
   public googleProfilePicture: string = '';
 
-  private isLoggedInSubject = new BehaviorSubject<boolean>(!!this.getUserFromStorage());
+  private isLoggedInSubject = new BehaviorSubject<boolean>(
+    !!this.getUserFromStorage(),
+  );
   isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
   private baseUrl = environment.apiBaseUrl;
@@ -70,7 +52,7 @@ export class UserService {
           }
           this.isLoggedInSubject.next(false);
           return false;
-        })
+        }),
       );
     }
     this.isLoggedInSubject.next(false);
@@ -90,13 +72,38 @@ export class UserService {
           }
           this.isLoggedInSubject.next(false);
           return false;
-        })
+        }),
       );
     }
     this.isLoggedInSubject.next(false);
     return new Observable((observer) => observer.next(false));
   }
+  setActiveCategory(category: string) {
+    this.activeCategorySubject.next(category);
+  }
 
+  setUserRole(role: string) {
+    this.userRoleSubject.next(role);
+  }
+
+  // Send OTP to user's email
+  sendOtpToEmail(email: string | any): Observable<any> {
+    return this.http.post<any>(`${this.url}/users/send-otp`, { email });
+  }
+
+  // Verify OTP for user's email
+  verifyOtp(email: string | any, otp: string | any): Observable<any> {
+    return this.http.post<any>(`${this.url}/users/verify-otp`, { email, otp });
+  }
+  resetPassword(
+    email: string | any,
+    newPassword: string | any,
+  ): Observable<any> {
+    return this.http.post(`${this.baseUrl}/users/reset-password`, {
+      email,
+      newPassword,
+    });
+  }
   getUserDetails() {
     return this.user;
   }
@@ -110,7 +117,7 @@ export class UserService {
     this.saveUserHistory();
   }
 
-  saveUserDetails(user?: any ) {
+  saveUserDetails(user?: any) {
     localStorage.setItem('userDetails', JSON.stringify(user || this.user));
   }
 
@@ -136,7 +143,11 @@ export class UserService {
     }
   }
 
-  updateRating(productId: string, rating: number, userId: number): Observable<any> {
+  updateRating(
+    productId: string,
+    rating: number,
+    userId: number,
+  ): Observable<any> {
     const url = `${this.url}/productRating`;
     return this.http.post<any>(url, { productId, rating, userId });
   }

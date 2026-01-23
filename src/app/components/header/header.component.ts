@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { OrderService } from 'src/app/service/order.service';
 import { UserService } from 'src/app/service/user.service';
+import { SocialAuthService } from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-header',
@@ -57,7 +58,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     public readonly router: Router,
     public orderService: OrderService,
     private dialog: MatDialog,
-    public notificationService: NotificationService
+    public notificationService: NotificationService,
+     private socialAuth: SocialAuthService,
   ) {}
 
   ngOnInit() {
@@ -272,6 +274,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
       catalogEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
   }
+  logout(): void {
+    console.log('test')
+ 
+  localStorage.removeItem('userToken');
+  localStorage.removeItem('user'); 
+  localStorage.removeItem('userDetails'); 
+  sessionStorage.clear(); 
+  this.socialAuth.signOut().catch(() => {});
+  this.router.navigateByUrl('/', { replaceUrl: true });
+}
 
   clear() {
     this.searchValue = '';

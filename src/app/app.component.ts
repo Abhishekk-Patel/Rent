@@ -66,10 +66,13 @@ export class AppComponent implements OnInit, OnDestroy {
   url.includes('forgot-password');
 
 
-        this.showHeaderFooter = !(isHome || isForgotPassword);
+        this.showHeaderFooter = this.hasAuthToken() &&  !(isHome || isForgotPassword);
       });
   }
 
+   private hasAuthToken(): boolean {
+    return !!localStorage.getItem('userToken');
+  }
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();

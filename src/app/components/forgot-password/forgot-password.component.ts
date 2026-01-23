@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { UserService } from 'src/app/service/user.service';
 
 type Step = 'email' | 'otp' | 'reset' | 'done';
 
@@ -36,7 +37,7 @@ export class ForgotPasswordComponent {
     { validators: this.passwordMatchValidator }
   );
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder,private userService: UserService) {}
 
   // --------- validators ----------
   private passwordMatchValidator(group: any) {
@@ -52,59 +53,84 @@ export class ForgotPasswordComponent {
       this.emailForm.markAllAsTouched();
       return;
     }
-
     this.isLoading = true;
-
-    // TODO: call your API
-    // this.userService.sendOtp(this.emailForm.value.email).subscribe(...)
+     this.userService.sendOtpToEmail(this.emailForm.value.email).subscribe(res=> console.log(res,"sent otp"))
     setTimeout(() => {
       this.isLoading = false;
       this.step = 'otp';
     }, 700);
   }
 
-  verifyOtp() {
-    this.otpError = '';
-    if (this.otpForm.invalid) {
-      this.otpForm.markAllAsTouched();
-      return;
-    }
+verifyOtp() {
+  this.otpError = '';
 
-    this.isLoading = true;
+  if (this.otpForm.invalid) {
+    this.otpForm.markAllAsTouched();
+    return;
+  }
 
-    // TODO: call your API
-    setTimeout(() => {
+  this.isLoading = true;
+
+  const email = (this.emailForm.value.email || '').toLowerCase().trim();
+  const otp = (this.otpForm.value.otp || '').trim();
+
+  this.userService.verifyOtp(email, otp).subscribe({
+    next: (res) => {
       this.isLoading = false;
 
-      // Demo: treat 0000 as invalid
-      if (this.otpForm.value.otp === '0000') {
-        this.otpError = 'Invalid OTP. Please try again.';
-        return;
-      }
+      // ✅ backend should return resetToken
+      // if (!res?.resetToken) {
+      //   this.otpError = 'OTP verified but reset session is invalid.';
+      //   return;
+      // }
 
+
+
+      // move to reset password step
       this.step = 'reset';
-    }, 700);
-  }
-
-  resetPassword() {
-    this.resetError = '';
-    if (this.resetForm.invalid) {
-      this.resetForm.markAllAsTouched();
-      return;
-    }
-    if (this.resetForm.errors?.['passwordMismatch']) {
-      this.resetError = 'Passwords do not match.';
-      return;
-    }
-
-    this.isLoading = true;
-
-    // TODO: call your API
-    setTimeout(() => {
+    },
+    error: (err) => {
       this.isLoading = false;
-      this.step = 'done';
-    }, 800);
+      this.otpError = err?.error?.error || 'Invalid or expired OTP';
+    },
+  });
+}
+
+resetPassword() {
+  this.resetError = '';
+
+  if (this.resetForm.invalid) {
+    this.resetForm.markAllAsTouched();
+    return;
   }
+
+  if (this.resetForm.errors?.['passwordMismatch']) {
+    this.resetError = 'Passwords do not match.';
+    return;
+  }
+
+  // if (!this.resetToken) {
+  //   this.resetError = 'Reset session expired. Please request OTP again.';
+  //   this.step = 'email';
+  //   return;
+  // }
+
+  this.isLoading = true;
+
+  const newPassword = this.resetForm.value.password!;
+
+  this.userService.resetPassword(this.emailForm.value.email,newPassword).subscribe({
+    next: () => {
+      this.isLoading = false;
+      this.step = 'done'; // ✅ only move on success
+    },
+    error: (err) => {
+      this.isLoading = false;
+      this.resetError = err?.error?.error || 'Failed to reset password';
+    },
+  });
+}
+
 
   resendOtp() {
     this.otpError = '';

@@ -1,4 +1,3 @@
-
 import {
   Component,
   ElementRef,
@@ -23,7 +22,6 @@ import { UnifiedChatComponent } from '../unified-chat.component';
 import { Category_LIST } from 'src/mock-data';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
-
 @Component({
   selector: 'app-content-component',
   templateUrl: './content-component.component.html',
@@ -44,7 +42,7 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
 
   // Search
   searchValue = '';
-  @ViewChild('searchInput', { static: false }) searchInput?: ElementRef;
+  @ViewChild('searchInput', { static: false }) searchInput?: ElementRef<HTMLInputElement>;
 
   // Loading / paging
   isLoading: boolean = false;
@@ -62,12 +60,13 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
 
   // Subscriptions
   private scrollSubscription!: Subscription;
+  private dataSubscription!: Subscription;
 
   productData$ = this.store.select('productData');
   defaultImg = 'assets/Downloads/MissingProduct.webp';
-  @ViewChild('howItWorksSheet') howItWorksSheetTpl!: TemplateRef<any>;
-private howSheetRef?: MatBottomSheetRef;
 
+  @ViewChild('howItWorksSheet') howItWorksSheetTpl!: TemplateRef<any>;
+  private howSheetRef?: MatBottomSheetRef;
 
   constructor(
     public mycartService: MyCartServiceService,
@@ -78,18 +77,18 @@ private howSheetRef?: MatBottomSheetRef;
     private store: Store<{ productData: any }>,
     private cdr: ChangeDetectorRef,
     private dialog: MatDialog,
-      private bottomSheet: MatBottomSheet 
+    private bottomSheet: MatBottomSheet
   ) {
     this.store.dispatch({ type: 'LoadProductData' });
   }
 
-  // ✅ HostListener: single source of truth for scroll-to-top button visibility
+  // ✅ Single source of truth for scroll-to-top visibility
   @HostListener('window:scroll', [])
   onWindowScroll() {
     this.showScrollToTop = window.scrollY > 300;
   }
 
-  // ✅ HostListener: keep mobile view state updated without manual add/remove
+  // ✅ Keep mobile view state updated
   @HostListener('window:resize', [])
   onWindowResize() {
     this.checkMobileView();
@@ -97,30 +96,30 @@ private howSheetRef?: MatBottomSheetRef;
 
   ngOnInit() {
     this.checkMobileView();
-
-    // Ensure initial state is correct on first paint (no flicker)
     this.onWindowScroll();
 
-    // Role & filters
+    // Role changes
     this.userService.userRole$.subscribe(role => {
       this.userRole = role;
       this.filterRewardsByCategory('All');
     });
 
-    // Listen for category changes from header
+    // Category changes from header/service
     this.userService.activeCategory$.subscribe(categoryName => {
       this.filterRewardsByCategory(categoryName);
     });
 
-    // Listen for global search value changes
+    // Global search value changes
     this.userService.searchValue$.subscribe(searchValue => {
-      this.searchValue = searchValue.trim().toLowerCase();
+      this.searchValue = (searchValue || '').trim().toLowerCase();
       this.filterRewards();
     });
 
     // Load product data
     this.isLoading = true;
-    this.productData$.subscribe((data) => {
+    this.dataSubscription = this.productData$.subscribe((data: any[]) => {
+      if (!data || !Array.isArray(data)) return;
+
       this.rewards = data.map((item: any) => ({
         pk: item._id,
         name: item.productName,
@@ -130,7 +129,7 @@ private howSheetRef?: MatBottomSheetRef;
         quantity: item.quantity || 0,
         userRole: item.userRole || 'Both',
         valid_until: item.validUntil,
-        display_img_urls: item.images.map((img: any) => img.url),
+        display_img_urls: Array.isArray(item.images) ? item.images.map((img: any) => img.url) : [],
         currentImageIndex: 0,
         city: item.city || 'Unknown',
         low_quantity: item.lowQuantity || 5,
@@ -139,58 +138,60 @@ private howSheetRef?: MatBottomSheetRef;
         ProductRatings: item.ratings || [],
         userId: item.userId || '',
         userRatings: item.ratings || [],
-        totalUserRated: item.totalUserRated ? item.totalUserRated : item.ratings.length || 0,
+        totalUserRated: item.totalUserRated ? item.totalUserRated : (item.ratings?.length || 0),
+        avgRating: item.avgRating || 0,
       }));
-      this.filteredRewards = [...this.rewards];
+
       this.updateRewardsAndCategories();
-      this.filterRewardsByCategory('All');
+
+      // ✅ start the first page only AFTER data exists
+      this.filteredRewards = [];
+      this.currentPage = 1;
+      this.loadMoreRewards();
+
       this.isLoading = false;
       this.cdr.detectChanges();
     });
 
     this.mycartService.setIsAddNewProduct(false);
-
-    // Initial page load
-    this.loadMoreRewards();
   }
+
   openHowItWorksSheet(): void {
-  if (!this.howItWorksSheetTpl) return;
+    if (!this.howItWorksSheetTpl) return;
 
-  this.howSheetRef = this.bottomSheet.open(this.howItWorksSheetTpl, {
-    panelClass: 'how-sheet-panel',
-    hasBackdrop: true,
-    backdropClass: 'how-sheet-backdrop',
-  });
-}
+    this.howSheetRef = this.bottomSheet.open(this.howItWorksSheetTpl, {
+      panelClass: 'how-sheet-panel',
+      hasBackdrop: true,
+      backdropClass: 'how-sheet-backdrop',
+    });
+  }
 
-closeHowItWorksSheet(): void {
-  this.howSheetRef?.dismiss();
-}
+  closeHowItWorksSheet(): void {
+    this.howSheetRef?.dismiss();
+  }
 
-goToProductsFromSheet(): void {
-  this.closeHowItWorksSheet();
-  setTimeout(() => this.scrollToCatalog(), 120);
-}
-
+  goToProductsFromSheet(): void {
+    this.closeHowItWorksSheet();
+    setTimeout(() => this.scrollToCatalog(), 120);
+  }
 
   ngAfterViewInit() {
-    // Debounced search input
+    // Debounced search input (both desktop & mobile templates reuse #searchInput)
     if (this.searchInput && this.searchInput.nativeElement) {
       fromEvent(this.searchInput.nativeElement, 'input')
-        .pipe(debounceTime(300))
+        .pipe(debounceTime(250))
         .subscribe(() => {
-          const searchValue = this.searchInput!.nativeElement.value.trim();
-          this.searchValue = searchValue.toLowerCase();
-          this.filterRewardsByCategory(searchValue || 'All');
+          const value = this.searchInput!.nativeElement.value.trim().toLowerCase();
+          this.searchValue = value;
+          this.filterRewardsByCategory(value || 'All');
         });
     }
 
-    // ✅ Single RxJS subscription for infinite scroll (bottom detection)
-    // (kept separate from HostListener which controls button visibility)
+    // Infinite scroll bottom detection
     this.scrollSubscription = fromEvent(window, 'scroll')
-      .pipe(debounceTime(300)) // debounce is fine for bottom detection
+      .pipe(debounceTime(300))
       .subscribe(() => {
-        const atBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;
+        const atBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 80;
         if (atBottom) {
           this.showLoadingSpinner();
           this.loadMoreRewards();
@@ -199,22 +200,16 @@ goToProductsFromSheet(): void {
   }
 
   ngOnDestroy() {
-    // HostListeners do not require manual removal.
-    if (this.scrollSubscription) {
-      this.scrollSubscription.unsubscribe();
-    }
-    if (this.loadingTimeout) {
-      clearTimeout(this.loadingTimeout);
-    }
+    if (this.scrollSubscription) this.scrollSubscription.unsubscribe();
+    if (this.dataSubscription) this.dataSubscription.unsubscribe();
+    if (this.loadingTimeout) clearTimeout(this.loadingTimeout);
   }
 
   // ---------- UI helpers ----------
 
   checkMobileView() {
     this.isMobileView = window.innerWidth <= 768;
-    if (!this.isMobileView) {
-      this.showCategoryMenu = false;
-    }
+    if (!this.isMobileView) this.showCategoryMenu = false;
   }
 
   scrollToCatalog(): void {
@@ -227,7 +222,6 @@ goToProductsFromSheet(): void {
   }
 
   scrollToTop() {
-    // Hide immediately to avoid debounce lag while smooth scroll happens
     this.showScrollToTop = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -244,7 +238,6 @@ goToProductsFromSheet(): void {
     this.filterRewardsByCategory(category.name);
     this.showCategoryMenu = false;
 
-    // Scroll to catalog section
     setTimeout(() => {
       const catalogEl = document.querySelector('.catalog');
       if (catalogEl) {
@@ -268,19 +261,16 @@ goToProductsFromSheet(): void {
   }
 
   search(): void {
-    let searchValue = this.searchValue || '';
-    if (this.searchInput && this.searchInput.nativeElement) {
-      searchValue = this.searchInput.nativeElement.value.trim().toLowerCase();
-      this.searchValue = searchValue;
-    } else if (searchValue) {
-      this.searchValue = searchValue.trim().toLowerCase();
-    } else {
-      this.searchValue = '';
+    let value = (this.searchValue || '').trim().toLowerCase();
+
+    if (this.searchInput?.nativeElement) {
+      value = this.searchInput.nativeElement.value.trim().toLowerCase();
     }
+
+    this.searchValue = value;
     this.filterRewards();
 
-    // Optionally, scroll on blur
-    if (this.searchInput && this.searchInput.nativeElement) {
+    if (this.searchInput?.nativeElement) {
       this.searchInput.nativeElement.addEventListener('blur', () => {
         this.scrollToFirstMatch();
       }, { once: true });
@@ -302,18 +292,19 @@ goToProductsFromSheet(): void {
 
   clear() {
     this.searchValue = '';
-    if (this.searchInput && this.searchInput.nativeElement) {
+    if (this.searchInput?.nativeElement) {
       this.searchInput.nativeElement.value = '';
     }
     this.filterRewards();
   }
 
   private filterRewards() {
-    // Best match search: check all relevant fields
+    const search = (this.searchValue || '').trim().toLowerCase();
+
     this.filteredRewards = this.rewards
       .filter((reward: any) => {
-        const search = this.searchValue;
         if (!search) return reward.userRole === this.userRole || reward.userRole === 'Both';
+
         const fields = [
           reward.name,
           reward.city,
@@ -321,7 +312,8 @@ goToProductsFromSheet(): void {
           reward.description,
           reward.ProductOwnerEmail
         ];
-        const matchesSearch = fields.some(field => field && field.toLowerCase().includes(search));
+
+        const matchesSearch = fields.some(f => f && String(f).toLowerCase().includes(search));
         const matchesUserRole = reward.userRole === this.userRole || reward.userRole === 'Both';
         return matchesSearch && matchesUserRole;
       })
@@ -329,7 +321,7 @@ goToProductsFromSheet(): void {
 
     this.currentPage = 1;
 
-    if (this.searchValue && !this.filteredRewards.length) {
+    if (search && !this.filteredRewards.length) {
       this.mycartService.showMessage(this.alertMsg);
     }
   }
@@ -337,26 +329,30 @@ goToProductsFromSheet(): void {
   // ---------- Filtering & sorting ----------
 
   filterRewardsByCategory(categoryName: string) {
+    const cat = (categoryName || 'All').toLowerCase();
+    const search = (this.searchValue || '').toLowerCase();
+
     this.filteredRewards = this.rewards
       .filter((reward) => {
         const matchesCategory =
-          categoryName === 'All' ||
-          reward.category.toLocaleLowerCase().includes(categoryName.toLocaleLowerCase());
+          cat === 'all' || (reward.category || '').toLowerCase().includes(cat);
+
         const matchesSearch =
-          reward.name.toLocaleLowerCase().includes(this.searchValue) ||
-          reward.city.toLocaleLowerCase().includes(this.searchValue);
+          (reward.name || '').toLowerCase().includes(search) ||
+          (reward.city || '').toLowerCase().includes(search) ||
+          (reward.category || '').toLowerCase().includes(search);
+
         const matchesUserRole =
           reward.userRole === this.userRole || reward.userRole === 'Both';
+
         return matchesCategory && matchesSearch && matchesUserRole;
       })
       .slice(0, this.pageSize);
 
     this.currentPage = 1;
 
-    if (this.searchValue || categoryName !== 'All') {
-      if (!this.filteredRewards.length) {
-        this.mycartService.showMessage(this.alertMsg);
-      }
+    if ((this.searchValue || categoryName !== 'All') && !this.filteredRewards.length) {
+      this.mycartService.showMessage(this.alertMsg);
     }
   }
 
@@ -368,15 +364,15 @@ goToProductsFromSheet(): void {
 
   applyLocationFilter(location: string) {
     this.filteredRewards = this.rewards.filter((reward: any) => {
-      return reward.city.toLocaleLowerCase().includes(location.toLocaleLowerCase());
+      return (reward.city || '').toLowerCase().includes((location || '').toLowerCase());
     });
   }
 
   sortRewards(order: string) {
     this.filteredRewards.sort((a, b) => {
       return order === 'asc'
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name);
+        ? String(a.name).localeCompare(String(b.name))
+        : String(b.name).localeCompare(String(a.name));
     });
   }
 
@@ -387,7 +383,12 @@ goToProductsFromSheet(): void {
   }
 
   loadMoreRewards() {
-    this.isLoading = true;
+    if (!this.rewards.length) {
+      this.isLoading = false;
+      return;
+    }
+
+    const search = (this.searchValue || '').toLowerCase();
 
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = this.currentPage * this.pageSize;
@@ -395,16 +396,21 @@ goToProductsFromSheet(): void {
     const newRewards = this.rewards
       .filter((reward) => {
         const matchesSearch =
-          reward.name.toLocaleLowerCase().includes(this.searchValue) ||
-          reward.city.toLocaleLowerCase().includes(this.searchValue);
+          (reward.name || '').toLowerCase().includes(search) ||
+          (reward.city || '').toLowerCase().includes(search) ||
+          (reward.category || '').toLowerCase().includes(search);
+
         const matchesUserRole =
           reward.userRole === this.userRole || reward.userRole === 'Both';
+
         return matchesSearch && matchesUserRole;
       })
       .slice(startIndex, endIndex);
 
-    // Note: Set won't dedupe different object references; kept for parity with your logic.
-    this.filteredRewards = [...new Set([...this.filteredRewards, ...newRewards])];
+    // ✅ Dedupe by pk (reliable)
+    const map = new Map<string, any>();
+    [...this.filteredRewards, ...newRewards].forEach(r => map.set(String(r.pk), r));
+    this.filteredRewards = Array.from(map.values());
 
     this.currentPage++;
     this.isLoading = false;
@@ -418,10 +424,8 @@ goToProductsFromSheet(): void {
   }
 
   addToCart(pk: number) {
-    const reward = this.rewards.find((reward) => reward.pk === pk);
-    if (reward) {
-      this.mycartService.addToCart(reward);
-    }
+    const reward = this.rewards.find((r) => r.pk === pk);
+    if (reward) this.mycartService.addToCart(reward);
   }
 
   toggleFavorite(reward: any) {
@@ -438,17 +442,23 @@ goToProductsFromSheet(): void {
   }
 
   nextImage(reward: any) {
+    if (!reward.display_img_urls?.length) return;
+
     reward.currentImageIndex =
       (reward.currentImageIndex + 1) % reward.display_img_urls.length;
+
     if (!reward.display_img_urls[reward.currentImageIndex]) {
       reward.currentImageIndex = 0;
     }
   }
 
   prevImage(reward: any) {
+    if (!reward.display_img_urls?.length) return;
+
     reward.currentImageIndex =
       (reward.currentImageIndex - 1 + reward.display_img_urls.length) %
       reward.display_img_urls.length;
+
     if (!reward.display_img_urls[reward.currentImageIndex]) {
       reward.currentImageIndex = reward.display_img_urls.length - 1;
     }
@@ -464,22 +474,11 @@ goToProductsFromSheet(): void {
 
   onRatingChange(newRating: number, reward: any) {
     reward.rating = newRating;
-    this.userService.updateRating(reward.pk, newRating, reward.userId).subscribe((res: any) => { });
+    this.userService.updateRating(reward.pk, newRating, reward.userId).subscribe(() => {});
   }
 
   openMessageDialog(product: any) {
-    // this.dialog.open(UnifiedChatComponent, {
-    //   position: { top: '0', left: '0' },
-    //   width: '100vw',
-    //   height: '100vh',
-    //   maxWidth: '100vw',
-    //   maxHeight: '100vh',
-    //   panelClass: 'chat-dialog-fullscreen',
-    //   autoFocus: false,
-    //   data: { product }
-    // });
-
-
+    // kept your router navigation behavior
     this.router.navigate(['/messenger'], {
       queryParams: {
         productId: product.pk || product._id,
@@ -488,8 +487,8 @@ goToProductsFromSheet(): void {
         image: product.display_img_urls?.[0] || product.imageUrl || ''
       }
     });
-
   }
+
   onImgError(event: Event) {
     const img = event.target as HTMLImageElement;
     img.src = this.defaultImg;
@@ -509,24 +508,26 @@ goToProductsFromSheet(): void {
 
   updateRewardsAndCategories() {
     this.filteredRewards = this.rewards
-      .filter((reward) => {
-        return reward.userRole === this.userRole || reward.userRole === 'Both';
-      })
+      .filter((reward) => reward.userRole === this.userRole || reward.userRole === 'Both')
       .slice(0, this.pageSize);
 
     this.categories = Category_LIST.filter((cat) => {
       return cat.useRole === this.userRole || cat.useRole === 'Both';
     });
 
-    this.filterRewardsByCategory('All');
+    // Keep selection sane
+    const anySelected = this.categories.some(c => c.isSelected);
+    if (!anySelected && this.categories.length) {
+      this.categories[0].isSelected = false;
+    }
+
     this.currentPage = 1;
-    this.showLoadingSpinner();
-    this.loadMoreRewards();
   }
 
   onUserRoleChange(event: any) {
     this.userRole = event.value;
     this.updateRewardsAndCategories();
+
     this.currentPage = 1;
     this.filteredRewards = [];
     this.showLoadingSpinner();

@@ -358,7 +358,7 @@
         <span>Message</span>
       </button>
 
-      <button class="footer-btn danger" (click)="router.navigate([''])" aria-label="Logout">
+      <button class="footer-btn danger" (click)="logout()" aria-label="Logout">
         <mat-icon>logout</mat-icon>
         <span>Logout</span>
       </button>
@@ -456,7 +456,7 @@
         <li class="nav-item" aria-label="Profile" *ngIf="!isAddNewProduct">
           <mat-menu #userMenu="matMenu">
             <button mat-menu-item (click)="router.navigate(['my-account'])">Account</button>
-            <button mat-menu-item (click)="router.navigate([''])">Logout</button>
+            <button mat-menu-item (click)="logout()">Logout</button>
           </mat-menu>
 
           <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Profile" class="icon-chip">
