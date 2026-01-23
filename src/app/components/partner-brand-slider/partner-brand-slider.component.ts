@@ -11,7 +11,10 @@ import { Subscription } from 'rxjs';
 export class PartnerBrandSliderComponent implements OnInit, OnDestroy {
   brands = [
     { name: 'Brannd10', imageUrl: './assets/gpt.png' },
-    { name: 'Brand2', imageUrl: './assets/download.jpeg' },
+    { name: 'Brand2', imageUrl: './assets/hero_section_img.png' },
+    { name: 'Brand3', imageUrl: './assets/hero_section_bg.png' },
+
+
   ];
 
   @Output() howItWorksClick = new EventEmitter<void>();

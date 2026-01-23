@@ -187,9 +187,13 @@ export class MyCartServiceService {
   // openProductDetails(response: any): void {
   //   this.dialog.open(ProductDetailsPopupComponent, { data: { response } });
   // }
-  openProductDetails(response: any): void {
+  openProductDetails(response: any,route?: string): void {
     console.log(response)
-  this.router.navigate(['/product-details', response], { state: { response } });
+    if(route ==='add_product'){
+       this.router.navigate(['/content']);
+
+    }
+else  this.router.navigate(['/product-details', response], { state: { response } });
 
 }
 

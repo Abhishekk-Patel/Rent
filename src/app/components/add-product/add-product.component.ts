@@ -236,7 +236,7 @@ export class AddProductComponent implements OnInit {
         (response: any) => {
           this.isUploading = false;
           this.userService.addUserHistory(formData);
-          this.myCartService.openProductDetails(response);
+          this.myCartService.openProductDetails(response,'add_product');
         },
         (error: any) => {
           this.isUploading = false;

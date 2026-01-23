@@ -13,14 +13,13 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { debounceTime, fromEvent, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
 import { DataService } from 'src/app/service/data.service';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { OrderService } from 'src/app/service/order.service';
 import { UserService } from 'src/app/service/user.service';
-import { UnifiedChatComponent } from '../unified-chat.component';
 import { Category_LIST } from 'src/mock-data';
-import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 
 @Component({
   selector: 'app-content-component',
@@ -48,7 +47,9 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   isLoading: boolean = false;
   private pageSize: number = 10;
   private currentPage: number = 1;
-  private loadingTimeout: any;
+
+  // ✅ prevents repeated bottom-trigger calls
+  private isLoadingMore: boolean = false;
 
   // Roles & misc
   userRole: string = 'Bride';
@@ -59,8 +60,14 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   showScrollToTop: boolean = false;
 
   // Subscriptions
-  private scrollSubscription!: Subscription;
   private dataSubscription!: Subscription;
+  private roleSub?: Subscription;
+  private categorySub?: Subscription;
+  private searchSub?: Subscription;
+  private searchInputSub?: Subscription;
+
+  // Debounce scroll handler without rxjs window subscription
+  private scrollTicking = false;
 
   productData$ = this.store.select('productData');
   defaultImg = 'assets/Downloads/MissingProduct.webp';
@@ -82,10 +89,22 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     this.store.dispatch({ type: 'LoadProductData' });
   }
 
-  // ✅ Single source of truth for scroll-to-top visibility
+  // ✅ ONE scroll source of truth (includes scroll-to-top + infinite scroll)
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    this.showScrollToTop = window.scrollY > 300;
+    // lightweight rAF debounce to prevent jitter/jump and repeated triggers
+    if (this.scrollTicking) return;
+    this.scrollTicking = true;
+
+    requestAnimationFrame(() => {
+      this.scrollTicking = false;
+
+      // scroll-to-top button
+      this.showScrollToTop = window.scrollY > 300;
+
+      // infinite scroll (bottom detection)
+      this.tryLoadMoreOnBottom();
+    });
   }
 
   // ✅ Keep mobile view state updated
@@ -99,18 +118,18 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     this.onWindowScroll();
 
     // Role changes
-    this.userService.userRole$.subscribe(role => {
+    this.roleSub = this.userService.userRole$.subscribe(role => {
       this.userRole = role;
       this.filterRewardsByCategory('All');
     });
 
     // Category changes from header/service
-    this.userService.activeCategory$.subscribe(categoryName => {
+    this.categorySub = this.userService.activeCategory$.subscribe(categoryName => {
       this.filterRewardsByCategory(categoryName);
     });
 
     // Global search value changes
-    this.userService.searchValue$.subscribe(searchValue => {
+    this.searchSub = this.userService.searchValue$.subscribe(searchValue => {
       this.searchValue = (searchValue || '').trim().toLowerCase();
       this.filterRewards();
     });
@@ -144,9 +163,11 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
 
       this.updateRewardsAndCategories();
 
-      // ✅ start the first page only AFTER data exists
+      // start the first page only AFTER data exists
       this.filteredRewards = [];
       this.currentPage = 1;
+      this.isLoadingMore = false;
+
       this.loadMoreRewards();
 
       this.isLoading = false;
@@ -155,6 +176,29 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
 
     this.mycartService.setIsAddNewProduct(false);
   }
+
+  ngAfterViewInit() {
+    // Debounced search input
+    if (this.searchInput && this.searchInput.nativeElement) {
+      this.searchInputSub = fromEvent(this.searchInput.nativeElement, 'input')
+        .pipe(debounceTime(250))
+        .subscribe(() => {
+          const value = this.searchInput!.nativeElement.value.trim().toLowerCase();
+          this.searchValue = value;
+          this.filterRewardsByCategory(value || 'All');
+        });
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.dataSubscription) this.dataSubscription.unsubscribe();
+    if (this.roleSub) this.roleSub.unsubscribe();
+    if (this.categorySub) this.categorySub.unsubscribe();
+    if (this.searchSub) this.searchSub.unsubscribe();
+    if (this.searchInputSub) this.searchInputSub.unsubscribe();
+  }
+
+  // ---------- Bottom sheet ----------
 
   openHowItWorksSheet(): void {
     if (!this.howItWorksSheetTpl) return;
@@ -173,36 +217,6 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   goToProductsFromSheet(): void {
     this.closeHowItWorksSheet();
     setTimeout(() => this.scrollToCatalog(), 120);
-  }
-
-  ngAfterViewInit() {
-    // Debounced search input (both desktop & mobile templates reuse #searchInput)
-    if (this.searchInput && this.searchInput.nativeElement) {
-      fromEvent(this.searchInput.nativeElement, 'input')
-        .pipe(debounceTime(250))
-        .subscribe(() => {
-          const value = this.searchInput!.nativeElement.value.trim().toLowerCase();
-          this.searchValue = value;
-          this.filterRewardsByCategory(value || 'All');
-        });
-    }
-
-    // Infinite scroll bottom detection
-    this.scrollSubscription = fromEvent(window, 'scroll')
-      .pipe(debounceTime(300))
-      .subscribe(() => {
-        const atBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 80;
-        if (atBottom) {
-          this.showLoadingSpinner();
-          this.loadMoreRewards();
-        }
-      });
-  }
-
-  ngOnDestroy() {
-    if (this.scrollSubscription) this.scrollSubscription.unsubscribe();
-    if (this.dataSubscription) this.dataSubscription.unsubscribe();
-    if (this.loadingTimeout) clearTimeout(this.loadingTimeout);
   }
 
   // ---------- UI helpers ----------
@@ -226,6 +240,35 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  // ✅ safer & more stable bottom detection
+  private tryLoadMoreOnBottom(): void {
+    if (this.isLoadingMore) return;
+    if (this.isLoading) return;
+    if (!this.rewards.length) return;
+
+    const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+    const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
+    const fullH = document.documentElement.scrollHeight || 0;
+
+    // buffer so it loads slightly before true bottom
+    const buffer = 120;
+    const atBottom = scrollTop + viewportH >= fullH - buffer;
+
+    if (!atBottom) return;
+
+    // lock and load next page
+    this.isLoadingMore = true;
+    this.isLoading = true;
+
+    // do load
+    this.loadMoreRewards();
+
+    // release lock after DOM paints
+    setTimeout(() => {
+      this.isLoadingMore = false;
+    }, 250);
+  }
+
   // ---------- Category & selection ----------
 
   getExpandedCategory() {
@@ -233,8 +276,9 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   selectCategory(category: any) {
-    this.categories.forEach(cat => cat.isSelected = false);
+    this.categories.forEach(cat => (cat.isSelected = false));
     category.isSelected = true;
+
     this.filterRewardsByCategory(category.name);
     this.showCategoryMenu = false;
 
@@ -271,9 +315,13 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     this.filterRewards();
 
     if (this.searchInput?.nativeElement) {
-      this.searchInput.nativeElement.addEventListener('blur', () => {
-        this.scrollToFirstMatch();
-      }, { once: true });
+      this.searchInput.nativeElement.addEventListener(
+        'blur',
+        () => {
+          this.scrollToFirstMatch();
+        },
+        { once: true }
+      );
     }
   }
 
@@ -284,7 +332,15 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
         const el = document.getElementById(firstMatchId);
         if (el) {
           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          (el as HTMLElement).focus();
+
+          // NOTE: focus can cause extra scroll in some browsers.
+          // Keep it only if you really need keyboard focus:
+          // (el as HTMLElement).focus({ preventScroll: true } as any);
+          try {
+            (el as HTMLElement).focus({ preventScroll: true } as any);
+          } catch {
+            (el as HTMLElement).focus();
+          }
         }
       }, 100);
     }
@@ -357,7 +413,7 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   applyPriceFilter(priceRange: { min: any; max: any }) {
-    this.filteredRewards = this.rewards.filter((reward:any) => {
+    this.filteredRewards = this.rewards.filter((reward: any) => {
       return reward.Rent >= priceRange.min && reward.Rent <= priceRange.max;
     });
   }
@@ -407,7 +463,7 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
       })
       .slice(startIndex, endIndex);
 
-    // ✅ Dedupe by pk (reliable)
+    // Dedupe by pk
     const map = new Map<string, any>();
     [...this.filteredRewards, ...newRewards].forEach(r => map.set(String(r.pk), r));
     this.filteredRewards = Array.from(map.values());
@@ -478,7 +534,6 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   openMessageDialog(product: any) {
-    // kept your router navigation behavior
     this.router.navigate(['/messenger'], {
       queryParams: {
         productId: product.pk || product._id,
@@ -515,7 +570,6 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
       return cat.useRole === this.userRole || cat.useRole === 'Both';
     });
 
-    // Keep selection sane
     const anySelected = this.categories.some(c => c.isSelected);
     if (!anySelected && this.categories.length) {
       this.categories[0].isSelected = false;
@@ -531,6 +585,8 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     this.currentPage = 1;
     this.filteredRewards = [];
     this.showLoadingSpinner();
+    this.isLoadingMore = false;
     this.loadMoreRewards();
   }
+
 }

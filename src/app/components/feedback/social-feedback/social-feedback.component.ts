@@ -14,6 +14,9 @@ export class SocialFeedbackComponent implements OnInit, OnDestroy {
   isMobile = false;
   activeIndex = 0;
 
+  // ✅ mobile "view all" state
+  mobileExpanded = false;
+
   private timer: any;
 
   @ViewChild('track', { static: false })
@@ -31,7 +34,7 @@ export class SocialFeedbackComponent implements OnInit, OnDestroy {
 
         // Start slideshow only on desktop
         if (!this.isMobile && this.items.length > 1) {
-          this.startAutoSlide();
+          setTimeout(() => this.startAutoSlide(), 0);
         }
       },
       error: () => {
@@ -46,53 +49,80 @@ export class SocialFeedbackComponent implements OnInit, OnDestroy {
   }
 
   // ===== Slideshow controls =====
-  startAutoSlide() {
+  startAutoSlide(): void {
     this.stopAutoSlide();
     this.timer = setInterval(() => this.next(), 3500);
   }
 
-  stopAutoSlide() {
+  stopAutoSlide(): void {
     if (this.timer) clearInterval(this.timer);
     this.timer = null;
   }
 
-  next() {
+  next(): void {
     if (!this.items.length || this.isMobile) return;
     this.activeIndex = (this.activeIndex + 1) % this.items.length;
-    this.scrollToActive();
+    this.scrollTrackToActive();
   }
 
-  prev() {
+  prev(): void {
     if (!this.items.length || this.isMobile) return;
     this.activeIndex = (this.activeIndex - 1 + this.items.length) % this.items.length;
-    this.scrollToActive();
+    this.scrollTrackToActive();
     this.startAutoSlide(); // reset timer
   }
 
-  goTo(index: number) {
+  goTo(index: number): void {
     if (this.isMobile) return;
     this.activeIndex = index;
-    this.scrollToActive();
+    this.scrollTrackToActive();
     this.startAutoSlide(); // reset timer
   }
 
   // Pause on hover (desktop only)
-  pause() {
+  pause(): void {
     if (!this.isMobile) this.stopAutoSlide();
   }
 
-  resume() {
+  resume(): void {
     if (!this.isMobile && this.items.length > 1) this.startAutoSlide();
   }
 
-  private scrollToActive() {
+  /**
+   * ✅ FIX: never use card.scrollIntoView()
+   * It scrolls the PAGE. We scroll only inside the horizontal track.
+   */
+  private scrollTrackToActive(): void {
     const track = this.trackRef?.nativeElement;
     if (!track) return;
 
     const card = track.children.item(this.activeIndex) as HTMLElement | null;
     if (!card) return;
 
-    card.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+    const left = card.offsetLeft - track.offsetLeft;
+
+    track.scrollTo({
+      left,
+      behavior: 'smooth'
+    });
+  }
+
+  // ===== Mobile CTA actions =====
+  openAllFeedback(): void {
+    this.mobileExpanded = true;
+    this.stopAutoSlide();
+  }
+
+  closeAllFeedback(): void {
+    this.mobileExpanded = false;
+
+    // optional: reset carousel index when going back
+    this.activeIndex = 0;
+    setTimeout(() => {
+      // scroll carousel back to first card (only if track exists)
+      const track = this.trackRef?.nativeElement;
+      if (track) track.scrollTo({ left: 0, behavior: 'smooth' });
+    }, 0);
   }
 
   // ===== UI helpers =====
