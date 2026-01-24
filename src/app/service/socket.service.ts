@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../environments/environment';
@@ -6,40 +5,70 @@ import { Observable, Subject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SocketService {
-  private socket!: Socket;
+  private socket?: Socket;
+
   private messageSubject = new Subject<any>();
   private callSubject = new Subject<any>();
   private onlineUsersSubject = new Subject<string[]>();
 
+  /** Connect to CHAT namespace (/chat) with JWT token */
   connect(token: string): void {
-    if (this.socket) return;
-    this.socket = io(environment.apiBaseUrl, { auth: { token } });
+    if (this.socket && (this.socket.connected || this.socket.active)) return;
+
+    this.socket = io(`${environment.socketUrl}/chat`, {
+      transports: ['websocket', 'polling'],
+      withCredentials: true,
+      auth: { token },
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 500,
+      timeout: 10000,
+    });
+
     this.registerEvents();
+
+    // optional logs
+    this.socket.on('connect', () => console.log('✅ Chat socket connected:', this.socket?.id));
+    this.socket.on('connect_error', (err) => console.error('❌ Chat socket connect_error:', err?.message || err));
+    this.socket.on('disconnect', (reason) => console.warn('⚠️ Chat socket disconnected:', reason));
   }
 
   disconnect(): void {
     if (this.socket) {
+      this.socket.removeAllListeners();
       this.socket.disconnect();
-      this.socket = undefined!;
+      this.socket = undefined;
     }
   }
 
-  emit(event: string, data: any): void {
+  emit(event: string, data?: any): void {
     this.socket?.emit(event, data);
   }
 
-  // Listen for arbitrary socket events
-  onEvent(event: string): Observable<any> {
-    return new Observable(observer => {
+  /** New generic listener */
+  on<T = any>(event: string): Observable<T> {
+    return new Observable<T>((observer) => {
       const waitForSocket = () => {
-        if (this.socket) {
-          this.socket.on(event, (data: any) => observer.next(data));
-        } else {
-          setTimeout(waitForSocket, 50);
+        if (!this.socket) {
+          const t = setTimeout(waitForSocket, 50);
+          return () => clearTimeout(t);
         }
+
+        const handler = (data: T) => observer.next(data);
+        this.socket.on(event, handler);
+
+        return () => {
+          this.socket?.off(event, handler);
+        };
       };
-      waitForSocket();
+
+      return waitForSocket();
     });
+  }
+
+  /** ✅ BACKWARD COMPAT: your component calls onEvent(...) */
+  onEvent<T = any>(event: string): Observable<T> {
+    return this.on<T>(event);
   }
 
   onMessage(): Observable<any> {
@@ -54,26 +83,11 @@ export class SocketService {
     return this.onlineUsersSubject.asObservable();
   }
 
-  private registerEvents() {
-    // Chat message pipeline
+  private registerEvents(): void {
+    if (!this.socket) return;
+
     this.socket.on('chatMessage', (msg: any) => this.messageSubject.next(msg));
-
-    // Incoming call (signaling)
     this.socket.on('incoming_call', (data: any) => this.callSubject.next(data));
-
-    // Presence
     this.socket.on('onlineUsers', (users: string[]) => this.onlineUsersSubject.next(users || []));
-
-    // WebRTC signaling passthrough
-    this.socket.on('webrtc_offer', (payload: any) => {
-      // { offer, isVideo, ownerId, buyerId, productId }
-      this.socket.emit('ack_webrtc_offer'); // optional
-    });
-    this.socket.on('webrtc_answer', (_payload: any) => {
-      /* pass-through handled via onEvent in component */
-    });
-    this.socket.on('webrtc_ice_candidate', (_payload: any) => {
-      /* pass-through handled via onEvent in component */
-    });
   }
 }

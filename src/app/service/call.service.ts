@@ -1,4 +1,3 @@
-
 import { Injectable, ElementRef } from '@angular/core';
 import { SocketService } from './socket.service';
 
@@ -20,9 +19,15 @@ export class CallService {
     socketService: SocketService,
     onEndCall: () => void
   ) {
+    if (!state.selectedChat) {
+      onEndCall();
+      return;
+    }
+
     const config: RTCConfiguration = {
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
     };
+
     state.peerConnection = new RTCPeerConnection(config);
 
     state.peerConnection.onicecandidate = (event) => {
@@ -40,8 +45,7 @@ export class CallService {
       if (!state.remoteStream) {
         state.remoteStream = new MediaStream();
         setTimeout(() => {
-          if (state.remoteVideo)
-            state.remoteVideo.nativeElement.srcObject = state.remoteStream;
+          if (state.remoteVideo) state.remoteVideo.nativeElement.srcObject = state.remoteStream;
         }, 0);
       }
       state.remoteStream.addTrack(event.track);
@@ -52,14 +56,15 @@ export class CallService {
         video: state.isVideoCall,
         audio: true,
       });
+
       state.localStream.getTracks().forEach((track) => {
         state.peerConnection!.addTrack(track, state.localStream!);
       });
+
       setTimeout(() => {
-        if (state.localVideo)
-          state.localVideo.nativeElement.srcObject = state.localStream;
+        if (state.localVideo) state.localVideo.nativeElement.srcObject = state.localStream;
       }, 0);
-    } catch (err) {
+    } catch {
       alert('Could not access camera/microphone');
       onEndCall();
       return;
@@ -68,6 +73,7 @@ export class CallService {
     if (isCaller && state.selectedChat) {
       const offer = await state.peerConnection.createOffer();
       await state.peerConnection.setLocalDescription(offer);
+
       socketService.emit('webrtc_offer', {
         offer,
         isVideo: state.isVideoCall,
@@ -88,8 +94,10 @@ export class CallService {
     state.isVideoCall = isVideo;
     await this.initWebRTC(state, false, socketService, onEndCall);
     await state.peerConnection!.setRemoteDescription(new RTCSessionDescription(offer));
+
     const answer = await state.peerConnection!.createAnswer();
     await state.peerConnection!.setLocalDescription(answer);
+
     if (state.selectedChat) {
       socketService.emit('webrtc_answer', {
         answer,
@@ -111,7 +119,7 @@ export class CallService {
     try {
       await state.peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
     } catch {
-      // Ignore malformed candidates
+      // ignore
     }
   }
 
