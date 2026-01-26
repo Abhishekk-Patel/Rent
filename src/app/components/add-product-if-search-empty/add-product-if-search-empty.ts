@@ -31,5 +31,5 @@ export class AddProductIfSearchEmptyComponent {
 
   addNewProduct() {
     this.addProduct.emit();
-  }
+  }  
 }

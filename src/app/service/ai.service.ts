@@ -23,6 +23,21 @@ export class AiService {
 
   searchAiProdcuts(prompt: string): Observable<AiResponse> {
     console.log(prompt, 'promt');
-    return this.http.post<AiResponse>(`${this.baseUrl}/api/ai/search-products`, { prompt });
+    return this.http.post<AiResponse>(
+      `${this.baseUrl}/api/ai/search-products`,
+      { prompt },
+    );
+  }
+
+  prepareAddToCart(userId: string, productId: string, qty: number) {
+    return this.http.post<any>(`${this.baseUrl}/api/ai/cart/prepare`, {
+      userId,
+      productId,
+      qty,
+    });
+  }
+
+  confirmAddToCart(confirmationToken: string) {
+    return this.http.post<any>(`${this.baseUrl}/api/ai/cart/confirm`, { confirmationToken });
   }
 }

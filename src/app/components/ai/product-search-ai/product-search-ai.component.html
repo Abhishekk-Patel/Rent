@@ -3,14 +3,12 @@
   <mat-icon>auto_awesome</mat-icon>
 </button>
 
+
 <!-- FLOATING PANEL -->
 <div class="ai-panel" *ngIf="isOpen">
   <div class="ai-header">
-    <span>AskAbhi
-    </span>
- 
-  
-    <button class="close-btn" (click)="toggle()">✕</button>
+    <span>AskAbhi</span>
+    <button class="close-btn" type="button" (click)="toggle()">✕</button>
   </div>
 
   <div class="ai-body">
@@ -20,7 +18,7 @@
       rows="3"
     ></textarea>
 
-    <button class="search-btn" (click)="searchProducts()" [disabled]="loading">
+    <button class="search-btn" type="button" (click)="searchProducts()" [disabled]="loading || !prompt.trim()">
       {{ loading ? 'Searching...' : 'Search' }}
     </button>
 
@@ -29,26 +27,65 @@
 
     <!-- PRODUCTS -->
     <div class="products" *ngIf="products.length">
-  <div class="product-card" *ngFor="let p of products">
-    <img class="product-img" [src]="p.images?.[0]?.url" alt="product" />
 
-    <div class="info">
-      <h4 class="product-title">{{ p.productName }}</h4>
-      <p class="product-desc">{{ p.productDescription }}</p>
-      <span class="price">₹{{ p.productRent }}</span>
+      <!-- ✅ CONFIRM UI (show ONCE, not inside ngFor) -->
+      <div class="confirm-box" *ngIf="confirmationToken">
+        <div class="confirm-top">
+          <strong>Confirm</strong>
+          <button class="x" type="button" (click)="cancelConfirm()">✕</button>
+        </div>
+
+        <p class="confirm-text">{{ confirmMessage }}</p>
+
+        <div class="confirm-product" *ngIf="confirmProduct">
+          <img [src]="confirmProduct.image" alt="product" />
+          <div>
+            <div class="cp-name">{{ confirmProduct.productName }}</div>
+            <div class="cp-sub">
+              ₹{{ confirmProduct.productRent }} • {{ confirmProduct.city }}
+            </div>
+          </div>
+        </div>
+
+        <div class="confirm-actions">
+          <button class="btn btn-outline" type="button" (click)="cancelConfirm()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" type="button" (click)="confirmAddToCart()" [disabled]="loading">
+            {{ loading ? 'Adding...' : 'Yes, add' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Product list -->
+      <div class="product-card" *ngFor="let p of products">
+        <img class="product-img" [src]="p.images?.[0]?.url" alt="product" />
+
+        <div class="info">
+          <h4 class="product-title">{{ p.productName }}</h4>
+          <p class="product-desc">{{ p.productDescription }}</p>
+          <span class="price">₹{{ p.productRent }}</span>
+        </div>
+
+        <div class="actions">
+          <button
+            class="btn btn-outline"
+            type="button"
+            [disabled]="p.quantity === 0 || isOwner(p)"
+            (click)="viewProduct(p)">
+            View
+          </button>
+
+          <button
+            class="btn btn-primary"
+            type="button"
+            [disabled]="p.quantity === 0 || isOwner(p)"
+            (click)="prepareAddToCart(p._id)">
+            Add To Cart
+          </button>
+        </div>
+      </div>
+
     </div>
-
-    <div class="actions">
-      <button class="btn btn-outline" type="button" (click)="viewProduct(p)">
-        View
-      </button>
-
-      <button class="btn btn-primary" type="button"  (click)="addtoCart(p)">
-        Add To Cart
-      </button>
-    </div>
-  </div>
-</div>
-
   </div>
 </div>

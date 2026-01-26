@@ -33,6 +33,15 @@
   z-index: 1000;
   overflow: hidden;
 }
+.ai-fab {
+  animation: aiPulse 2.4s infinite;
+}
+
+@keyframes aiPulse {
+  0% { box-shadow: 0 0 0 0 rgba(106,92,255,0.6); }
+  70% { box-shadow: 0 0 0 12px rgba(106,92,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(106,92,255,0); }
+}
 
 /* HEADER */
 .ai-header {
@@ -252,6 +261,68 @@ textarea:focus {
 
 .btn-primary:hover {
   box-shadow: 0 14px 28px rgba(106, 92, 255, 0.22);
+}
+.confirm-box {
+  margin-top: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  background: linear-gradient(180deg, rgba(106,92,255,0.06), rgba(0,194,255,0.03));
+}
+
+.confirm-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.confirm-top .x {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  color: rgba(11, 18, 32, 0.7);
+}
+
+.confirm-text {
+  margin: 8px 0 10px;
+  font-weight: 700;
+  font-size: 13px;
+  color: rgba(11, 18, 32, 0.85);
+}
+
+.confirm-product {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.confirm-product img {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.cp-name {
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.cp-sub {
+  font-size: 12px;
+  color: rgba(11, 18, 32, 0.65);
+  margin-top: 2px;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 /* Mobile responsiveness */
