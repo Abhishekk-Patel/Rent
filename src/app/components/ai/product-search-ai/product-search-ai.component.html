@@ -1,0 +1,54 @@
+<!-- FLOATING BUTTON -->
+<button class="ai-fab" mat-icon-button (click)="toggle()" aria-label="AI Search">
+  <mat-icon>auto_awesome</mat-icon>
+</button>
+
+<!-- FLOATING PANEL -->
+<div class="ai-panel" *ngIf="isOpen">
+  <div class="ai-header">
+    <span>AskAbhi
+    </span>
+ 
+  
+    <button class="close-btn" (click)="toggle()">✕</button>
+  </div>
+
+  <div class="ai-body">
+    <textarea
+      [(ngModel)]="prompt"
+      placeholder="Try: Party wear lehenga"
+      rows="3"
+    ></textarea>
+
+    <button class="search-btn" (click)="searchProducts()" [disabled]="loading">
+      {{ loading ? 'Searching...' : 'Search' }}
+    </button>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+    <p class="message" *ngIf="message">{{ message }}</p>
+
+    <!-- PRODUCTS -->
+    <div class="products" *ngIf="products.length">
+  <div class="product-card" *ngFor="let p of products">
+    <img class="product-img" [src]="p.images?.[0]?.url" alt="product" />
+
+    <div class="info">
+      <h4 class="product-title">{{ p.productName }}</h4>
+      <p class="product-desc">{{ p.productDescription }}</p>
+      <span class="price">₹{{ p.productRent }}</span>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-outline" type="button" (click)="viewProduct(p)">
+        View
+      </button>
+
+      <button class="btn btn-primary" type="button"  (click)="addtoCart(p)">
+        Add To Cart
+      </button>
+    </div>
+  </div>
+</div>
+
+  </div>
+</div>

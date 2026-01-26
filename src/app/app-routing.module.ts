@@ -15,6 +15,8 @@ import { ProductDetailsPopupComponent } from './components/product-details-popup
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { FeedbackDashboardComponent } from './components/feedback/feedback-dashboard/feedback-dashboard.component';
 import { HeaderComponent } from './components/header/header.component';
+import { AIComponent } from './components/ai/ai.component';
+import { ProductSearchAiComponent } from './components/ai/product-search-ai/product-search-ai.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -32,6 +34,10 @@ const routes: Routes = [
   { path: 'product-details/:id', component: ProductDetailsPopupComponent,canActivate: [AuthGuard] },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'admin/feedback', component: FeedbackDashboardComponent,canActivate: [AuthGuard] },
+  { path: 'AI', component: AIComponent,canActivate: [AuthGuard] },
+  { path: 'ProductSearchAI', component: ProductSearchAiComponent,canActivate: [AuthGuard] },
+
+  
 
   { path: '**', redirectTo: '', pathMatch: 'full' }, // Redirect any unknown paths to HomeComponent
 ];

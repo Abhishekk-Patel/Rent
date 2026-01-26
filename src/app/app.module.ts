@@ -61,6 +61,8 @@ import { FeedbackModalComponent } from './components/feedback/feedback-modal/fee
 import { SocialFeedbackComponent } from './components/feedback/social-feedback/social-feedback.component';
 import { FeedbackDashboardComponent } from './components/feedback/feedback-dashboard/feedback-dashboard.component';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { AIComponent } from './components/ai/ai.component';
+import { ProductSearchAiComponent } from './components/ai/product-search-ai/product-search-ai.component';
 
 @NgModule({
   declarations: [
@@ -86,7 +88,9 @@ import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
   FeedbackButtonComponent,
   FeedbackModalComponent,
   SocialFeedbackComponent,
-  FeedbackDashboardComponent
+  FeedbackDashboardComponent,
+  AIComponent,
+  ProductSearchAiComponent
   ],
   imports: [
     HttpClientModule,

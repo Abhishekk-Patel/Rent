@@ -188,7 +188,7 @@ export class MyCartServiceService {
   //   this.dialog.open(ProductDetailsPopupComponent, { data: { response } });
   // }
   openProductDetails(response: any,route?: string): void {
-    console.log(response)
+    console.log(response,'product reponse from my cart service')
     if(route ==='add_product'){
        this.router.navigate(['/content']);
 
