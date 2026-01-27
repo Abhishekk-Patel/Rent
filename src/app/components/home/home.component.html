@@ -124,20 +124,17 @@
                   </mat-error>
                 </mat-form-field>
 
-                <!-- <div class="row-actions">
-                  <a href="#" class="link">Forgot password?</a>
-                </div> -->
-<div class="row-actions">
-  <a
-    class="link forgot-link"
-    role="button"
-    tabindex="0"
-    aria-label="Forgot your password"
-    [routerLink]="['/forgot-password']"
-  >
-    Forgot password?
-  </a>
-</div>
+                <div class="row-actions">
+                  <a
+                    class="link forgot-link"
+                    role="button"
+                    tabindex="0"
+                    aria-label="Forgot your password"
+                    [routerLink]="['/forgot-password']"
+                  >
+                    Forgot password?
+                  </a>
+                </div>
 
                 <button
                   mat-raised-button
@@ -201,14 +198,89 @@
                   </mat-form-field>
                 </div>
 
-                <mat-form-field appearance="outline" class="field" floatLabel="always">
-                  <mat-label>Email</mat-label>
-                  <input matInput formControlName="email" type="email" placeholder="you@example.com" required aria-required="true" />
-                  <mat-error *ngIf="signUpFormControl['email'].invalid && signUpFormControl['email'].touched">
-                    <span *ngIf="signUpFormControl['email'].errors?.['required']">Email is required.</span>
-                    <span *ngIf="signUpFormControl['email'].errors?.['email']">Enter a valid email address.</span>
-                  </mat-error>
-                </mat-form-field>
+                <!-- ✅ EMAIL (DISABLED AFTER VERIFIED) -->
+               <mat-form-field appearance="outline" class="field" floatLabel="always">
+  <mat-label>Email</mat-label>
+
+  <input
+    matInput
+    formControlName="email"
+    type="email"
+    placeholder="you@example.com"
+    required
+    aria-required="true"
+    autocomplete="email"
+  />
+
+  <!-- ✅ VERIFIED ICON at end (no text) -->
+  <mat-icon
+    *ngIf="otpVerified"
+    matSuffix
+    class="verified-suffix"
+    aria-label="Email verified"
+    matTooltip="Email verified"
+  >
+    verified
+  </mat-icon>
+
+  <mat-error *ngIf="signUpFormControl['email'].invalid && signUpFormControl['email'].touched">
+    <span *ngIf="signUpFormControl['email'].errors?.['required']">Email is required.</span>
+    <span *ngIf="signUpFormControl['email'].errors?.['email'] || signUpForm.get('email')?.errors?.['pattern']">
+      Enter a valid email address.
+    </span>
+  </mat-error>
+</mat-form-field>
+
+
+                <!-- ✅ VERIFY UI appears ONLY when email typed/touched and NOT verified -->
+                <div
+                  *ngIf="!otpVerified &&  (signUpForm.get('email')?.value?.length > 0)"
+                >
+                  <div class="otp-actions">
+                    <button
+                      mat-stroked-button
+                      type="button"
+                      (click)="sendOtp()"
+                      [disabled]="signUpForm.get('email')?.invalid || otpLoading || resendCooldown > 0"
+                    >
+                      <ng-container *ngIf="resendCooldown === 0 && !otpLoading">Verify Email</ng-container>
+                      <ng-container *ngIf="resendCooldown > 0">Resend in {{ resendCooldown }}s</ng-container>
+                      <ng-container *ngIf="otpLoading">Sending...</ng-container>
+                    </button>
+                  </div>
+
+                  <div *ngIf="otpSent" class="otp-verify">
+                    <mat-form-field appearance="outline" class="field" floatLabel="always">
+                      <mat-label>OTP</mat-label>
+                      <input
+                        matInput
+                        formControlName="otp"
+                        inputmode="numeric"
+                        placeholder="Enter OTP"
+                        autocomplete="one-time-code"
+                      />
+                      <mat-hint>Check inbox/spam for OTP</mat-hint>
+                      <mat-error *ngIf="signUpForm.get('otp')?.touched && signUpForm.get('otp')?.invalid">
+                        <span *ngIf="signUpForm.get('otp')?.errors?.['pattern']">OTP must be 4–8 digits.</span>
+                      </mat-error>
+                    </mat-form-field>
+
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      type="button"
+                      (click)="verifyOtp()"
+                      [disabled]="otpLoading || !signUpForm.get('otp')?.value"
+                    >
+                      <ng-container *ngIf="!otpLoading">Verify OTP</ng-container>
+                      <ng-container *ngIf="otpLoading">Verifying...</ng-container>
+                    </button>
+
+                    <div *ngIf="otpError" class="alert alert--error" role="alert">
+                      {{ otpError }}
+                    </div>
+                  </div>
+                </div>
 
                 <div class="grid2">
                   <mat-form-field appearance="outline" class="field" floatLabel="always">
@@ -269,7 +341,7 @@
                   color="primary"
                   class="btn btn--primary"
                   type="submit"
-                  [disabled]="signUpForm.invalid || isLoading"
+                  [disabled]="signUpForm.invalid || isLoading || !otpVerified"
                   [attr.aria-busy]="isLoading ? 'true' : null"
                 >
                   <ng-container *ngIf="!isLoading">Create Account</ng-container>
@@ -289,7 +361,8 @@
           </mat-tab-group>
 
           <p class="panel__fineprint">
-            By continuing, you agree to our <a class="link" routerLink='/terms'>Terms</a> &amp; <a class="link" routerLink='privacy'>Privacy</a>.
+            By continuing, you agree to our <a class="link" routerLink="/terms">Terms</a> &amp;
+            <a class="link" routerLink="/privacy">Privacy</a>.
           </p>
         </mat-card-content>
       </mat-card>

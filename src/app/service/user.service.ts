@@ -104,6 +104,24 @@ export class UserService {
       newPassword,
     });
   }
+
+
+   // =========================
+  // ✅ SIGNUP OTP (EMAIL VERIFY)
+  // =========================
+  sendSignupOtpToVerifyNewuserEmail(email: string | any, username?: string | any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/users/auth/signup/send-otp`, {
+      email: (email || '').trim().toLowerCase(),
+      username: username || '',
+    });
+  }
+
+  verifySignupOtpToVerifyNewuserEmail(email: string | any, otp: string | any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/users/auth/signup/verify-otp`, {
+      email: (email || '').trim().toLowerCase(),
+      otp: (otp || '').trim(),
+    });
+  }
   getUserDetails() {
     return this.user;
   }

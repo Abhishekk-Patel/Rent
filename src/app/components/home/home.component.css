@@ -757,6 +757,47 @@
   position:relative;
   z-index:1;
 }
+.otp-actions {
+  display: flex;
+  gap: 12px;
+  margin: 8px 0 4px;
+}
+
+.otp-verify {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+.verified-pill{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(46, 125, 50, .25);
+  background: rgba(46, 125, 50, .10);
+  color: rgba(23, 92, 33, 1);
+  font-weight: 900;
+}
+
+.verified-pill__icon{
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+.verified-suffix{
+  color: #2e7d32;            /* green */
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+:host ::ng-deep .verified-suffix{
+  font-size: 22px;
+  height: 22px;
+  width: 22px;
+}
+
+
 
 /* subtle accents per type */
 .card--rent:hover{ border-color: rgba(200,171,106,.55); }

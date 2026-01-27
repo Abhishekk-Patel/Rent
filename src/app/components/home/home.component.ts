@@ -17,7 +17,11 @@ import {
 } from '@angular/forms';
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { UserService } from 'src/app/service/user.service';
-import { GoogleLoginProvider, SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
+import {
+  GoogleLoginProvider,
+  SocialAuthService,
+  SocialUser,
+} from '@abacritt/angularx-social-login';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 
@@ -33,27 +37,21 @@ type Stage = 'choose' | 'rent';
 export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('googleBtn', { static: false }) googleBtn?: ElementRef<HTMLElement>;
 
-  // UI State
-  authTabIndex = 0; // 0 = login, 1 = register
+  authTabIndex = 0;
   stage: Stage = 'choose';
 
-  // Forms
   loginForm!: FormGroup;
   signUpForm!: FormGroup;
 
-  // Auth flags
   isLoggedIn = false;
   isLoading = false;
 
-  // Password toggles
   hidePassword = true;
   hideConfirmPassword = true;
 
-  // Errors
   loginError = '';
   signUpError = '';
 
-  // Social
   user: SocialUser | null = null;
   loggedIn = false;
   googleProviderId = GoogleLoginProvider.PROVIDER_ID;
@@ -61,9 +59,16 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private googleRendered = false;
   private sub = new Subscription();
 
-  // Use environment or config for this ideally
   private googleClientId =
     '204670204818-b33g0rdegov9g9tae1j5c30ikdumi2hr.apps.googleusercontent.com';
+
+  // OTP STATE
+  otpSent = false;
+  otpVerified = false;
+  otpLoading = false;
+  otpError = '';
+  resendCooldown = 0;
+  private resendTimer?: any;
 
   constructor(
     public router: Router,
@@ -74,62 +79,66 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     private http: HttpClient
   ) {}
 
-  
-ngOnInit(): void {
-  this.loginForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
-  });
-
-  this.signUpForm = this.fb.group(
-    {
-      username: ['', Validators.required],
+  ngOnInit(): void {
+    this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      mobileNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
       password: ['', Validators.required],
-      confirmPassword: ['', Validators.required],
-    },
-    { validators: [this.passwordMatchValidator] }
-  );
+    });
 
-  // ✅ Convert login email to lowercase
-  this.loginForm.get('email')?.valueChanges.subscribe((value) => {
-    if (value && value !== value.toLowerCase()) {
-      this.loginForm.get('email')?.setValue(value.toLowerCase(), { emitEvent: false });
-    }
-  });
+    this.signUpForm = this.fb.group(
+      {
+        username: ['', Validators.required],
+        email: [
+          '',
+          [
+            Validators.required,
+            Validators.email,
+            Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/),
+          ],
+        ],
+        mobileNumber: ['', [Validators.required, Validators.pattern(/^[6-9][0-9]{9}$/)]],
+        password: ['', Validators.required],
+        confirmPassword: ['', Validators.required],
+        otp: ['', [Validators.pattern(/^[0-9]{4,8}$/)]],
+      },
+      { validators: [this.passwordMatchValidator] }
+    );
 
-  // ✅ Convert signup email to lowercase
-  this.signUpForm.get('email')?.valueChanges.subscribe((value) => {
-    if (value && value !== value.toLowerCase()) {
-      this.signUpForm.get('email')?.setValue(value.toLowerCase(), { emitEvent: false });
-    }
-  });
+    // lowercase login email
+    this.loginForm.get('email')?.valueChanges.subscribe((value) => {
+      if (value && value !== value.toLowerCase()) {
+        this.loginForm.get('email')?.setValue(value.toLowerCase(), { emitEvent: false });
+      }
+    });
 
-  this.sub.add(
-    this.authService.authState.subscribe((user) => {
-      this.user = user;
-      this.loggedIn = !!user;
-    })
-  );
-}
+    // lowercase signup email + reset OTP on change
+    this.signUpForm.get('email')?.valueChanges.subscribe((value) => {
+      if (value && value !== value.toLowerCase()) {
+        this.signUpForm.get('email')?.setValue(value.toLowerCase(), { emitEvent: false });
+      }
+      this.resetOtpState(); // any email change invalidates OTP
+    });
+
+    this.sub.add(
+      this.authService.authState.subscribe((user) => {
+        this.user = user;
+        this.loggedIn = !!user;
+      })
+    );
+  }
 
   ngAfterViewInit(): void {
-    // Render google button initially if login tab is selected
     queueMicrotask(() => this.tryRenderGoogleButton());
   }
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
+    clearInterval(this.resendTimer);
   }
 
   onAuthTabChange(index: number): void {
     this.authTabIndex = index;
-    // Google button is only on Login tab
-    if (this.authTabIndex === 0) {
-      queueMicrotask(() => this.tryRenderGoogleButton(true));
-    }
-    // Reset any errors when tab changes
+    if (this.authTabIndex === 0) queueMicrotask(() => this.tryRenderGoogleButton(true));
     this.loginError = '';
     this.signUpError = '';
   }
@@ -162,7 +171,104 @@ ngOnInit(): void {
     this.googleRendered = true;
   }
 
-  // Custom password match validator
+  // =========================
+  // OTP Helpers
+  // =========================
+  private getSignupEmail(ctrl: AbstractControl | null): string {
+    return (ctrl?.value || '').toString().trim().toLowerCase();
+  }
+
+  resetOtpState(): void {
+    // re-enable in case previously verified
+    this.signUpForm.get('email')?.enable({ emitEvent: false });
+    this.signUpForm.get('otp')?.enable({ emitEvent: false });
+
+    this.otpSent = false;
+    this.otpVerified = false;
+    this.otpError = '';
+    this.signUpForm.get('otp')?.setValue('', { emitEvent: false });
+    this.signUpForm.get('otp')?.markAsUntouched();
+  }
+
+  sendOtp(): void {
+    const emailCtrl = this.signUpForm.get('email');
+    const email = this.getSignupEmail(emailCtrl);
+
+    if (!emailCtrl || emailCtrl.invalid) {
+      emailCtrl?.markAsTouched();
+      return;
+    }
+
+    this.otpLoading = true;
+    this.otpError = '';
+
+    // IMPORTANT: make sure your service points to correct route (with /api or /user prefix if needed)
+    this.userService.sendSignupOtpToVerifyNewuserEmail(email).subscribe({
+      next: () => {
+        this.otpLoading = false;
+        this.otpSent = true;
+        this.otpVerified = false;
+        this.startResendCooldown(30);
+      },
+      error: (err: any) => {
+        this.otpLoading = false;
+        this.otpError = err?.error?.message || err?.error?.error || 'Failed to send OTP. Try again.';
+      },
+    });
+  }
+
+  verifyOtp(): void {
+    const email = this.getSignupEmail(this.signUpForm.get('email'));
+    const otpCtrl = this.signUpForm.get('otp');
+    const otp = (otpCtrl?.value || '').toString().trim();
+
+    if (!this.otpSent) {
+      this.otpError = 'Please send OTP first.';
+      return;
+    }
+
+    if (!otp || otpCtrl?.invalid) {
+      otpCtrl?.markAsTouched();
+      this.otpError = 'Enter a valid OTP.';
+      return;
+    }
+
+    this.otpLoading = true;
+    this.otpError = '';
+
+    this.userService.verifySignupOtpToVerifyNewuserEmail(email, otp).subscribe({
+      next: () => {
+        this.otpLoading = false;
+        this.otpVerified = true;
+
+        // ✅ lock fields + hide verify UI
+        this.signUpForm.get('email')?.disable({ emitEvent: false });
+        this.signUpForm.get('otp')?.disable({ emitEvent: false });
+
+        this.otpSent = false;
+        this.otpError = '';
+      },
+      error: (err: any) => {
+        this.otpLoading = false;
+        this.otpVerified = false;
+        this.otpError = err?.error?.message || err?.error?.error || 'Invalid OTP.';
+      },
+    });
+  }
+
+  private startResendCooldown(seconds: number): void {
+    this.resendCooldown = seconds;
+    clearInterval(this.resendTimer);
+    this.resendTimer = setInterval(() => {
+      this.resendCooldown--;
+      if (this.resendCooldown <= 0) {
+        clearInterval(this.resendTimer);
+        this.resendCooldown = 0;
+      }
+    }, 1000);
+  }
+
+  // Password match validator
   private passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
     const password = control.get('password')?.value;
     const confirm = control.get('confirmPassword');
@@ -174,7 +280,6 @@ ngOnInit(): void {
       confirm.setErrors({ ...existing, mustMatch: true });
       return { mustMatch: true };
     } else {
-      // remove mustMatch error only
       const errors = confirm.errors;
       if (errors && errors['mustMatch']) {
         delete errors['mustMatch'];
@@ -187,12 +292,11 @@ ngOnInit(): void {
   get loginFormControl() {
     return this.loginForm.controls;
   }
-
   get signUpFormControl() {
     return this.signUpForm.controls;
   }
 
-  // ---- Navigation ----
+  // Navigation
   navigateTo(user: string): void {
     this.myCartSercvice.setUser(user);
     this.router.navigate(['/content']);
@@ -210,7 +314,7 @@ ngOnInit(): void {
     this.stage = 'choose';
   }
 
-  // ---- Actions ----
+  // Login
   login(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
@@ -225,7 +329,7 @@ ngOnInit(): void {
         this.isLoading = false;
 
         if (response === true) {
-          this.user = this.userService.getUserDetails();
+          this.user = this.userService.getUserDetails?.() ?? null;
           this.isLoggedIn = true;
           this.stage = 'choose';
           return;
@@ -245,22 +349,31 @@ ngOnInit(): void {
     });
   }
 
+  // Signup
   signUp(): void {
     if (this.signUpForm.invalid) {
       this.signUpForm.markAllAsTouched();
       return;
     }
 
+    if (!this.otpVerified) {
+      this.signUpError = 'Please verify your email using OTP before creating account.';
+      return;
+    }
+
     this.isLoading = true;
     this.signUpError = '';
 
-    this.userService.signUp(this.signUpForm).subscribe({
+    // ✅ IMPORTANT: use getRawValue so disabled email is included
+    const payload = this.signUpForm.getRawValue();
+
+    this.userService.signUp(payload).subscribe({
       next: (response: any) => {
         this.isLoading = false;
 
         if (response === true) {
           this.isLoggedIn = true;
-          this.stage = 'rent'; // after signup show rent
+          this.stage = 'rent';
           return;
         }
 
@@ -284,7 +397,6 @@ ngOnInit(): void {
     });
   }
 
-  // ---- UI helpers ----
   togglePasswordVisibility(): void {
     this.hidePassword = !this.hidePassword;
   }
@@ -293,7 +405,6 @@ ngOnInit(): void {
     this.hideConfirmPassword = !this.hideConfirmPassword;
   }
 
-  // ---- Google Login (GIS -> backend) ----
   private handleCredentialResponse(response: any): void {
     this.isLoading = true;
     this.loginError = '';
@@ -302,21 +413,20 @@ ngOnInit(): void {
       .post(environment.apiBaseUrl + '/auth/google/token', { token: response.credential })
       .subscribe({
         next: (backendResponse: any) => {
-          const loginSuccess = this.userService.loginWithGoogleBackendResponse(backendResponse);
+          const loginSuccess = this.userService.loginWithGoogleBackendResponse?.(backendResponse);
 
           this.isLoading = false;
           if (loginSuccess) {
-            this.user = this.userService.getUserDetails();
+            this.user = this.userService.getUserDetails?.() ?? null;
             this.isLoggedIn = true;
             this.stage = 'choose';
           } else {
             this.loginError = 'Google login failed.';
           }
         },
-        error: (error) => {
+        error: () => {
           this.isLoading = false;
           this.loginError = 'Google login failed';
-          console.error('Backend login error:', error);
         },
       });
   }
