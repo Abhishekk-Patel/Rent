@@ -139,7 +139,7 @@
         <ul class="mobile-categories-list">
           <li
             class="category-item-mobile"
-            *ngFor="let category of categories"
+            *ngFor="let category of categories; trackBy: trackByCategory"
             (click)="selectCategory(category)"
             tabindex="0"
             role="button"
@@ -241,7 +241,7 @@
           <ul class="category-list" role="list">
             <li
               class="category-item"
-              *ngFor="let category of categories"
+              *ngFor="let category of categories; trackBy: trackByCategory"
               (click)="selectCategory(category)"
               role="listitem"
               tabindex="0"
@@ -288,8 +288,8 @@
             <input
               matInput
               placeholder="City or Pincode"
-              (keyup.enter)="applyLocationFilter(searchValue)"
-              [(ngModel)]="searchValue"
+              [(ngModel)]="locationValue"
+              (keyup.enter)="applyLocationFilter(locationValue)"
             />
           </mat-form-field>
         </mat-expansion-panel>
@@ -301,7 +301,7 @@
           </mat-expansion-panel-header>
 
           <div class="sizes">
-            <button mat-stroked-button *ngFor="let s of ['XS','S','M','L','XL','XXL']" class="size-chip">
+            <button mat-stroked-button *ngFor="let s of sizes" class="size-chip">
               {{ s }}
             </button>
           </div>
@@ -390,22 +390,16 @@
       <!-- Product grid -->
       <div class="grid" [class.loading]="isLoading">
         <div
-          *ngFor="let reward of filteredRewards"
+          *ngFor="let reward of filteredRewards; trackBy: trackByReward"
           class="product-card"
           [@fadeInCard]
           [attr.id]="'search-match-' + reward.pk"
           tabindex="0"
-          (mouseenter)="reward._hover = true"
-          (mouseleave)="reward._hover = false"
         >
           <!-- Image -->
           <div class="media">
             <img
-              [src]="
-                reward._hover && reward.display_img_urls?.[1]
-                  ? reward.display_img_urls[1]
-                  : reward.display_img_urls?.[0] || defaultImg
-              "
+              [src]="reward.display_img_urls?.[reward.currentImageIndex] || defaultImg"
               [alt]="reward.name"
               loading="lazy"
               (error)="onImgError($event)"
@@ -418,6 +412,7 @@
               [color]="reward.isFavorite ? 'warn' : 'basic'"
               (click)="toggleFavorite(reward)"
               aria-label="Add to wishlist"
+              type="button"
             >
               <mat-icon>{{ reward.isFavorite ? "favorite" : "favorite_border" }}</mat-icon>
             </button>
@@ -456,7 +451,7 @@
                 [avgRating]="reward.avgRating"
                 [totalUsers]="reward.totalUserRated"
                 (ratingChange)="onRatingChange($event, reward)"
-                [disabled]="this.userService.getUserDetails().userId === reward.userId"
+                [disabled]="userId === reward.userId"
               ></app-product-rating>
             </div>
           </div>
@@ -485,7 +480,7 @@
               mat-stroked-button
               color="primary"
               class="btn btn-ghost"
-              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
+              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userEmail"
               (click)="productDetails(reward.pk)"
               type="button"
             >
@@ -497,7 +492,7 @@
               mat-flat-button
               color="primary"
               class="btn btn-primary"
-              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
+              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userEmail"
               (click)="addToCart(reward.pk)"
               type="button"
             >
@@ -509,7 +504,7 @@
               mat-icon-button
               color="warn"
               class="btn-icon"
-              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userService.getUserDetails().email"
+              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userEmail"
               (click)="openMessageDialog(reward)"
               aria-label="Message"
               type="button"
@@ -521,7 +516,7 @@
 
         <!-- Skeletons -->
         <ng-container *ngIf="isLoading">
-          <div class="skeleton" *ngFor="let i of [1,2,3,4,5,6,7,8]"></div>
+          <div class="skeleton" *ngFor="let _ of skeletons"></div>
         </ng-container>
       </div>
 

@@ -5,9 +5,10 @@ import {
   AfterViewInit,
   OnInit,
   OnDestroy,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   HostListener,
-  TemplateRef
+  TemplateRef,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -21,59 +22,70 @@ import { OrderService } from 'src/app/service/order.service';
 import { UserService } from 'src/app/service/user.service';
 import { Category_LIST } from 'src/mock-data';
 
+
+
 @Component({
   selector: 'app-content-component',
   templateUrl: './content-component.component.html',
   styleUrls: ['./content-component.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestroy {
-  alertMsg: string = 'No matches found';
+  alertMsg = 'No matches found';
 
-  // View / layout state
-  isMobileView: boolean = false;
-  showCategoryMenu: boolean = false;
+  // View / layout
+  isMobileView = false;
+  showCategoryMenu = false;
 
-  // Product & filter state
-  rewards: any[] = [];
-  filteredRewards: any[] = [];
+  // Data
+  rewards:any[] = [];
+  filteredRewards:any[] = [];
   categories = Category_LIST;
   isSortPanelOpen = false;
 
-  // Search
+  // Search / filters
   searchValue = '';
+  locationValue = ''; // ✅ separate from searchValue
+  userRole = 'Bride';
+
+  // UI state
+  isLoading = false;
+  showScrollToTop = false;
+
+  // Paging
+  private pageSize = 10;
+  private currentPage = 1;
+  private isLoadingMore = false;
+
+  // Debounce scroll
+  private scrollTicking = false;
+
+  // Template refs
   @ViewChild('searchInput', { static: false }) searchInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('howItWorksSheet') howItWorksSheetTpl!: TemplateRef<any>;
+  private howSheetRef?: MatBottomSheetRef;
 
-  // Loading / paging
-  isLoading: boolean = false;
-  private pageSize: number = 10;
-  private currentPage: number = 1;
-
-  // ✅ prevents repeated bottom-trigger calls
-  private isLoadingMore: boolean = false;
-
-  // Roles & misc
-  userRole: string = 'Bride';
-  isDateToday: string = new Date().toISOString().split('T')[0];
-  productRating: any = 0;
-
-  // Scroll-to-top visibility
-  showScrollToTop: boolean = false;
-
-  // Subscriptions
-  private dataSubscription!: Subscription;
+  // Rx subscriptions
+  private dataSub?: Subscription;
   private roleSub?: Subscription;
   private categorySub?: Subscription;
   private searchSub?: Subscription;
   private searchInputSub?: Subscription;
 
-  // Debounce scroll handler without rxjs window subscription
-  private scrollTicking = false;
-
+  // Store
   productData$ = this.store.select('productData');
+
+  // Assets
   defaultImg = 'assets/Downloads/MissingProduct.webp';
 
-  @ViewChild('howItWorksSheet') howItWorksSheetTpl!: TemplateRef<any>;
-  private howSheetRef?: MatBottomSheetRef;
+  // ✅ avoid template-time allocations
+  readonly sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  readonly skeletons = Array.from({ length: 8 });
+
+  // ✅ cache user details once (no template service calls)
+  private readonly user = this.userService.getUserDetails();
+  readonly userId = this.user.userId;
+  readonly userEmail = this.user.email;
 
   constructor(
     public mycartService: MyCartServiceService,
@@ -89,55 +101,57 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     this.store.dispatch({ type: 'LoadProductData' });
   }
 
-  // ✅ ONE scroll source of truth (includes scroll-to-top + infinite scroll)
+  // ✅ trackBy (big perf win)
+  trackByReward = (_: number, r:any) => r.pk;
+  trackByCategory = (_: number, c: any) => c.id ?? c.name;
+
+  // ✅ single scroll handler: scroll-to-top + infinite scroll
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    // lightweight rAF debounce to prevent jitter/jump and repeated triggers
+    console.log('scroll event');
     if (this.scrollTicking) return;
     this.scrollTicking = true;
 
     requestAnimationFrame(() => {
       this.scrollTicking = false;
-
-      // scroll-to-top button
       this.showScrollToTop = window.scrollY > 300;
-
-      // infinite scroll (bottom detection)
       this.tryLoadMoreOnBottom();
+      this.cdr.markForCheck();
     });
   }
 
-  // ✅ Keep mobile view state updated
   @HostListener('window:resize', [])
   onWindowResize() {
     this.checkMobileView();
+    this.cdr.markForCheck();
   }
 
   ngOnInit() {
     this.checkMobileView();
     this.onWindowScroll();
 
-    // Role changes
-    this.roleSub = this.userService.userRole$.subscribe(role => {
-      this.userRole = role;
-      this.filterRewardsByCategory('All');
+    // role changes
+    this.roleSub = this.userService.userRole$.subscribe((role) => {
+      this.userRole = role || 'Bride';
+      this.resetAndLoad();
     });
 
-    // Category changes from header/service
-    this.categorySub = this.userService.activeCategory$.subscribe(categoryName => {
-      this.filterRewardsByCategory(categoryName);
+    // category changes
+    this.categorySub = this.userService.activeCategory$.subscribe((categoryName) => {
+      this.setSelectedCategory(categoryName || 'All');
+      this.resetAndLoad();
     });
 
-    // Global search value changes
-    this.searchSub = this.userService.searchValue$.subscribe(searchValue => {
-      this.searchValue = (searchValue || '').trim().toLowerCase();
-      this.filterRewards();
+    // global search changes
+    this.searchSub = this.userService.searchValue$.subscribe((v) => {
+      this.searchValue = (v || '').trim().toLowerCase();
+      this.resetAndLoad();
     });
 
-    // Load product data
+    // load product data
     this.isLoading = true;
-    this.dataSubscription = this.productData$.subscribe((data: any[]) => {
-      if (!data || !Array.isArray(data)) return;
+    this.dataSub = this.productData$.subscribe((data: any[]) => {
+      if (!Array.isArray(data)) return;
 
       this.rewards = data.map((item: any) => ({
         pk: item._id,
@@ -157,45 +171,39 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
         ProductRatings: item.ratings || [],
         userId: item.userId || '',
         userRatings: item.ratings || [],
-        totalUserRated: item.totalUserRated ? item.totalUserRated : (item.ratings?.length || 0),
+        totalUserRated: item.totalUserRated ?? (item.ratings?.length || 0),
         avgRating: item.avgRating || 0,
       }));
 
-      this.updateRewardsAndCategories();
-
-      // start the first page only AFTER data exists
-      this.filteredRewards = [];
-      this.currentPage = 1;
-      this.isLoadingMore = false;
-
-      this.loadMoreRewards();
+      this.updateCategoriesForRole();
+      this.resetAndLoad();
 
       this.isLoading = false;
-      this.cdr.detectChanges();
+      this.cdr.markForCheck();
     });
 
     this.mycartService.setIsAddNewProduct(false);
   }
 
   ngAfterViewInit() {
-    // Debounced search input
-    if (this.searchInput && this.searchInput.nativeElement) {
+    // Debounced input -> updates searchValue -> resets and loads
+    if (this.searchInput?.nativeElement) {
       this.searchInputSub = fromEvent(this.searchInput.nativeElement, 'input')
         .pipe(debounceTime(250))
         .subscribe(() => {
-          const value = this.searchInput!.nativeElement.value.trim().toLowerCase();
-          this.searchValue = value;
-          this.filterRewardsByCategory(value || 'All');
+          this.searchValue = this.searchInput!.nativeElement.value.trim().toLowerCase();
+          this.resetAndLoad();
+          this.cdr.markForCheck();
         });
     }
   }
 
   ngOnDestroy() {
-    if (this.dataSubscription) this.dataSubscription.unsubscribe();
-    if (this.roleSub) this.roleSub.unsubscribe();
-    if (this.categorySub) this.categorySub.unsubscribe();
-    if (this.searchSub) this.searchSub.unsubscribe();
-    if (this.searchInputSub) this.searchInputSub.unsubscribe();
+    this.dataSub?.unsubscribe();
+    this.roleSub?.unsubscribe();
+    this.categorySub?.unsubscribe();
+    this.searchSub?.unsubscribe();
+    this.searchInputSub?.unsubscribe();
   }
 
   // ---------- Bottom sheet ----------
@@ -228,10 +236,8 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
 
   scrollToCatalog(): void {
     setTimeout(() => {
-      const catalogEl = document.querySelector('.catalog');
-      if (catalogEl) {
-        (catalogEl as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      const el = document.querySelector('.catalog') as HTMLElement | null;
+      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
   }
 
@@ -240,89 +246,48 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // ✅ safer & more stable bottom detection
-  private tryLoadMoreOnBottom(): void {
-    if (this.isLoadingMore) return;
-    if (this.isLoading) return;
-    if (!this.rewards.length) return;
-
-    const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
-    const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
-    const fullH = document.documentElement.scrollHeight || 0;
-
-    // buffer so it loads slightly before true bottom
-    const buffer = 120;
-    const atBottom = scrollTop + viewportH >= fullH - buffer;
-
-    if (!atBottom) return;
-
-    // lock and load next page
-    this.isLoadingMore = true;
-    this.isLoading = true;
-
-    // do load
-    this.loadMoreRewards();
-
-    // release lock after DOM paints
-    setTimeout(() => {
-      this.isLoadingMore = false;
-    }, 250);
-  }
-
-  // ---------- Category & selection ----------
-
-  getExpandedCategory() {
-    return this.categories.find((category) => category.isExpanded);
-  }
+  // ---------- Category selection ----------
 
   selectCategory(category: any) {
-    this.categories.forEach(cat => (cat.isSelected = false));
+    this.categories.forEach((c: any) => (c.isSelected = false));
     category.isSelected = true;
 
-    this.filterRewardsByCategory(category.name);
+    this.resetAndLoad();
     this.showCategoryMenu = false;
 
-    setTimeout(() => {
-      const catalogEl = document.querySelector('.catalog');
-      if (catalogEl) {
-        (catalogEl as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
+    setTimeout(() => this.scrollToCatalog(), 100);
   }
 
-  onPanelChange() {
-    const expandedCategory = this.getExpandedCategory();
-    this.filterRewardsByCategory(expandedCategory ? expandedCategory.name : 'All');
+  private setSelectedCategory(name: string) {
+    const n = (name || 'All').toLowerCase();
+    this.categories.forEach((c: any) => (c.isSelected = (c.name || '').toLowerCase() === n));
+    // if not found, nothing selected (that’s ok)
   }
 
   // ---------- Search ----------
 
-  handleKeyPress(event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
-      this.search();
-      this.scrollToFirstMatch();
-    }
-  }
-
   search(): void {
-    let value = (this.searchValue || '').trim().toLowerCase();
-
-    if (this.searchInput?.nativeElement) {
-      value = this.searchInput.nativeElement.value.trim().toLowerCase();
-    }
+    const value =
+      this.searchInput?.nativeElement?.value?.trim().toLowerCase() ??
+      (this.searchValue || '').trim().toLowerCase();
 
     this.searchValue = value;
-    this.filterRewards();
+    this.resetAndLoad();
 
+    // keep scroll behavior you had
     if (this.searchInput?.nativeElement) {
       this.searchInput.nativeElement.addEventListener(
         'blur',
-        () => {
-          this.scrollToFirstMatch();
-        },
+        () => this.scrollToFirstMatch(),
         { once: true }
       );
     }
+  }
+
+  clear() {
+    this.searchValue = '';
+    if (this.searchInput?.nativeElement) this.searchInput.nativeElement.value = '';
+    this.resetAndLoad();
   }
 
   scrollToFirstMatch(): void {
@@ -332,10 +297,6 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
         const el = document.getElementById(firstMatchId);
         if (el) {
           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-          // NOTE: focus can cause extra scroll in some browsers.
-          // Keep it only if you really need keyboard focus:
-          // (el as HTMLElement).focus({ preventScroll: true } as any);
           try {
             (el as HTMLElement).focus({ preventScroll: true } as any);
           } catch {
@@ -346,131 +307,126 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     }
   }
 
-  clear() {
-    this.searchValue = '';
-    if (this.searchInput?.nativeElement) {
-      this.searchInput.nativeElement.value = '';
-    }
-    this.filterRewards();
-  }
+  // ---------- Filtering / sorting ----------
 
-  private filterRewards() {
-    const search = (this.searchValue || '').trim().toLowerCase();
-
-    this.filteredRewards = this.rewards
-      .filter((reward: any) => {
-        if (!search) return reward.userRole === this.userRole || reward.userRole === 'Both';
-
-        const fields = [
-          reward.name,
-          reward.city,
-          reward.category,
-          reward.description,
-          reward.ProductOwnerEmail
-        ];
-
-        const matchesSearch = fields.some(f => f && String(f).toLowerCase().includes(search));
-        const matchesUserRole = reward.userRole === this.userRole || reward.userRole === 'Both';
-        return matchesSearch && matchesUserRole;
-      })
-      .slice(0, this.pageSize);
-
-    this.currentPage = 1;
-
-    if (search && !this.filteredRewards.length) {
-      this.mycartService.showMessage(this.alertMsg);
-    }
-  }
-
-  // ---------- Filtering & sorting ----------
-
-  filterRewardsByCategory(categoryName: string) {
-    const cat = (categoryName || 'All').toLowerCase();
-    const search = (this.searchValue || '').toLowerCase();
-
-    this.filteredRewards = this.rewards
-      .filter((reward) => {
-        const matchesCategory =
-          cat === 'all' || (reward.category || '').toLowerCase().includes(cat);
-
-        const matchesSearch =
-          (reward.name || '').toLowerCase().includes(search) ||
-          (reward.city || '').toLowerCase().includes(search) ||
-          (reward.category || '').toLowerCase().includes(search);
-
-        const matchesUserRole =
-          reward.userRole === this.userRole || reward.userRole === 'Both';
-
-        return matchesCategory && matchesSearch && matchesUserRole;
-      })
-      .slice(0, this.pageSize);
-
-    this.currentPage = 1;
-
-    if ((this.searchValue || categoryName !== 'All') && !this.filteredRewards.length) {
-      this.mycartService.showMessage(this.alertMsg);
-    }
-  }
-
-  applyPriceFilter(priceRange: { min: any; max: any }) {
-    this.filteredRewards = this.rewards.filter((reward: any) => {
-      return reward.Rent >= priceRange.min && reward.Rent <= priceRange.max;
-    });
+  applyPriceFilter(priceRange: { min: number; max: number }) {
+    // keep current list but apply constraint
+    this.filteredRewards = this.filteredRewards.filter(
+      (r) => r.Rent >= priceRange.min && r.Rent <= priceRange.max
+    );
+    this.cdr.markForCheck();
   }
 
   applyLocationFilter(location: string) {
-    this.filteredRewards = this.rewards.filter((reward: any) => {
-      return (reward.city || '').toLowerCase().includes((location || '').toLowerCase());
-    });
+    this.locationValue = location || '';
+    this.resetAndLoad();
   }
 
   sortRewards(order: string) {
-    this.filteredRewards.sort((a, b) => {
-      return order === 'asc'
+    this.filteredRewards = [...this.filteredRewards].sort((a, b) =>
+      order === 'asc'
         ? String(a.name).localeCompare(String(b.name))
-        : String(b.name).localeCompare(String(a.name));
-    });
+        : String(b.name).localeCompare(String(a.name))
+    );
+    this.cdr.markForCheck();
   }
 
-  // ---------- Pagination / infinite scroll ----------
+  // ---------- Paging / infinite scroll ----------
 
-  showLoadingSpinner() {
+  private tryLoadMoreOnBottom(): void {
+    if (this.isLoadingMore || this.isLoading || !this.rewards.length) return;
+
+    const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+    const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
+    const fullH = document.documentElement.scrollHeight || 0;
+
+    const buffer = 120;
+    const atBottom = scrollTop + viewportH >= fullH - buffer;
+    if (!atBottom) return;
+
+    this.isLoadingMore = true;
     this.isLoading = true;
+
+    this.loadMoreRewards();
+
+    setTimeout(() => (this.isLoadingMore = false), 250);
   }
 
-  loadMoreRewards() {
+  private resetAndLoad() {
+    this.currentPage = 1;
+    this.filteredRewards = [];
+    this.isLoadingMore = false;
+
+    // show toast only if you are actually searching and it returns 0
+    this.loadMoreRewards(true);
+    this.cdr.markForCheck();
+  }
+
+  private loadMoreRewards(checkEmptyToast = false) {
     if (!this.rewards.length) {
       this.isLoading = false;
       return;
     }
 
-    const search = (this.searchValue || '').toLowerCase();
+    const search = (this.searchValue || '').trim().toLowerCase();
+    const location = (this.locationValue || '').trim().toLowerCase();
+
+    const selectedCategory =
+      this.categories.find((c: any) => c.isSelected)?.name ?? 'All';
+    const cat = (selectedCategory || 'All').toLowerCase();
 
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = this.currentPage * this.pageSize;
 
-    const newRewards = this.rewards
-      .filter((reward) => {
-        const matchesSearch =
-          (reward.name || '').toLowerCase().includes(search) ||
-          (reward.city || '').toLowerCase().includes(search) ||
-          (reward.category || '').toLowerCase().includes(search);
-
-        const matchesUserRole =
-          reward.userRole === this.userRole || reward.userRole === 'Both';
-
-        return matchesSearch && matchesUserRole;
-      })
+    const page = this.rewards
+      .filter((r) => this.matchesAllFilters(r, { search, location, cat }))
       .slice(startIndex, endIndex);
 
-    // Dedupe by pk
-    const map = new Map<string, any>();
-    [...this.filteredRewards, ...newRewards].forEach(r => map.set(String(r.pk), r));
+    // dedupe by pk
+    const map = new Map<number,any>();
+    for (const r of [...this.filteredRewards, ...page]) map.set(r.pk, r);
     this.filteredRewards = Array.from(map.values());
+
+    if (checkEmptyToast && search && this.filteredRewards.length === 0) {
+      this.mycartService.showMessage(this.alertMsg);
+    }
 
     this.currentPage++;
     this.isLoading = false;
-    this.cdr.detectChanges();
+    this.cdr.markForCheck();
+  }
+
+  private matchesAllFilters(
+    r:any,
+    f: { search: string; location: string; cat: string }
+  ): boolean {
+    const matchesRole = r.userRole === this.userRole || r.userRole === 'Both';
+
+    const matchesCategory =
+      f.cat === 'all' || (r.category || '').toLowerCase().includes(f.cat);
+
+    const matchesLocation =
+      !f.location || (r.city || '').toLowerCase().includes(f.location);
+
+    if (!f.search) return matchesRole && matchesCategory && matchesLocation;
+
+    const fields = [r.name, r.city, r.category, r.description, r.ProductOwnerEmail];
+    const matchesSearch = fields.some((x) => String(x || '').toLowerCase().includes(f.search));
+
+    return matchesRole && matchesCategory && matchesLocation && matchesSearch;
+  }
+
+  private updateCategoriesForRole() {
+    this.categories = Category_LIST.filter((cat: any) => {
+      return cat.useRole === this.userRole || cat.useRole === 'Both';
+    });
+
+    // do not auto-select anything if none is selected; keep previous behavior-ish
+    const anySelected = this.categories.some((c: any) => c.isSelected);
+    if (!anySelected && this.categories.length) {
+      // keep all false
+      this.categories.forEach((c: any) => (c.isSelected = false));
+    }
   }
 
   // ---------- Product actions ----------
@@ -484,63 +440,45 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     if (reward) this.mycartService.addToCart(reward);
   }
 
-  toggleFavorite(reward: any) {
+  toggleFavorite(reward:any) {
     reward.isFavorite = !reward.isFavorite;
-    if (reward.isFavorite) {
-      this.mycartService.addToFavorites(reward);
-    } else {
-      this.mycartService.removeFromFavorites?.(reward);
-    }
+    if (reward.isFavorite) this.mycartService.addToFavorites(reward);
+    else this.mycartService.removeFromFavorites?.(reward);
+    this.cdr.markForCheck();
   }
 
   productDetails(primaryKey: number) {
     this.mycartService.openProductDetails(primaryKey);
   }
 
-  nextImage(reward: any) {
+  nextImage(reward:any) {
     if (!reward.display_img_urls?.length) return;
-
-    reward.currentImageIndex =
-      (reward.currentImageIndex + 1) % reward.display_img_urls.length;
-
-    if (!reward.display_img_urls[reward.currentImageIndex]) {
-      reward.currentImageIndex = 0;
-    }
+    reward.currentImageIndex = (reward.currentImageIndex + 1) % reward.display_img_urls.length;
+    this.cdr.markForCheck();
   }
 
-  prevImage(reward: any) {
+  prevImage(reward:any) {
     if (!reward.display_img_urls?.length) return;
-
     reward.currentImageIndex =
-      (reward.currentImageIndex - 1 + reward.display_img_urls.length) %
-      reward.display_img_urls.length;
-
-    if (!reward.display_img_urls[reward.currentImageIndex]) {
-      reward.currentImageIndex = reward.display_img_urls.length - 1;
-    }
+      (reward.currentImageIndex - 1 + reward.display_img_urls.length) % reward.display_img_urls.length;
+    this.cdr.markForCheck();
   }
 
-  isValidUntilWithin7Days(validUntil: string): boolean {
-    const today = new Date();
-    const validUntilDate = new Date(validUntil);
-    const timeDifference = validUntilDate.getTime() - today.getTime();
-    const daysDifference = timeDifference / (1000 * 3600 * 24);
-    return daysDifference <= 7 && daysDifference >= 0;
-  }
-
-  onRatingChange(newRating: number, reward: any) {
-    reward.rating = newRating;
+  onRatingChange(newRating: number, reward:any) {
+    // optimistic update
+    (reward as any).rating = newRating;
     this.userService.updateRating(reward.pk, newRating, reward.userId).subscribe(() => {});
+    this.cdr.markForCheck();
   }
 
-  openMessageDialog(product: any) {
+  openMessageDialog(product:any) {
     this.router.navigate(['/messenger'], {
       queryParams: {
-        productId: product.pk || product._id,
+        productId: product.pk,
         ownerId: product.userId,
         name: product.name,
-        image: product.display_img_urls?.[0] || product.imageUrl || ''
-      }
+        image: product.display_img_urls?.[0] || '',
+      },
     });
   }
 
@@ -551,42 +489,29 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
 
   closeSortPanel() {
     this.isSortPanelOpen = false;
+    this.cdr.markForCheck();
   }
 
   openSortPanel() {
     this.isSortPanelOpen = true;
+    this.cdr.markForCheck();
   }
 
   closePanel() {
     this.closeSortPanel();
   }
 
-  updateRewardsAndCategories() {
-    this.filteredRewards = this.rewards
-      .filter((reward) => reward.userRole === this.userRole || reward.userRole === 'Both')
-      .slice(0, this.pageSize);
-
-    this.categories = Category_LIST.filter((cat) => {
-      return cat.useRole === this.userRole || cat.useRole === 'Both';
-    });
-
-    const anySelected = this.categories.some(c => c.isSelected);
-    if (!anySelected && this.categories.length) {
-      this.categories[0].isSelected = false;
-    }
-
-    this.currentPage = 1;
-  }
-
   onUserRoleChange(event: any) {
-    this.userRole = event.value;
-    this.updateRewardsAndCategories();
-
-    this.currentPage = 1;
-    this.filteredRewards = [];
-    this.showLoadingSpinner();
-    this.isLoadingMore = false;
-    this.loadMoreRewards();
+    this.userRole = event.value || 'Bride';
+    this.updateCategoriesForRole();
+    this.resetAndLoad();
   }
 
+  // kept from your older code (if you still use it elsewhere)
+  isValidUntilWithin7Days(validUntil: string): boolean {
+    const today = new Date();
+    const validUntilDate = new Date(validUntil);
+    const days = (validUntilDate.getTime() - today.getTime()) / (1000 * 3600 * 24);
+    return days <= 7 && days >= 0;
+  }
 }
