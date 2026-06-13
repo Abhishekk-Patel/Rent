@@ -1,9 +1,11 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Filter } from 'bad-words';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { MatStepper } from '@angular/material/stepper';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { UserService } from 'src/app/service/user.service';
@@ -13,7 +15,7 @@ import { UserService } from 'src/app/service/user.service';
   templateUrl: './add-product.component.html',
   styleUrls: ['./add-product.component.css'],
 })
-export class AddProductComponent implements OnInit {
+export class AddProductComponent implements OnInit, OnDestroy {
   // UI flags
   isLocating = false;
   isUploading = false;
@@ -63,6 +65,8 @@ export class AddProductComponent implements OnInit {
 
   fullAddressTooltip = '';
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -71,8 +75,13 @@ export class AddProductComponent implements OnInit {
     private ngZone: NgZone
   ) {
     // basic auth check (same as your original)
-    const userDetails = localStorage.getItem('userDetails');
-    if (!userDetails) {
+    try {
+      const userDetails = localStorage.getItem('userDetails');
+      if (!userDetails) {
+        this.router.navigate(['']);
+      }
+    } catch (e) {
+      console.error('localStorage not available:', e);
       this.router.navigate(['']);
     }
 
@@ -134,9 +143,16 @@ export class AddProductComponent implements OnInit {
   ngOnInit(): void {
     this.myCartService.setIsAddNewProduct(true);
 
-    this.productForm.get('userRole')?.valueChanges.subscribe((userRole) => {
-      this.updateCategories(userRole);
-    });
+    this.productForm.get('userRole')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((userRole) => {
+        this.updateCategories(userRole);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   updateCategories(userRole: string): void {

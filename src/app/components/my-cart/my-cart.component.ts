@@ -31,8 +31,10 @@ export class MyCartComponent implements OnInit, OnDestroy {
   deliveryFormGroup: FormGroup;
   paymentFormGroup: FormGroup;
   currentSuggestionIndex: number = 0; // Track the current suggestion index
-  private sliderSubscription!: Subscription; // Subscription for the automatic slider
+  private sliderSubscription?: Subscription; // Subscription for the automatic slider
   private orderSubscription!: Subscription; // Subscription for order updates
+  private cartItemsSub?: Subscription; // Subscription for cart items
+  private orderErrorSub?: Subscription; // Subscription for order errors
   isOwner: Boolean = false;
   user: string = ''; // User email for socket connection
 
@@ -69,7 +71,7 @@ export class MyCartComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Always fetch cart items from API on init
     this.myCartService.fetchCartItems();
-    this.myCartService.cartItems$.subscribe((items) => {
+    this.cartItemsSub = this.myCartService.cartItems$.subscribe((items) => {
       this.cartItems = items;
       this.generateSuggestions(); // Generate suggestions whenever cart items change
     });
@@ -115,7 +117,7 @@ export class MyCartComponent implements OnInit, OnDestroy {
       });
 
 
-    this.orderService.orderError().subscribe((error) => {
+    this.orderErrorSub = this.orderService.orderError().subscribe((error) => {
       this.myCartService.showMessage(error.message); // or handle as needed
       console.error('Order error:', error);
     });
@@ -124,6 +126,12 @@ export class MyCartComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.sliderSubscription) {
       this.sliderSubscription.unsubscribe(); // Unsubscribe from the slider on destroy
+    }
+    if (this.cartItemsSub) {
+      this.cartItemsSub.unsubscribe(); // Unsubscribe from cart items
+    }
+    if (this.orderErrorSub) {
+      this.orderErrorSub.unsubscribe(); // Unsubscribe from order errors
     }
     this.orderSubscription.unsubscribe(); // Unsubscribe from the order updates
     this.orderService.disconnect(); // Clean up socket connection
@@ -273,7 +281,7 @@ export class MyCartComponent implements OnInit, OnDestroy {
   pauseAutoSlider(): void {
     if (this.sliderSubscription) {
       this.sliderSubscription.unsubscribe();
-      this.sliderSubscription = undefined as any;
+      this.sliderSubscription = undefined;
     }
   }
 

@@ -7,6 +7,8 @@ import { MyCartServiceService } from 'src/app/service/my-cart-service.service';
 import { OrderService } from 'src/app/service/order.service';
 import { UserService } from 'src/app/service/user.service';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-header',
@@ -52,6 +54,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   dragStartX = 0;
   menuTransform = 'translateX(0)'; // set to 0 when open
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     public userService: UserService,
     public cartService: MyCartServiceService,
@@ -68,14 +72,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.cartService.fetchCartItems();
     this.openLanguageDialog();
 
-    this.cartService.isAddNewProduct$.subscribe(res => (this.isAddNewProduct = res));
-    this.notificationService.unreadMessages$.subscribe(count => (this.unreadMessages = count));
+    this.cartService.isAddNewProduct$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(res => (this.isAddNewProduct = res));
+    this.notificationService.unreadMessages$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(count => (this.unreadMessages = count));
 
     this.updateCategories();
     this.filteredCategories = [...this.categories];
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
     document.body.classList.remove('no-scroll');
   }
 
@@ -216,16 +226,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
   openMyCard() { this.cartService.openCart(); }
 
   openLanguageDialog(): void {
+    if (!navigator.geolocation) {
+      this.countryCode = 'US';
+      return;
+    }
+
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         fetch(
           `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${coords.latitude}&longitude=${coords.longitude}&localityLanguage=en`
         )
         .then(res => res.json())
-        .then(data => { this.countryCode = data.countryCode; })
-        .catch(console.error);
+        .then(data => { this.countryCode = data?.countryCode || 'US'; })
+        .catch(err => {
+          console.error('Location fetch failed:', err);
+          this.countryCode = 'US';
+        });
       },
-      console.error
+      (error) => {
+        console.error('Geolocation error:', error);
+        this.countryCode = 'US';
+      }
     );
   }
 
@@ -275,12 +296,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }, 100);
   }
   logout(): void {
-    console.log('test')
- 
-  localStorage.removeItem('userToken');
-  localStorage.removeItem('user'); 
-  localStorage.removeItem('userDetails'); 
-  sessionStorage.clear(); 
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('userDetails');
+    sessionStorage.clear(); 
   this.socialAuth.signOut().catch(() => {});
   this.router.navigateByUrl('/', { replaceUrl: true });
 }

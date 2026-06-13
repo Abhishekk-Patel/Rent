@@ -68,7 +68,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   otpLoading = false;
   otpError = '';
   resendCooldown = 0;
-  private resendTimer?: any;
+  private resendTimer?: ReturnType<typeof setInterval>;
 
   constructor(
     public router: Router,
@@ -105,19 +105,23 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     // lowercase login email
-    this.loginForm.get('email')?.valueChanges.subscribe((value) => {
-      if (value && value !== value.toLowerCase()) {
-        this.loginForm.get('email')?.setValue(value.toLowerCase(), { emitEvent: false });
-      }
-    });
+    this.sub.add(
+      this.loginForm.get('email')?.valueChanges.subscribe((value) => {
+        if (value && value !== value.toLowerCase()) {
+          this.loginForm.get('email')?.setValue(value.toLowerCase(), { emitEvent: false });
+        }
+      }) || new Subscription()
+    );
 
     // lowercase signup email + reset OTP on change
-    this.signUpForm.get('email')?.valueChanges.subscribe((value) => {
-      if (value && value !== value.toLowerCase()) {
-        this.signUpForm.get('email')?.setValue(value.toLowerCase(), { emitEvent: false });
-      }
-      this.resetOtpState(); // any email change invalidates OTP
-    });
+    this.sub.add(
+      this.signUpForm.get('email')?.valueChanges.subscribe((value) => {
+        if (value && value !== value.toLowerCase()) {
+          this.signUpForm.get('email')?.setValue(value.toLowerCase(), { emitEvent: false });
+        }
+        this.resetOtpState(); // any email change invalidates OTP
+      }) || new Subscription()
+    );
 
     this.sub.add(
       this.authService.authState.subscribe((user) => {
@@ -133,7 +137,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
-    clearInterval(this.resendTimer);
+    if (this.resendTimer) clearInterval(this.resendTimer);
   }
 
   onAuthTabChange(index: number): void {

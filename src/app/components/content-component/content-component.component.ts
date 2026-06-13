@@ -92,7 +92,7 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   readonly skeletons = Array.from({ length: 8 });
 
   // ✅ cache user details once (no template service calls)
-  private readonly user = this.userService.getUserDetails();
+  private readonly user = this.userService.getUserDetails() || { userId: '', email: '' };
   readonly userId = this.user.userId;
   readonly userEmail = this.user.email;
 
@@ -117,7 +117,6 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
   // ✅ single scroll handler: scroll-to-top + infinite scroll
   @HostListener('window:scroll', [])
   onWindowScroll() {
-    console.log('scroll event');
     if (this.scrollTicking) return;
     this.scrollTicking = true;
 

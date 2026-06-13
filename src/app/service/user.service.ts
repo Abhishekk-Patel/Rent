@@ -44,7 +44,11 @@ export class UserService {
       return this.http.post<any>(this.loginApiUrl, loginForm.value).pipe(
         map((response) => {
           if (response && response.User) {
-            localStorage.setItem('userToken', response.token);
+            try {
+              localStorage.setItem('userToken', response.token);
+            } catch (e) {
+              console.error('localStorage not available:', e);
+            }
             this.user = response.User;
             this.saveUserDetails();
             this.isLoggedInSubject.next(true);
@@ -64,7 +68,11 @@ export class UserService {
       return this.http.post<any>(this.signUpApiUrl, signUpForm.value).pipe(
         map((response) => {
           if (response && response.User) {
-            localStorage.setItem('userToken', response.token);
+            try {
+              localStorage.setItem('userToken', response.token);
+            } catch (e) {
+              console.error('localStorage not available:', e);
+            }
             this.user = response.User;
             this.saveUserDetails();
             this.isLoggedInSubject.next(true);
@@ -136,7 +144,11 @@ export class UserService {
   }
 
   saveUserDetails(user?: any) {
-    localStorage.setItem('userDetails', JSON.stringify(user || this.user));
+    try {
+      localStorage.setItem('userDetails', JSON.stringify(user || this.user));
+    } catch (e) {
+      console.error('localStorage not available:', e);
+    }
   }
 
   editUser(userId: string, userData: any) {
@@ -144,20 +156,32 @@ export class UserService {
   }
 
   private loadUserDetails() {
-    const user = localStorage.getItem('userDetails');
-    if (user) {
-      this.user = JSON.parse(user);
+    try {
+      const user = localStorage.getItem('userDetails');
+      if (user) {
+        this.user = JSON.parse(user);
+      }
+    } catch (e) {
+      console.error('localStorage not available:', e);
     }
   }
 
   private saveUserHistory() {
-    localStorage.setItem('userHistory', JSON.stringify(this.userHistory));
+    try {
+      localStorage.setItem('userHistory', JSON.stringify(this.userHistory));
+    } catch (e) {
+      console.error('localStorage not available:', e);
+    }
   }
 
   private loadUserHistory() {
-    const history = localStorage.getItem('userHistory');
-    if (history) {
-      this.userHistory = JSON.parse(history);
+    try {
+      const history = localStorage.getItem('userHistory');
+      if (history) {
+        this.userHistory = JSON.parse(history);
+      }
+    } catch (e) {
+      console.error('localStorage not available:', e);
     }
   }
 
@@ -178,8 +202,12 @@ export class UserService {
 
   loginWithGoogleBackendResponse(backendResponse: any): boolean {
     if (backendResponse && backendResponse.user) {
-      localStorage.setItem('userDetails', JSON.stringify(backendResponse.user));
-      localStorage.setItem('userToken', backendResponse.token);
+      try {
+        localStorage.setItem('userDetails', JSON.stringify(backendResponse.user));
+        localStorage.setItem('userToken', backendResponse.token);
+      } catch (e) {
+        console.error('localStorage not available:', e);
+      }
       this.handleLoginSuccess(backendResponse.user);
       return true;
     }
@@ -187,7 +215,12 @@ export class UserService {
   }
 
   private getUserFromStorage() {
-    const user = localStorage.getItem('userDetails');
-    return user ? JSON.parse(user) : null;
+    try {
+      const user = localStorage.getItem('userDetails');
+      return user ? JSON.parse(user) : null;
+    } catch (e) {
+      console.error('localStorage not available:', e);
+      return null;
+    }
   }
 }
