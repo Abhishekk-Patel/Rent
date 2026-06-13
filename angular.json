@@ -30,7 +30,7 @@
               "src/styles.css"
             ],
             "scripts": [],
-            "baseHref": "/Rent/"
+            "baseHref": "/"
           },
           "configurations": {
             "production": {

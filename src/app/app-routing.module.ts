@@ -45,6 +45,7 @@ const routes: Routes = [
 @NgModule({
   imports: [
     RouterModule.forRoot(routes, {
+      useHash: true,  // Enable hash-based routing for custom domain (tryrentit.in)
       //  scrollPositionRestoration: 'top', // always scroll to top on navigation
       //  anchorScrolling: 'enabled',       // scroll to #fragment anchors if present
       //  scrollOffset: [0, 0],             // (optional) adjust offset for fixed headers
