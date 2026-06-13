@@ -1,110 +1,691 @@
-<div class="myaccount-container-top">
-  <div class="account-container">
-    <div class="user-details">
-      <h2>User Details</h2>
-      <div class="detail">
-        <label>Username:</label>
-        <span>{{ user?.username }}</span>
+<!-- Track Order Modal -->
+<div
+  class="track-order-modal"
+  *ngIf="showTrackOrderModal"
+  (click)="closeTrackOrderModal()"
+>
+  <div
+    class="track-order-modal-content"
+    *ngIf="trackOrderData as t"
+    (click)="$event.stopPropagation()"
+  >
+    <button
+      class="close-modal-btn"
+      type="button"
+      (click)="closeTrackOrderModal()"
+      title="Close"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <div class="modal-head">
+      <h2>Track Order</h2>
+      <span class="pill" [ngClass]="statusClass(t.status)">
+        <mat-icon>{{ statusIcon(t.status) }}</mat-icon>
+        {{ normalizeStatus(t.status) }}
+      </span>
+    </div>
+
+    <div class="modern-track-status">
+      <mat-horizontal-stepper
+        [selectedIndex]="getOrderStepIndex(t)"
+        class="modern-stepper"
+        labelPosition="bottom"
+      >
+        <mat-step [completed]="getOrderStepIndex(t) > 0">
+          <ng-template matStepLabel>Order Placed</ng-template>
+          <div class="step-content">
+            <mat-icon>shopping_cart</mat-icon>
+            <span>Your order has been placed.</span>
+          </div>
+        </mat-step>
+
+        <mat-step [completed]="getOrderStepIndex(t) > 1">
+          <ng-template matStepLabel>Seen by Owner</ng-template>
+          <div class="step-content">
+            <mat-icon>visibility</mat-icon>
+            <span>The owner has seen your order.</span>
+          </div>
+        </mat-step>
+
+        <mat-step [completed]="getOrderStepIndex(t) === 2">
+          <ng-template matStepLabel>Accepted / Rejected</ng-template>
+          <div class="step-content">
+            <mat-icon *ngIf="normalizeStatus(t.status) === 'Order Accepted'"
+              >check_circle</mat-icon
+            >
+            <mat-icon *ngIf="normalizeStatus(t.status) === 'Order Rejected'"
+              >cancel</mat-icon
+            >
+
+            <span *ngIf="normalizeStatus(t.status) === 'Order Accepted'">
+              Your order was <b>accepted</b> by the owner.
+            </span>
+
+            <span *ngIf="normalizeStatus(t.status) === 'Order Rejected'">
+              Your order was <b>rejected</b>.
+              <ng-container *ngIf="t.rejectionReason">
+                <br />
+                <small><b>Reason:</b> {{ t.rejectionReason }}</small>
+              </ng-container>
+            </span>
+
+            <span
+              *ngIf="
+                normalizeStatus(t.status) !== 'Order Accepted' &&
+                normalizeStatus(t.status) !== 'Order Rejected'
+              "
+            >
+              Waiting for owner's response.
+            </span>
+          </div>
+        </mat-step>
+      </mat-horizontal-stepper>
+    </div>
+
+    <div class="track-order-details">
+      <h3>Order Details</h3>
+
+      <div class="order-details-row">
+        <div class="order-detail-item">
+          <mat-icon>receipt_long</mat-icon>
+          <span><strong>Order ID:</strong> {{ t.orderId || "NA" }}</span>
+        </div>
+
+        <div class="order-detail-item">
+          <mat-icon>category</mat-icon>
+          <span><strong>Product:</strong> {{ t.productName || "NA" }}</span>
+        </div>
       </div>
-      <div class="detail">
-        <label>Email:</label>
-        <span>{{ user?.email }}</span>
-      </div>
-      <div class="detail">
-        <label>Mobile Number:</label>
-        <span>{{ user?.mobileNumber }}</span>
+
+      <div class="order-details-row">
+        <div class="order-detail-item">
+          <mat-icon>person</mat-icon>
+          <span><strong>Customer:</strong> {{ t.customerName || "NA" }}</span>
+        </div>
+
+        <div class="order-detail-item">
+          <mat-icon>calendar_today</mat-icon>
+          <span>
+            <strong>Placed On:</strong>
+            {{ t.createdAt ? (t.createdAt | date: "medium") : "NA" }}
+          </span>
+        </div>
       </div>
     </div>
-    <mat-tab-group>
-      <mat-tab label="History" class="history-tab">
-        <div class="user-history">
-          <div class="tab-header">
-            <h2>History</h2>
-            <button *ngIf="userHistory.length > 0" (click)="sortByDate('history')" class="sort">Sort by Date</button>
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="reject-modal" *ngIf="showRejectModal" (click)="closeRejectDialog()">
+  <div class="reject-modal-content" (click)="$event.stopPropagation()">
+    <button
+      class="close-modal-btn"
+      type="button"
+      (click)="closeRejectDialog()"
+      title="Close"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <h3>Reject Order</h3>
+
+    <p style="margin: 6px 0 14px 0">
+      <b>Order ID:</b>
+      {{ rejectTargetOrder?.orderId || rejectTargetOrder?._id || "NA" }}
+    </p>
+
+    <mat-form-field appearance="outline" style="width: 100%">
+      <mat-label>Reason (optional)</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="rejectReason"
+        rows="3"
+        placeholder="Reason for rejection..."
+      ></textarea>
+    </mat-form-field>
+
+    <div class="reject-actions">
+      <button
+        class="confirm-reject-btn"
+        type="button"
+        (click)="confirmReject()"
+      >
+        Confirm Reject
+      </button>
+      <button
+        class="cancel-reject-btn"
+        type="button"
+        (click)="closeRejectDialog()"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="myacc-shell">
+  <div class="myacc-grid">
+    <!-- Profile -->
+    <aside class="profile-card">
+      <div class="profile-top">
+        <div class="avatar-wrap">
+          <img
+            [src]="user?.profilePicture || 'assets/default_img.png'"
+            alt="Profile"
+            class="avatar"
+          />
+
+          <span class="verified-dot" *ngIf="user?.isVarified; else notVerified">
+            <mat-icon>verified</mat-icon>
+          </span>
+          <ng-template #notVerified>
+            <span class="verified-dot is-pending">
+              <mat-icon>shield</mat-icon>
+            </span>
+          </ng-template>
+        </div>
+
+        <div class="profile-identity">
+          <h2 class="profile-name">
+            {{ userEditMode ? "Edit Details" : user?.username }}
+          </h2>
+
+          <span class="badge badge-success" *ngIf="user?.isVarified; else notV">
+            <mat-icon>check_circle</mat-icon> Verified Seller
+          </span>
+          <ng-template #notV>
+            <span class="badge badge-warn">
+              <mat-icon>info</mat-icon> Not Verified
+            </span>
+          </ng-template>
+        </div>
+
+        <button
+          *ngIf="!userEditMode"
+          mat-icon-button
+          class="icon-btn"
+          type="button"
+          (click)="startEditUser()"
+          title="Edit"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      </div>
+
+      <!-- View mode -->
+      <ng-container *ngIf="!userEditMode">
+        <div class="profile-kv">
+          <div class="kv">
+            <mat-icon>email</mat-icon>
+            <div>
+              <div class="kv-label">Email</div>
+              <div class="kv-value">{{ user?.email }}</div>
+            </div>
           </div>
-          <div *ngIf="userHistory.length === 0" class="no-records">
+
+          <div class="kv">
+            <mat-icon>phone</mat-icon>
+            <div>
+              <div class="kv-label">Mobile</div>
+              <div class="kv-value">{{ user?.mobileNumber }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verify only if NOT verified -->
+        <ng-container *ngIf="!user?.isVarified">
+          <button
+            class="btn btn-gold w-100"
+            type="button"
+            (click)="verifyUser()"
+          >
+            <mat-icon>verified_user</mat-icon> Verify Now
+          </button>
+
+          <div *ngIf="showOtpInput" class="otp-card">
+            <div class="otp-title">Enter OTP sent to your email</div>
+
+            <div class="otp-row">
+              <mat-icon>mail</mat-icon>
+              <input
+                [(ngModel)]="otp"
+                maxlength="6"
+                placeholder="Enter OTP"
+                class="otp-input"
+              />
+            </div>
+
+            <div class="otp-actions">
+              <button
+                class="btn btn-primary"
+                type="button"
+                (click)="verifyOtpAndEditUser()"
+              >
+                Submit OTP
+              </button>
+              <button class="btn btn-ghost" type="button" (click)="resendOtp()">
+                Resend OTP
+              </button>
+            </div>
+
+            <div *ngIf="otpError" class="otp-error">{{ otpError }}</div>
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <!-- Edit mode -->
+      <form
+        *ngIf="userEditMode"
+        (ngSubmit)="saveUserDetails()"
+        class="edit-form"
+      >
+        <label class="field">
+          <span>Username</span>
+          <div class="field-row">
+            <mat-icon>person</mat-icon>
+            <input [(ngModel)]="editUser.username" name="username" required />
+          </div>
+        </label>
+
+        <label class="field">
+          <span>Email</span>
+          <div class="field-row">
+            <mat-icon>email</mat-icon>
+            <input [(ngModel)]="editUser.email" name="email" disabled />
+          </div>
+        </label>
+
+        <label class="field">
+          <span>Mobile</span>
+          <div class="field-row">
+            <mat-icon>phone</mat-icon>
+            <input
+              [(ngModel)]="editUser.mobileNumber"
+              name="mobileNumber"
+              required
+            />
+          </div>
+        </label>
+
+        <div class="edit-actions">
+          <button
+            class="btn btn-primary"
+            type="submit"
+            [disabled]="isSavingUser"
+          >
+            <mat-icon>check</mat-icon>
+            {{ isSavingUser ? "Saving..." : "Save" }}
+          </button>
+          <button
+            class="btn btn-ghost"
+            type="button"
+            (click)="cancelEditUser()"
+            [disabled]="isSavingUser"
+          >
+            <mat-icon>close</mat-icon> Cancel
+          </button>
+        </div>
+      </form>
+    </aside>
+
+    <!-- Content -->
+    <main class="content-card">
+      <div class="content-head">
+        <div class="content-tabs-title">My Account</div>
+        <div class="muted" *ngIf="isLoading">Loading…</div>
+      </div>
+
+      <mat-tab-group
+        class="premium-tabs"
+        (selectedTabChange)="onTabChange($event)"
+      >
+        <!-- HISTORY -->
+        <mat-tab label="History">
+          <div class="tab-topbar">
+            <h3>History</h3>
+            <button
+              *ngIf="userHistory.length > 0"
+              (click)="sortByDate('history')"
+              class="btn btn-ghost"
+              type="button"
+            >
+              <mat-icon>swap_vert</mat-icon> Sort by Date
+            </button>
+          </div>
+
+          <div
+            *ngIf="userHistory.length === 0 && !isLoading"
+            class="empty-state"
+          >
             No record found
           </div>
-          <div class="history-item" *ngFor="let item of userHistory">
-            <div class="item-details">
-              <img [src]="item.images[0]?.url" alt="{{ item.productName }}" class="product-image">
-              <div class="item-info">
-                <h3><strong>Product Name:</strong> {{ item.productName }}</h3>
-                <p><strong>Product Description:</strong>{{ item.productDescription }}</p>
-                <p><strong>Price:</strong> {{ item.productRent }}</p>
-                <p><strong>Product Listed Date:</strong> {{ item.productListedDate ? (item.productListedDate |
-                  date:'short') : 'NA' }}</p>
-                <div class="action-buttons">
-                  <button (click)="editHistoryItem(item)" class="edit-btn">Edit</button>
-                  <button (click)="deleteHistoryItem(item)" class="delete-btn">Delete</button>
+
+          <div class="order-list">
+            <div
+              class="order-card"
+              *ngFor="let item of userHistory; trackBy: trackByHistoryId"
+            >
+              <!-- VIEW -->
+              <div
+                class="order-main"
+                *ngIf="!item.editMode; else historyEditTpl"
+              >
+                <img
+                  [src]="item.images[0]?.url"
+                  class="order-img"
+                  alt="Product"
+                />
+
+                <div class="order-info">
+                  <div class="order-head-row">
+                    <div class="order-title">{{ item.productName }}</div>
+                    <span class="pill status-seen">
+                      <mat-icon>inventory_2</mat-icon> Listed
+                    </span>
+                  </div>
+
+                  <div class="order-meta-row">
+                    <span class="muted">₹ {{ item.productRent }}</span>
+                    <span class="dot">•</span>
+                    <span class="muted">
+                      {{
+                        item.productListedDate
+                          ? (item.productListedDate | date: "mediumDate")
+                          : "NA"
+                      }}
+                    </span>
+                  </div>
+
+                  <div class="order-desc">
+                    {{ item.productDescription || "NA" }}
+                  </div>
+
+                  <div class="cta-row">
+                    <div class="cta-left">
+                      <button
+                        class="btn btn-primary"
+                        type="button"
+                        (click)="startEditHistory(item)"
+                      >
+                        <mat-icon>edit</mat-icon> Edit
+                      </button>
+                      <button
+                        class="btn btn-danger"
+                        type="button"
+                        (click)="showDeleteConfirm(item)"
+                      >
+                        <mat-icon>delete</mat-icon> Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- EDIT -->
+              <ng-template #historyEditTpl>
+                <div class="history-edit">
+                  <div class="history-edit-head">
+                    <div class="order-title">Edit Product</div>
+                    <button
+                      class="btn btn-ghost"
+                      type="button"
+                      (click)="cancelEditHistory(item)"
+                    >
+                      <mat-icon>close</mat-icon> Close
+                    </button>
+                  </div>
+
+                  <div class="history-form-grid">
+                    <label class="field">
+                      <span>Name</span>
+                      <input
+                        [(ngModel)]="item._draft.productName"
+                        name="pName{{ item._id }}"
+                      />
+                    </label>
+
+                    <label class="field">
+                      <span>Price</span>
+                      <input
+                        type="number"
+                        [(ngModel)]="item._draft.productRent"
+                        name="pRent{{ item._id }}"
+                      />
+                    </label>
+
+                    <label class="field full">
+                      <span>Description</span>
+                      <textarea
+                        rows="3"
+                        [(ngModel)]="item._draft.productDescription"
+                        name="pDesc{{ item._id }}"
+                      ></textarea>
+                    </label>
+                  </div>
+
+                  <div class="edit-actions">
+                    <button
+                      class="btn btn-primary"
+                      type="button"
+                      (click)="saveHistoryEdit(item)"
+                    >
+                      <mat-icon>check</mat-icon> Save
+                    </button>
+                    <button
+                      class="btn btn-ghost"
+                      type="button"
+                      (click)="cancelEditHistory(item)"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </ng-template>
+
+              <!-- Confirm delete -->
+              <div *ngIf="confirmDeleteItem === item" class="confirm-inline">
+                <div class="confirm-inline-text">
+                  <mat-icon>warning</mat-icon> Delete this item?
+                </div>
+                <div class="confirm-inline-actions">
+                  <button
+                    class="btn btn-danger"
+                    type="button"
+                    (click)="confirmDeleteHistoryItem(item)"
+                  >
+                    Confirm
+                  </button>
+                  <button
+                    class="btn btn-ghost"
+                    type="button"
+                    (click)="cancelDelete()"
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </mat-tab>
-      <mat-tab    [label]="'Received Orders (' + receivedOrders.length + ')'">
-        <div class="received-orders">
-          <div class="tab-header">
-            <h2>Received Orders</h2>
-            <button *ngIf="receivedOrders.length > 0" (click)="sortByDate('received')" class="sort">Sort by
-              Date</button>
+        </mat-tab>
+
+        <!-- RECEIVED -->
+        <mat-tab [label]="'Received Orders (' + receivedOrders.length + ')'">
+          <div class="tab-topbar">
+            <h3>Received Orders</h3>
+            <button
+              *ngIf="receivedOrders.length > 0"
+              (click)="sortByDate('received')"
+              class="btn btn-ghost"
+              type="button"
+            >
+              <mat-icon>swap_vert</mat-icon> Sort by Date
+            </button>
           </div>
-          <div *ngIf="receivedOrders.length === 0" class="no-records">
+
+          <div
+            *ngIf="receivedOrders.length === 0 && !isLoading"
+            class="empty-state"
+          >
             No orders received
           </div>
-          <div class="order-item" *ngFor="let order of receivedOrders">
-            <div class="item-details" *ngFor="let product of order.product">
-              <img [src]="product.display_img_urls[0]" alt="{{ product.name }}" class="product-image">
-              <div class="item-info">
-                <h3><strong>Product Name:</strong> {{ product.name }}</h3>
-                <p><strong>Product Description:</strong> {{ product.description }}</p>
-                <p><strong>Category:</strong> {{ product.category }}</p>
-              </div>
-            </div>
-            <div class="customer-details">
-              <h3>Customer Details</h3>
-              <p><strong>Name:</strong> John Doe</p>
-              <p><strong>Email:</strong> john.doeexample.com</p>
-              <p><strong>Address:</strong> 123 Main St, City, Country</p>
-              <p><strong>Phone:</strong> +1234567890</p>
-            </div>
-          </div>
-        </div>
-      </mat-tab>
-      <mat-tab [label]="'Your Orders (' + yourOrders.length + ')'">
 
-        <div class="your-orders">
-          <div class="tab-header">
-            <h2>Your Orders</h2>
-            <button *ngIf="yourOrders.length > 0" (click)="sortByDate('your')" class="sort">Sort by Date</button>
-          </div>
-          <div *ngIf="yourOrders.length === 0" class="no-records">
-            No orders placed
-          </div>
-          <div class="order-item" *ngFor="let order of yourOrders">
-            <div *ngFor="let product of order.product">
-              <div class="item-details">
-                <img [src]="product.display_img_urls[0]" alt="{{ product.name }}" class="product-image">
-                <div class="item-info">
-                  <h3><strong>Product Name:</strong> {{ product.name }}</h3>
-                  <p><strong>Product Description:</strong> {{ product.description }}</p>
-                  <p><strong>Category:</strong> {{ product.category }}</p>
+          <div class="order-list">
+            <div
+              class="order-card"
+              *ngFor="let order of receivedOrders; trackBy: trackByOrderId"
+            >
+              <div class="order-main" *ngFor="let product of order.product">
+                <img
+                  [src]="product.display_img_urls[0]"
+                  class="order-img"
+                  alt="Product"
+                />
+
+                <div class="order-info">
+                  <div class="order-head-row">
+                    <div class="order-title">{{ product.name }}</div>
+                    <span
+                      class="pill"
+                      [ngClass]="statusClass(order.status || 'Order Placed')"
+                    >
+                      <mat-icon>{{
+                        statusIcon(order.status || "Order Placed")
+                      }}</mat-icon>
+                      {{ normalizeStatus(order.status || "Order Placed") }}
+                    </span>
+                  </div>
+
+                  <div class="cta-row">
+                    <div class="cta-left">
+                      <button
+                        class="btn btn-ghost"
+                        type="button"
+                        [disabled]="
+                          normalizeStatus(order.status) !== 'Order Placed'
+                        "
+                        (click)="markSeen(order)"
+                      >
+                        <mat-icon>visibility</mat-icon> Seen
+                      </button>
+
+                      <button
+                        class="btn btn-primary"
+                        type="button"
+                        [disabled]="
+                          normalizeStatus(order.status) !== 'Order Seen'
+                        "
+                        (click)="acceptOrderOwner(order)"
+                      >
+                        <mat-icon>check_circle</mat-icon> Accept
+                      </button>
+
+                      <button
+                        class="btn btn-outline-danger"
+                        type="button"
+                        [disabled]="
+                          normalizeStatus(order.status) !== 'Order Seen'
+                        "
+                        (click)="openRejectDialog(order)"
+                      >
+                        <mat-icon>cancel</mat-icon> Reject
+                      </button>
+                    </div>
+
+                    <button
+                      class="btn btn-secondary"
+                      type="button"
+                      (click)="trackReceivedOrder(order)"
+                    >
+                      <mat-icon>track_changes</mat-icon> Track
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="customer-details" *ngFor="let customer of order.customer">
+          </div>
+        </mat-tab>
 
-              <h3>Customer Details</h3>
-              <p><strong>Name:</strong> {{customer.name}}</p>
-              <p><strong>Email:</strong> {{customer.email}}</p>
-              <p><strong>Address:</strong> {{customer.address}}</p>
-              <p><strong>Phone:</strong> {{customer.mobile}}</p>
+        <!-- YOUR -->
+        <mat-tab [label]="'Your Orders (' + yourOrders.length + ')'">
+          <div class="tab-topbar">
+            <h3>Your Orders</h3>
+            <button
+              *ngIf="yourOrders.length > 0"
+              (click)="sortByDate('your')"
+              class="btn btn-ghost"
+              type="button"
+            >
+              <mat-icon>swap_vert</mat-icon> Sort by Date
+            </button>
+          </div>
 
+          <div
+            *ngIf="yourOrders.length === 0 && !isLoading"
+            class="empty-state"
+          >
+            No orders placed
+          </div>
+
+          <div class="order-list">
+            <div
+              class="order-card"
+              *ngFor="let order of yourOrders; trackBy: trackByOrderId"
+            >
+              <div class="order-main" *ngFor="let product of order.product">
+                <img
+                  [src]="product.display_img_urls[0]"
+                  class="order-img"
+                  alt="Product"
+                />
+
+                <div class="order-info">
+                  <div class="order-head-row">
+                    <div class="order-title">{{ product.name }}</div>
+                    <span
+                      class="pill"
+                      [ngClass]="statusClass(order.status || 'Order Placed')"
+                    >
+                      <mat-icon>{{
+                        statusIcon(order.status || "Order Placed")
+                      }}</mat-icon>
+                      {{ normalizeStatus(order.status || "Order Placed") }}
+                    </span>
+                  </div>
+
+                  <div class="cta-row">
+                    <div class="cta-left">
+                      <button
+                        class="btn btn-ghost"
+                        type="button"
+                        (click)="editYourOrder(order)"
+                      >
+                        <mat-icon>edit</mat-icon> Edit
+                      </button>
+                      <button
+                        class="btn btn-danger"
+                        type="button"
+                        (click)="deleteYourOrder(order)"
+                      >
+                        <mat-icon>delete</mat-icon> Delete
+                      </button>
+                    </div>
+
+                    <button
+                      class="btn btn-secondary"
+                      type="button"
+                      (click)="trackYourOrder(order)"
+                    >
+                      <mat-icon>track_changes</mat-icon> Track
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </mat-tab>
-    </mat-tab-group>
+        </mat-tab>
+      </mat-tab-group>
+    </main>
   </div>
 </div>

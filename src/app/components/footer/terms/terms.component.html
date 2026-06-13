@@ -1,0 +1,69 @@
+
+<!-- terms.component.html -->
+
+<section class="terms-hero">
+    <div class="hero-content">
+      <h1>Terms &amp; Conditions</h1>
+      <p>
+        Please read these Terms &amp; Conditions carefully before using our services.
+        By accessing or using the platform, you agree to be bound by these terms.
+      </p>
+      <div class="hero-meta">
+        <mat-chip color="primary" selected>
+          <mat-icon>update</mat-icon>
+          <span>&nbsp;Last updated: {{ lastUpdated }}</span>
+        </mat-chip>
+        <mat-chip>
+          <mat-icon>domain</mat-icon>
+          <span>&nbsp;{{ companyName }}</span>
+        </mat-chip>
+      </div>
+      <div class="hero-actions">
+        <a routerLink="/privacy" mat-raised-button color="primary">
+          <mat-icon>shield</mat-icon>
+          Privacy Policy
+        </a>
+        <a routerLink="/contact" mat-stroked-button>
+          <mat-icon>mail</mat-icon>
+          Contact Us
+        </a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <img src="./assets/svg/terms.svg">
+
+    </div>
+  </section>
+  
+  <mat-divider></mat-divider>
+  
+  <div class="terms-layout">
+    <!-- Sticky TOC -->
+    <aside class="toc">
+      <mat-card class="toc-card">
+        <mat-card-title>Quick Navigation</mat-card-title>
+        <mat-card-content>
+          <mat-nav-list>
+            <a mat-list-item [routerLink]="[]" [fragment]="s.id" *ngFor="let s of sections">
+              <mat-icon matListIcon>chevron_right</mat-icon>
+              <span matLine>{{ s.title }}</span>
+            </a>
+          </mat-nav-list>
+        </mat-card-content>
+      </mat-card>
+    </aside>
+  
+    <!-- Main Content -->
+    <section class="content">
+      <mat-card *ngFor="let s of sections" [id]="s.id" class="section-card">
+        <mat-card-title>{{ s.title }}</mat-card-title>
+        <mat-card-content>
+          <p>
+            <!-- Placeholder text for each section -->
+            This section explains {{ s.title }} in detail. Replace this with your actual terms content.
+          </p>
+        </mat-card-content>
+      </mat-card>
+    </section>
+  </div>
+  

@@ -6,6 +6,7 @@ import { OrderService } from 'src/app/service/order.service';
 import { interval, Subscription } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { UserService } from 'src/app/service/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-my-cart',
@@ -20,6 +21,7 @@ import { UserService } from 'src/app/service/user.service';
   ],
 })
 export class MyCartComponent implements OnInit, OnDestroy {
+
   cartItems: any[] = [];
   favoriteItems: any[] = []; // List of favorite items
   suggestedProducts: any[] = []; // List of suggested products
@@ -29,14 +31,21 @@ export class MyCartComponent implements OnInit, OnDestroy {
   deliveryFormGroup: FormGroup;
   paymentFormGroup: FormGroup;
   currentSuggestionIndex: number = 0; // Track the current suggestion index
-  private sliderSubscription!: Subscription; // Subscription for the automatic slider
+  private sliderSubscription?: Subscription; // Subscription for the automatic slider
+  private orderSubscription!: Subscription; // Subscription for order updates
+  private cartItemsSub?: Subscription; // Subscription for cart items
+  private orderErrorSub?: Subscription; // Subscription for order errors
+  isOwner: Boolean = false;
+  user: string = ''; // User email for socket connection
+
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly myCartService: MyCartServiceService,
     private readonly dataService: DataService,
     private readonly orderService: OrderService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    public router: Router,
   ) {
     this.productFormGroup = this.fb.group({});
 
@@ -62,26 +71,80 @@ export class MyCartComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Always fetch cart items from API on init
     this.myCartService.fetchCartItems();
-    this.myCartService.cartItems$.subscribe((items) => {
+    this.cartItemsSub = this.myCartService.cartItems$.subscribe((items) => {
       this.cartItems = items;
       this.generateSuggestions(); // Generate suggestions whenever cart items change
     });
     this.favoriteItems = this.myCartService.getFavoriteItems(); // Fetch favorite items
     this.generateSuggestions(); // Generate suggestions on initialization
     this.startAutoSlider(); // Start the automatic slider
+    this.user = this.userService.getUserDetails().email;
+    this.orderService.connectToSocket(this.user);
+
+    this.orderSubscription = this.orderService
+      .receiveOrder()
+      .subscribe((order) => {
+
+        const productEmails = order.product.map(
+          (res: any) => res.productOwnerEmail
+        );
+
+        // Check if the current user matches any product owner email
+        if (productEmails.includes(this.user)) {
+          this.isOwner = true;
+          this.myCartService.showMessage(order.message);
+
+        }
+
+        else if (order.product) {
+          this.myCartService.showMessage(order.message);
+        }
+        else {
+          this.isOwner = false; // Set to false if no match
+          this.myCartService.showMessage('No new orders');
+        }
+
+        // If the order was placed by this user (customer), clear cart and show message
+        if (order.customer && order.customer.email !== this.user) {
+          order.product.forEach((item: any) => {
+            this.myCartService.removeFromCart(item);
+          });
+          this.cartItems = []; // Clear local cart items
+          // this.closeCartModel();
+          this.myCartService.showMessage(order.message);
+
+        }
+      });
+
+
+    this.orderErrorSub = this.orderService.orderError().subscribe((error) => {
+      this.myCartService.showMessage(error.message); // or handle as needed
+      console.error('Order error:', error);
+    });
   }
 
   ngOnDestroy(): void {
     if (this.sliderSubscription) {
       this.sliderSubscription.unsubscribe(); // Unsubscribe from the slider on destroy
     }
+    if (this.cartItemsSub) {
+      this.cartItemsSub.unsubscribe(); // Unsubscribe from cart items
+    }
+    if (this.orderErrorSub) {
+      this.orderErrorSub.unsubscribe(); // Unsubscribe from order errors
+    }
+    this.orderSubscription.unsubscribe(); // Unsubscribe from the order updates
+    this.orderService.disconnect(); // Clean up socket connection
   }
 
   selectHeader(header: string): void {
     this.selectedHeader = header;
     this.showStepper = false; // Reset stepper view when switching
   }
-
+  onAddProduct() {
+    this.myCartService.closeCartModel(); // Close the cart model if it's open
+    this.router.navigate(['/content']);
+  }
   removeFromCart(item: any, index: number): void {
     item.removing = true; // Add the removing class to trigger the animation
     setTimeout(() => {
@@ -96,17 +159,25 @@ export class MyCartComponent implements OnInit, OnDestroy {
   }
 
   placeOrder(): void {
-    this.showStepper = true; 
+    this.showStepper = true;
+    this.confirmOrder();
   }
 
-  closeCartModel(){
-    this.myCartService.closeCartModel(); // Call the service to close the cart model
-  }
+  // closeCartModel(){
+  //   this.myCartService.closeCartModel(); // Call the service to close the cart model
+  // }
   confirmOrder(): void {
+    const userId = this.userService.getUserDetails().userId || this.userService.getUserDetails().googleId;
     if (this.deliveryFormGroup.valid) {
-      const orderData = [[...this.cartItems], [this.deliveryFormGroup.value]];
+      const orderData = {
+        product: [...this.cartItems],
+        customer: this.deliveryFormGroup.value,
+        userId: userId
+      };
+
       this.orderService.sendOrder(orderData);
-      this.myCartService.showMessage('Order placed successfully');
+      // this.myCartService.showMessage('Order placed successfully');
+
       this.showStepper = false; // Return to cart after placing order
     } else {
       this.myCartService.showMessage('Error! Please fill all the details');
@@ -210,7 +281,7 @@ export class MyCartComponent implements OnInit, OnDestroy {
   pauseAutoSlider(): void {
     if (this.sliderSubscription) {
       this.sliderSubscription.unsubscribe();
-      this.sliderSubscription = undefined as any;
+      this.sliderSubscription = undefined;
     }
   }
 

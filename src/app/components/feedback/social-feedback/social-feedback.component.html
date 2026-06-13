@@ -1,0 +1,129 @@
+<section class="wrap">
+  <div class="inner">
+    <!-- Header -->
+    <div class="head">
+      <div class="head-left">
+        <h2>Loved by Couples</h2>
+        <p>Real stories from brides & grooms across India</p>
+      </div>
+
+      <div class="head-right">
+        <button
+          mat-stroked-button
+          class="share-cta"
+          type="button"
+          aria-label="Share your story"
+          (click)="openFeedbackModal()">
+          <mat-icon>edit</mat-icon>
+          Share your story
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats" *ngIf="!loading && !error && items.length > 0">
+      <div class="stat-pill">
+        <span class="stat-count">{{ items.length }}</span>
+        <span class="stat-label">Stories</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-stars">★</span>
+        <span class="stat-rating">{{ avgRating }}</span>
+      </div>
+    </div>
+
+    <!-- Loading / Error / Empty States -->
+    <div *ngIf="loading" class="state">
+      <p>Loading testimonials...</p>
+    </div>
+    <div *ngIf="!loading && error" class="state error">{{ error }}</div>
+    <div *ngIf="!loading && !error && items.length === 0" class="state">
+      <p>Be first to share your story</p>
+    </div>
+
+    <!-- Carousel -->
+    <div
+      *ngIf="!loading && !error && items.length > 0"
+      class="viewport"
+      (mouseenter)="pause()"
+      (mouseleave)="resume()">
+
+      <div class="track" #track>
+        <article class="card" *ngFor="let it of items">
+          <!-- Quote watermark -->
+          <div class="quote-mark">"</div>
+
+          <!-- Card content -->
+          <div class="card-content">
+            <!-- Avatar + Name + City -->
+            <div class="card-top">
+              <div class="avatar">{{ initials(it.displayName) }}</div>
+              <div class="card-meta">
+                <div class="name">{{ it.displayName?.trim() ? it.displayName : 'Anonymous' }}</div>
+                <div class="city" *ngIf="it.city">
+                  <mat-icon class="city-icon">location_on</mat-icon>
+                  {{ it.city }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Stars + Rating badge -->
+            <div class="stars-row" *ngIf="it.rating">
+              <div class="stars">
+                <span *ngFor="let s of stars(it.rating)" class="star">★</span>
+              </div>
+              <div class="rating-badge">{{ it.rating }}/5</div>
+            </div>
+
+            <!-- Message -->
+            <p class="msg">"{{ it.message }}"</p>
+
+            <!-- Date chip -->
+            <div class="date-chip">{{ it.createdAt | date:'MMM dd, yyyy' }}</div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Navigation buttons (always visible) -->
+      <button
+        type="button"
+        class="nav prev"
+        mat-icon-button
+        *ngIf="items.length > 1"
+        (click)="prev()"
+        aria-label="Previous testimonial">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <button
+        type="button"
+        class="nav next"
+        mat-icon-button
+        *ngIf="items.length > 1"
+        (click)="next()"
+        aria-label="Next testimonial">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+
+      <!-- Dot indicators -->
+      <div class="dots" *ngIf="items.length > 1">
+        <button
+          type="button"
+          class="dot"
+          *ngFor="let dot of items; let i = index"
+          [class.active]="i === activeIndex"
+          (click)="goTo(i)"
+          [attr.aria-label]="'Testimonial ' + (i + 1)"
+          role="tab"
+          [attr.aria-selected]="i === activeIndex">
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Modal -->
+  <app-feedback-modal
+    [open]="showFeedbackModal"
+    (closed)="closeFeedbackModal()">
+  </app-feedback-modal>
+</section>

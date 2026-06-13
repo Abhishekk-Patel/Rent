@@ -1,0 +1,11 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 160" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="headGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffecd2"/>
+      <stop offset="100%" stop-color="#fcb69f"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="160" fill="url(#headGrad)"/>
+  <path d="M0,50 C240,120 660,0 900,50 L900,160 L0,160 Z" fill="#ffffff" opacity="0.35"/>
+</svg>

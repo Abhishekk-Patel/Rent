@@ -1,206 +1,549 @@
+<!-- Top brand slider -->
+<app-partner-brand-slider
+  *ngIf="!searchValue"
+  (howItWorksClick)="openHowItWorksSheet()"
+></app-partner-brand-slider>
 
+<!-- ===========================
+     HOW IT WORKS: Bottom Sheet
+     =========================== -->
+<ng-template #howItWorksSheet>
+  <div class="how-sheet">
+    <div class="how-sheet-top">
+      <div>
+        <h2>How it works</h2>
+        <p>Renting luxury wedding wear is simple, secure, and stress-free.</p>
+      </div>
 
-<app-partner-brand-slider *ngIf="!searchValue"></app-partner-brand-slider>
+      <button
+        mat-icon-button
+        class="x"
+        (click)="closeHowItWorksSheet()"
+        aria-label="Close"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
 
-<section class="content">
-  <div class="layout">
-    <div class="categories">
-      <div class="categories-header">
-        <h3>Categories</h3>
+    <div class="how-sheet-grid">
+      <article class="how-sheet-card">
+        <div class="how-sheet-icon"><mat-icon>search</mat-icon></div>
+        <div class="how-sheet-num">01</div>
+        <h3>Browse & choose</h3>
+        <p>Explore curated lehengas, sherwanis, jewelry, and accessories.</p>
+      </article>
+
+      <article class="how-sheet-card">
+        <div class="how-sheet-icon"><mat-icon>straighten</mat-icon></div>
+        <div class="how-sheet-num">02</div>
+        <h3>Perfect fit assistance</h3>
+        <p>Share measurements or get styling help for a confident fit.</p>
+      </article>
+
+      <article class="how-sheet-card">
+        <div class="how-sheet-icon"><mat-icon>local_shipping</mat-icon></div>
+        <div class="how-sheet-num">03</div>
+        <h3>Doorstep delivery</h3>
+        <p>Professionally cleaned, quality-checked, delivered before your event.</p>
+      </article>
+
+      <article class="how-sheet-card">
+        <div class="how-sheet-icon"><mat-icon>assignment_return</mat-icon></div>
+        <div class="how-sheet-num">04</div>
+        <h3>Wear & return</h3>
+        <p>Enjoy your day. Return easily with pickup or drop-off options.</p>
+      </article>
+    </div>
+
+    <div class="how-sheet-assurance">
+      <span class="how-pill"><mat-icon>verified</mat-icon> Quality checked</span>
+      <span class="how-pill"><mat-icon>shield</mat-icon> Secure payments</span>
+      <span class="how-pill"><mat-icon>support_agent</mat-icon> Support throughout</span>
+    </div>
+
+    <div class="how-sheet-actions">
+      <button
+        mat-stroked-button
+        class="how-btn ghost"
+        type="button"
+        (click)="closeHowItWorksSheet()"
+      >
+        <mat-icon>keyboard_arrow_down</mat-icon>
+        Close
+      </button>
+
+      <button
+        mat-flat-button
+        color="primary"
+        class="how-btn primary"
+        type="button"
+        (click)="goToProductsFromSheet()"
+      >
+        <mat-icon>shopping_bag</mat-icon>
+        Browse products
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- ===========================
+     CATALOG
+     =========================== -->
+<section class="catalog catalog--lux" [ngClass]="{ 'catalog-mobile': isMobileView }">
+
+  <!-- ======= MOBILE TOP BAR ======= -->
+  <div *ngIf="isMobileView" class="mobile-top glass">
+    <!-- Role Toggle -->
+    <div class="mobile-role-wrap">
+      <fieldset class="role-puck" aria-label="User Role">
         <mat-button-toggle-group
           [(ngModel)]="userRole"
           (change)="onUserRoleChange($event)"
           class="user-role-toggle"
+          aria-label="User Role"
         >
-          <mat-button-toggle value="Bride">Bride</mat-button-toggle>
-          <mat-button-toggle value="Groom">Groom</mat-button-toggle>
+          <mat-button-toggle value="Bride" class="mobile-role-toggle">Bride</mat-button-toggle>
+          <mat-button-toggle value="Groom" class="mobile-role-toggle">Groom</mat-button-toggle>
         </mat-button-toggle-group>
-        <!-- Hamburger icon for mobile/tablet -->
-        <button class="hamburger-btn" (click)="showCategoryMenu = !showCategoryMenu" aria-label="Toggle categories" *ngIf="isMobileView">
-          <mat-icon>{{ showCategoryMenu ? 'close' : 'menu' }}</mat-icon>
-        </button>
-      </div>
-      <!-- Desktop view: show categories normally -->
-      <mat-accordion *ngIf="!isMobileView">
-        <mat-expansion-panel
-          class="category-item"
-          *ngFor="let category of categories; let i = index"
-          [(expanded)]="category.isExpanded"
-          (opened)="onPanelChange()"
-          (closed)="onPanelChange()"
+      </fieldset>
+    </div>
+
+    <!-- Premium mobile search -->
+    <div class="mobile-search">
+      <mat-form-field appearance="outline" class="w-100 search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          #searchInput
+          matInput
+          placeholder="Search products, city, category…"
+          [(ngModel)]="searchValue"
+          (keyup.enter)="search(); scrollToFirstMatch()"
+        />
+        <button
+          *ngIf="searchValue"
+          mat-icon-button
+          matSuffix
+          aria-label="Clear"
+          (click)="clear()"
         >
-          <mat-expansion-panel-header>
-            <mat-panel-description>
-              <mat-icon
-                class="status-icon"
-                [ngClass]="{
-                  selected: category.isSelected,
-                  unselected: !category.isSelected,
-                  expanded: category.isExpanded
-                }"
-                [style.color]="category.isExpanded ? 'green' : '#830E0E'"
-              >
-                {{
-                  category.isSelected ? "check_circle" : "check_circle_outline"
-                }}
-              </mat-icon>
-              <mat-panel-title class="cat-title">
-                {{ category.name }}
-              </mat-panel-title>
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-        </mat-expansion-panel>
-      </mat-accordion>
-      <!-- Mobile/tablet view: hamburger menu -->
-      <div class="mobile-category-menu" *ngIf="isMobileView && showCategoryMenu">
-        <ul class="category-list">
-          <li class="category-item" *ngFor="let category of categories; let i = index" (click)="selectCategory(category)">
-            <mat-icon
-              class="status-icon"
-              [ngClass]="{
-                selected: category.isSelected,
-                unselected: !category.isSelected
-              }"
-              [style.color]="category.isSelected ? 'green' : '#830E0E'"
-            >
-              {{ category.isSelected ? "check_circle" : "check_circle_outline" }}
-            </mat-icon>
-            <span class="cat-title">{{ category.name }}</span>
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <!-- Mobile Categories -->
+    <div class="mobile-categories-wrapper">
+      <div class="mobile-categories-row">
+        <ul class="mobile-categories-list">
+          <li
+            class="category-item-mobile"
+            *ngFor="let category of categories; trackBy: trackByCategory"
+            (click)="selectCategory(category)"
+            tabindex="0"
+            role="button"
+            [attr.aria-pressed]="category.isSelected"
+          >
+            <div class="category-chip" [class.active]="category.isSelected">
+              <span class="chip-icon">
+                <mat-icon>
+                  {{ category.isSelected ? 'check' : 'category' }}
+                </mat-icon>
+              </span>
+              <span class="chip-title">{{ category.name }}</span>
+            </div>
           </li>
         </ul>
       </div>
     </div>
-    <div class="rewards">
-      <div class="rewards-header">
-        <div class="search-section stylish-search-section">
-  <div class="search-bar">
-    <input
-      type="text"
-      #searchInput
-      (input)="search()"
-      (keypress)="handleKeyPress($event)"
-      placeholder="Search by Location, Category, etc."
-      [(ngModel)]="searchValue"
-      class="search-input"
-    />
 
-    <button class="search-btn" (click)="search()">
-      <mat-icon>search</mat-icon>
-    </button>
-  </div>
-  <div class="filters" *ngIf="searchValue">
-    <span>Applied Filters:</span>
-    <button mat-button class="filter">{{ searchValue }}</button>
-    <button mat-button class="filter clearFilterBtn" (click)="clear()">
-      clear
-      <mat-icon>close</mat-icon>
-    </button>
-  </div>
-</div>
+    <!-- Mobile applied -->
+    <div class="mobile-applied" *ngIf="searchValue || userRole">
+      <div class="applied-left">
+        <span class="mini-pill mini-pill--role" *ngIf="userRole">
+          <mat-icon class="role-icon" aria-hidden="true">
+            {{ userRole === "Bride" ? "female" : "male" }}
+          </mat-icon>
+          <span class="role-text">{{ userRole }}</span>
+        </span>
 
-        <button
-          class="sort-btn"
-          *ngIf="filteredRewards.length != 1"
-          (click)="openSortPanel()"
-          style=""
+        <span class="mini-pill mini-pill--input" *ngIf="searchValue">
+          {{ searchValue }}
+          <button class="mini-x" mat-icon-button (click)="clear()" aria-label="Clear search">
+            <mat-icon>close</mat-icon>
+          </button>
+        </span>
+      </div>
+
+      <button class="mobile-sort-btn" mat-flat-button (click)="openSortPanel()">
+        <mat-icon>tune</mat-icon>
+        <span>Filters</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ======= DESKTOP / MAIN LAYOUT ======= -->
+  <div class="catalog-shell">
+
+    <!-- Left Filters (desktop) -->
+    <aside class="filters-panel glass" *ngIf="!isMobileView">
+      <div class="filters-top">
+        <div class="filters-title">
+          <div class="title">Refine</div>
+          <div class="subtitle">Find the perfect look</div>
+        </div>
+
+        <mat-button-toggle-group
+          [(ngModel)]="userRole"
+          (change)="onUserRoleChange($event)"
+          class="user-role-toggle"
+          aria-label="User Role"
         >
-          <mat-icon style="vertical-align: middle;">sort</mat-icon>
-          <span>Filter</span>
+          <mat-button-toggle value="Bride">Bride</mat-button-toggle>
+          <mat-button-toggle value="Groom">Groom</mat-button-toggle>
+        </mat-button-toggle-group>
+
+        <!-- Desktop search (premium) -->
+        <mat-form-field appearance="outline" class="w-100 search-field desktop-search">
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            #searchInput
+            matInput
+            placeholder="Search products, city, category…"
+            [(ngModel)]="searchValue"
+            (keyup.enter)="search(); scrollToFirstMatch()"
+          />
+          <button
+            *ngIf="searchValue"
+            mat-icon-button
+            matSuffix
+            aria-label="Clear"
+            (click)="clear()"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button mat-stroked-button class="how-cta" type="button" (click)="openHowItWorksSheet()">
+          <mat-icon>info</mat-icon>
+          How it works
         </button>
       </div>
-      <div class="reward-list">
-        <div *ngFor="let reward of filteredRewards" class="rental-card">
-          <div class="card-image">
-            <img
-              [src]="
-                reward.display_img_urls[reward.currentImageIndex] ||
-                'assets/placeholder.png'
-              "
-              [alt]="reward.name"
-            />
-            <div class="heart-icon" (click)="addToFavorite(reward)">
-              <mat-icon>favorite</mat-icon>
-            </div>
-            <div class="nav-arrow left" (click)="prevImage(reward)">
-              <mat-icon>chevron_left</mat-icon>
-            </div>
-            <div class="nav-arrow right" (click)="nextImage(reward)">
-              <mat-icon>chevron_right</mat-icon>
-            </div>
 
-            <div class="rating-container">
-              <div class="location-info">
-                <mat-icon class="location-icon">location_on</mat-icon>
-                <span class="location-city">{{ reward.city }}</span>
-              </div>
-              <app-product-rating
-                [rating]="
-                  reward.ProductRatings[0] ? reward.ProductRatings[0].rating : 0
-                "
-                [avgRating]="reward.avgRating"
-                [totalUsers]="reward.totalUserRated"
-                (ratingChange)="onRatingChange($event, reward)"
-                [disabled]="
-                  this.userService.getUserDetails().userId === reward.userId
-                "
-              ></app-product-rating>
+      <mat-accordion class="filters-accordion">
+        <!-- Categories -->
+        <mat-expansion-panel expanded>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Categories</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <ul class="category-list" role="list">
+            <li
+              class="category-item"
+              *ngFor="let category of categories; trackBy: trackByCategory"
+              (click)="selectCategory(category)"
+              role="listitem"
+              tabindex="0"
+            >
+              <span class="check">
+                <mat-icon class="status">
+                  {{ category.isSelected ? "check_box" : "check_box_outline_blank" }}
+                </mat-icon>
+              </span>
+              <span class="cat-title">{{ category.name }}</span>
+            </li>
+          </ul>
+        </mat-expansion-panel>
+
+        <!-- Price -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Price</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="price-filter">
+            <mat-slider
+              min="0"
+              max="100000"
+              step="500"
+              discrete
+              tickInterval="10000"
+            ></mat-slider>
+            <div class="range-hints">
+              <span>₹0</span>
+              <span>₹1L+</span>
             </div>
           </div>
-          <div class="card-content">
-            <mat-card-title class="product-title">{{
-              reward.name | uppercase
-            }}</mat-card-title>
-            <div class="date">
-              <strong>Listed On:</strong>
-              {{ reward.valid_until | date : "mediumDate" }}
-            </div>
-            <div class="rent">
-              <strong>Rent:</strong> ₹{{ reward.Rent }}/day
-            </div>
-            <div class="size">
-              <strong>Size:</strong> {{ reward.size || "N/A" }}
-            </div>
-            <div
-              *ngIf="reward.quantity && reward.quantity <= reward.low_quantity"
-              class="badge"
-            >
-              High Demand (Only {{ reward.quantity }} left)
-            </div>
-          </div>
-          <div class="card-actions">
-            <button
-              class="know-more"
-              [disabled]="
-                reward.quantity === 0 ||
-                reward.ProductOwnerEmail === userService.getUserDetails().email
-              "
-              (click)="productDetails(reward.pk)"
-            >
-              Know More
+        </mat-expansion-panel>
+
+        <!-- Location -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Location</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-icon matPrefix>location_on</mat-icon>
+            <input
+              matInput
+              placeholder="City or Pincode"
+              [(ngModel)]="locationValue"
+              (keyup.enter)="applyLocationFilter(locationValue)"
+            />
+          </mat-form-field>
+        </mat-expansion-panel>
+
+        <!-- Size -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Size</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="sizes">
+            <button mat-stroked-button *ngFor="let s of sizes" class="size-chip">
+              {{ s }}
             </button>
-            <button
-              class="cart-icon"
-              [disabled]="
-                reward.quantity === 0 ||
-                reward.ProductOwnerEmail === userService.getUserDetails().email
-              "
-              (click)="addToCart(reward.pk)"
-            >
-              <span class="cart-label">Add to Cart</span>
-              <mat-icon class="cart-icon-inner">add_shopping_cart</mat-icon>
+          </div>
+        </mat-expansion-panel>
+
+        <!-- Occasion -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Occasion</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="chips">
+            <mat-chip-listbox>
+              <mat-chip-option>Wedding</mat-chip-option>
+              <mat-chip-option>Reception</mat-chip-option>
+              <mat-chip-option>Engagement</mat-chip-option>
+              <mat-chip-option>Haldi/Mehendi</mat-chip-option>
+            </mat-chip-listbox>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </aside>
+
+    <!-- Right: Products -->
+    <main class="products">
+      <!-- Desktop header row -->
+      <div class="top-row glass" *ngIf="!isMobileView">
+        <div class="heading">
+          <div class="h-title">Explore</div>
+          <div class="h-sub">
+            {{ userRole }} picks
+            <span class="dot">•</span>
+            {{ filteredRewards.length || 0 }} shown
+          </div>
+        </div>
+
+        <div class="applied-actions">
+          <div class="chips">
+            <mat-chip-set>
+              <mat-chip *ngIf="userRole" class="mini-pill mini-pill--role" selected>
+                <mat-icon matChipAvatar class="role-icon" aria-hidden="true">
+                  {{ userRole === "Bride" ? "female" : "male" }}
+                </mat-icon>
+                <span class="role-text">{{ userRole }}</span>
+              </mat-chip>
+
+              <mat-chip *ngIf="searchValue" class="applied-chip">
+                {{ searchValue }}
+                <button mat-icon-button (click)="clear()" matChipRemove>
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+            </mat-chip-set>
+          </div>
+
+          <div class="top-actions">
+            <button class="sort-btn" mat-stroked-button (click)="openSortPanel()">
+              <mat-icon>tune</mat-icon>
+              <span>Sort / Filter</span>
             </button>
           </div>
         </div>
       </div>
-      <div *ngIf="isLoading" class="skeleton-container">
-        <div
-          class="skeleton-card"
-          *ngFor="let i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-        ></div>
+
+      <!-- Premium empty state -->
+      <div class="empty glass" *ngIf="!isLoading && filteredRewards.length === 0">
+        <div class="empty-icon">
+          <mat-icon>search_off</mat-icon>
+        </div>
+        <div class="empty-title">No matches found</div>
+        <div class="empty-sub">
+          Try changing category, clearing search, or adjusting filters.
+        </div>
+        <div class="empty-actions">
+          <button mat-stroked-button class="pill-btn" (click)="clear()">
+            <mat-icon>refresh</mat-icon>
+            Clear search
+          </button>
+          <button mat-flat-button color="primary" class="pill-btn primary" (click)="openSortPanel()">
+            <mat-icon>tune</mat-icon>
+            Open filters
+          </button>
+        </div>
       </div>
-    </div>
+
+      <!-- Product grid -->
+      <div class="grid" [class.loading]="isLoading">
+        <div
+          *ngFor="let reward of filteredRewards; trackBy: trackByReward"
+          class="product-card"
+          [@fadeInCard]
+          [attr.id]="'search-match-' + reward.pk"
+          tabindex="0"
+        >
+          <!-- Image -->
+          <div class="media">
+            <img
+              [src]="reward.display_img_urls?.[reward.currentImageIndex] || defaultImg"
+              [alt]="reward.name"
+              loading="lazy"
+              (error)="onImgError($event)"
+            />
+
+            <!-- Image dots counter -->
+            <div class="image-dots" *ngIf="reward.display_img_urls?.length > 1" role="tablist" aria-label="Image navigation">
+              <button
+                class="dot-item"
+                *ngFor="let _; let i = index"
+                [class.active]="i === reward.currentImageIndex"
+                (click)="setImageIndex(reward, i)"
+                (keydown.enter)="setImageIndex(reward, i)"
+                (keydown.space)="setImageIndex(reward, i)"
+                [attr.aria-selected]="i === reward.currentImageIndex"
+                role="tab"
+                [attr.tabindex]="i === reward.currentImageIndex ? 0 : -1"
+                type="button"
+                [attr.aria-label]="'Image ' + (i + 1)"
+              ></button>
+            </div>
+
+            <!-- Wishlist -->
+            <button
+              class="wish"
+              mat-mini-fab
+              [color]="reward.isFavorite ? 'warn' : 'basic'"
+              (click)="toggleFavorite(reward)"
+              aria-label="Add to wishlist"
+              type="button"
+            >
+              <mat-icon>{{ reward.isFavorite ? "favorite" : "favorite_border" }}</mat-icon>
+            </button>
+
+            <!-- Prev / next -->
+            <div class="media-nav">
+              <button
+                class="nav-btn"
+                (click)="prevImage(reward)"
+                matTooltip="Previous image"
+                aria-label="Previous"
+                type="button"
+              >
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+
+              <button
+                class="nav-btn"
+                (click)="nextImage(reward)"
+                matTooltip="Next image"
+                aria-label="Next"
+                type="button"
+              >
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+
+            <!-- City + rating -->
+            <div class="bottom-badges">
+              <div class="city" [matTooltip]="reward.city">
+                <mat-icon>location_on</mat-icon>{{ reward.city }}
+              </div>
+
+              <app-product-rating
+                [rating]="reward.ProductRatings[0] ? reward.ProductRatings[0].rating : 0"
+                [avgRating]="reward.avgRating"
+                [totalUsers]="reward.totalUserRated"
+                (ratingChange)="onRatingChange($event, reward)"
+                [disabled]="userId === reward.userId"
+              ></app-product-rating>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="meta">
+            <div class="name" [matTooltip]="reward.name">{{ reward.name }}</div>
+
+            <div class="sub">
+              Listed on {{ reward.valid_until | date : "mediumDate" }}
+            </div>
+
+            <div class="price-row">
+              <div class="rent">₹{{ reward.Rent }} <span>/day</span></div>
+              <div class="size" *ngIf="reward.size">Size: {{ reward.size }}</div>
+            </div>
+
+            <div class="badge pulse-dot" *ngIf="reward.quantity && reward.quantity <= reward.low_quantity">
+              High Demand · Only {{ reward.quantity }} left
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="actions">
+            <button
+              mat-stroked-button
+              color="primary"
+              class="btn btn-ghost"
+              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userEmail"
+              (click)="productDetails(reward.pk)"
+              type="button"
+            >
+              <mat-icon>info</mat-icon>
+              <span class="hide-xs">Details</span>
+            </button>
+
+            <button
+              mat-flat-button
+              color="primary"
+              class="btn btn-primary"
+              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userEmail"
+              (click)="addToCart(reward.pk)"
+              type="button"
+            >
+              <mat-icon>add_shopping_cart</mat-icon>
+              <span class="hide-xs">Add</span>
+            </button>
+
+            <button
+              mat-icon-button
+              color="warn"
+              class="btn-icon"
+              [disabled]="reward.quantity === 0 || reward.ProductOwnerEmail === userEmail"
+              (click)="openMessageDialog(reward)"
+              aria-label="Message"
+              type="button"
+            >
+              <mat-icon>message</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Skeletons -->
+        <ng-container *ngIf="isLoading">
+          <div class="skeleton" *ngFor="let _ of skeletons"></div>
+        </ng-container>
+      </div>
+
+      <app-add-product-if-search-empty
+        style="width: 100%"
+        *ngIf="searchValue || filteredRewards.length === 0"
+        (addProduct)="onAddProduct()"
+      ></app-add-product-if-search-empty>
+    </main>
   </div>
 
+  <!-- Sort / Filter Panel (existing) -->
   <app-sort-panel
     (mouseleave)="closePanel()"
     *ngIf="isSortPanelOpen"
@@ -210,12 +553,18 @@
     (filterByLocation)="applyLocationFilter($event)"
   ></app-sort-panel>
 
-  <app-alert-msgs *ngIf="!isLoading" [message]="alertMsg"></app-alert-msgs>
+  <!-- Scroll to top -->
   <button
+    mat-fab
+    color="primary"
     class="scroll-to-top-btn"
     [class.show]="showScrollToTop"
     (click)="scrollToTop()"
+    aria-label="Scroll to top"
   >
     <mat-icon>arrow_upward</mat-icon>
   </button>
 </section>
+
+<!-- Social Feedback - Trust Building Section -->
+<app-social-feedback></app-social-feedback>

@@ -1,0 +1,136 @@
+:host {
+  display: block;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* -------------------- Terms Hero -------------------- */
+.terms-hero {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #e8d5f7, #c9a0d4);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Hero content */
+.terms-hero .hero-content {
+  flex: 1 1 50%;
+}
+
+.terms-hero .hero-content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.terms-hero .hero-content p {
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.terms-hero .hero-content .hero-meta {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.terms-hero .hero-content .hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Hero art */
+.terms-hero .hero-art img {
+  max-width: 300px;
+  width: 100%;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12));
+}
+
+/* -------------------- Terms Layout -------------------- */
+.terms-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+  margin-top: 24px;
+  padding: 20px;
+}
+
+/* Responsive layout */
+@media (max-width: 900px) {
+  .terms-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .terms-layout .toc {
+    position: static;
+    margin-bottom: 20px;
+  }
+}
+
+/* -------------------- Table of Contents -------------------- */
+.toc {
+  position: sticky;
+  top: 20px;
+}
+
+.toc .toc-card {
+  border-radius: 12px;
+  padding: 16px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.toc .toc-card mat-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.toc .toc-card mat-nav-list a.mat-list-item {
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 15px;
+  color: #333;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.toc .toc-card mat-nav-list a.mat-list-item:hover {
+  background: #c9a0d433;
+  color: #c47c89;
+}
+
+.toc .toc-card mat-nav-list a.mat-list-item mat-icon {
+  color: #c47c89;
+}
+
+/* -------------------- Content -------------------- */
+.content {
+  display: grid;
+  gap: 20px;
+}
+
+.content .section-card {
+  border-radius: 12px;
+  padding: 16px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.content .section-card mat-card-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.content .section-card mat-card-content {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #555;
+}

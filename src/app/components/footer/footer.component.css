@@ -1,84 +1,109 @@
 
-.footer {
-  /* background-image: url('https://mobirise.com/extensions/weddingamp/wedding/assets/images/background2.jpg');
-background-repeat: no-repeat;
-background-size: cover;
-background-position: center; */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.modern-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
-  background: #c3541c;
-  color: #fff;
-  /* border-top: 5px solid #fff; */
-  font-family: 'Arial', sans-serif;
+  flex-wrap: wrap;
+  padding: 20px 40px;
+  /* background: linear-gradient(135deg, #e8d5f7, #c9a0d4); */
+
+  background: url('src/assets/svg/footer.svg') no-repeat center / cover; 
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
-.footer-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* Optional overlay for better text contrast */
+.modern-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.4) 100%);
+  pointer-events: none;
 }
 
-.footer .left {
-  text-align: left;
-  align-items: flex-start;
+.modern-footer > * {
+  position: relative;
+  z-index: 1;
 }
 
-.footer .center {
-  text-align: center;
-}
-
-.footer .right {
-  text-align: right;
-  align-items: flex-end;
-}
-
-.footer img {
-  max-width: 100px;
-  display: block;
+/* Left column */
+.footer-left img {
+  max-width: 120px;
   margin-bottom: 10px;
 }
 
-.footer nav a {
-  margin: 5px 0;
-  color: #fff;
-  text-decoration: none;
-  transition: color 0.3s;
+.footer-left p {
+  font-size: 14px;
+  color: #444;
 }
 
-.footer nav a:hover {
-  color: #ddd;
-}
-
-.center-nav {
+/* Center navigation */
+.footer-center .footer-nav {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  gap: 20px;
 }
 
-.center-nav a {
-  margin: 5px 0;
-  color: #fff;
+.footer-center .footer-nav a {
   text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
-.center-nav a:hover {
-  color: #ddd;
+.footer-center .footer-nav a:hover {
+  color: #c47c89;
 }
 
-.social-media {
+/* Right column */
+.footer-right {
+  text-align: right;
+}
+
+.footer-right .version {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* Social icons */
+.social-icons {
   display: flex;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 15px;
 }
 
-.social-media img {
-  width: 24px;
-  height: 24px;
-  transition: transform 0.3s;
+.social-icons a {
+  color: #333;
+  font-size: 18px;
+  transition: transform 0.3s, color 0.3s;
 }
 
-.social-media img:hover {
+.social-icons a:hover {
+  color: #c47c89;
   transform: scale(1.2);
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modern-footer {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+    padding: 30px 20px;
+  }
+
+  .footer-center .footer-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .footer-right {
+    text-align: center;
+  }
+}
+
+  

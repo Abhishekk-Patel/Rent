@@ -1,164 +1,482 @@
-.partner-brands-slider {
+/* Wrapper */
+.brand-slider {
+  width: 100%;
+}
+
+/* Only show active slide (prevents stacking / extra height) */
+.brand {
+  display: none;
+}
+.brand.active {
+  display: block;
+}
+
+/* HERO CONTAINER: content-driven height (NO CLIPPING) */
+.hero-slide {
   position: relative;
   width: 100%;
-  min-height: 120px; /* Ensures some height but not fixed */
-  background-color: #fdfaf5;
+  border-radius: 18px;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+
+  /* key: minimum hero size, but can grow if content grows */
+  min-height: clamp(420px, 60vh, 640px);
+  height: auto;
+}
+
+/* Background image fills the container */
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: right center;
+  transform: scale(1.02);
+}
+
+/* Premium overlay */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(
+      1200px 600px at 85% 40%,
+      rgba(0, 0, 0, 0.1),
+      rgba(0, 0, 0, 0.55)
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.72) 0%,
+      rgba(0, 0, 0, 0.4) 42%,
+      rgba(0, 0, 0, 0) 75%
+    );
+}
+
+/* Grain */
+.hero-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0.08;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* CONTENT: relative so it participates in layout (no clipping) */
+.hero-content {
+  position: relative;
+  z-index: 3;
+
+  /* let the content define height */
+  min-height: inherit;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  padding: 2vw 0; /* Responsive vertical padding */
+
+  padding: clamp(18px, 4vw, 56px);
+  max-width: 54%;
 }
 
-.partner-brands-slider .brand img {
-  width: auto;
-  max-width: 100%;
-  height: auto;
-  max-height: 500px; /* Responsive max height */
-  object-fit: contain;
-  display: block;
-  margin: 0 auto;
+/* Top row */
+.hero-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
 }
 
-.cta-img-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
+.badge {
+  display: inline-flex;
   align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-weight: 650;
+  font-size: 13px;
 }
-.button-wrapper{
-  display: flex;
-  flex-direction: row;
+
+.badge-ic {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+.rating {
+  display: inline-flex;
   align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 8px 12px;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
 }
-.cta-btn {
-  position: absolute;
-  left: 25%;
-  top: 70%;
-  transform: translate(-50%, -50%);
-  background-color: #c3541c;
+
+.rating mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+.rating-text {
+  font-weight: 800;
+}
+
+.rating-sub {
+  opacity: 0.85;
+  font-size: 13px;
+}
+
+/* Title */
+.hero-title {
+  margin: 0 0 12px 0;
   color: #fff;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 32px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transition: background 0.2s, transform 0.2s;
-  z-index: 3;
+  font-weight: 850;
+  line-height: 1.02;
+  font-size: clamp(34px, 4.3vw, 72px);
+  letter-spacing: -0.03em;
 }
 
-.cta-btn:hover {
-  background-color: #a3420f;
-  transform: translate(-50%, -50%) scale(1.05);
-}
-.product-btn{
-  left: 25%;
-  top: 84%
-}
-.main-slider {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+.hero-title .accent {
+  display: inline-block;
+  opacity: 0.98;
 }
 
-.partner-brands-slider .brand {
-  display: none;
-  justify-content: center;
+/* Subtitle */
+.hero-subtitle {
+  margin: 0 0 18px 0;
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 52ch;
+  font-size: clamp(14px, 1.2vw, 18px);
+  line-height: 1.45;
+}
+
+/* Buttons */
+.hero-actions {
+  display: flex;
+  gap: 12px;
   align-items: center;
-  width: 100%;
-  height: 100%;
+  flex-wrap: wrap;
+  margin-top: 6px;
 }
 
-.partner-brands-slider .brand.active {
+.cta-btn {
+  border-radius: 999px !important;
+  padding: 12px 18px !important;
+  font-weight: 750 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease,
+    border-color 180ms ease;
+}
+
+.cta-btn mat-icon {
+  margin: 0 !important;
+}
+
+.cta-btn.primary {
+  background: #c9a96e !important;
+  color: #fff !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+}
+.cta-btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.34);
+  background: #b8965c !important;
+}
+
+.cta-btn.secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.7) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+.cta-btn.secondary:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+.cta-btn.tertiary {
+  color: rgba(255, 255, 255, 0.92) !important;
+  background: transparent !important;
+}
+.cta-btn.tertiary:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Meta chips */
+.hero-meta {
   display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 18px;
 }
 
-.partner-brands-slider .brand img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  font-size: 13px;
+  font-weight: 650;
 }
 
-/* Center the dots container */
-.nav-dots {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+.meta-item mat-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+/* dots */
+.hero-dots {
+  margin-top: 18px;
   display: flex;
-  justify-content: center;
-  gap: 15px;
-  z-index: 2;
+  gap: 8px;
+  align-items: center;
 }
 
-/* Style for each dot */
-.nav-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.5);
+.dot {
+  width: 26px;
+  height: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.14);
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s ease;
+  transition: width 220ms ease, background 220ms ease, border-color 220ms ease;
 }
 
-.nav-dot.active {
-  background-color: #fff;
-  transform: scale(1.5);
+.dot.active {
+  width: 42px;
+  background: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.65);
 }
 
-.nav-dot:hover {
-  background-color: rgba(0, 0, 0, 0.8);
-}
-
-/* Mobile responsiveness */
-@media (max-width: 1024px) {
-  .partner-brands-slider .brand img {
-    height: 300px; /* Adjust image height for tablets */
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .hero-content {
+    max-width: 68%;
   }
-
-  .nav-dot {
-    width: 10px;
-    height: 10px;
-  }
-
-  .nav-dots {
-    gap: 12px;
+  .hero-title {
+    font-size: clamp(30px, 4.2vw, 52px);
   }
 }
 
-/* Tablet and smaller devices */
+/* ✅ PREMIUM MOBILE (glass bottom sheet) */
 @media (max-width: 768px) {
-  .partner-brands-slider .brand img {
-    height: 250px; /* Adjust image height for smaller screens */
+  .hero-slide {
+    border-radius: 18px;
+    min-height: 78vh;
+    box-shadow: 0 22px 70px rgba(0, 0, 0, 0.35);
   }
 
-  .nav-dot {
-    width: 8px;
-    height: 8px;
+  /* Better crop for faces/outfit on phones */
+  .hero-img {
+    object-position: 72% 20%;
+    transform: scale(1.08);
+    filter: saturate(1.02) contrast(1.02);
   }
 
-  .nav-dots {
+  /* Softer luxury overlay */
+  .hero-overlay {
+    background: radial-gradient(
+        900px 520px at 65% 12%,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.55)
+      ),
+      linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.75) 0%,
+        rgba(0, 0, 0, 0.22) 55%,
+        rgba(0, 0, 0, 0) 100%
+      );
+  }
+
+  /* Content becomes a premium bottom sheet */
+  .hero-content {
+    max-width: 100%;
+    justify-content: flex-end;
+    padding: 0; /* sheet handles padding */
+    margin: 0;
+  }
+
+  /* Push content lower so image still dominates */
+  .hero-content::before {
+    content: "";
+    display: block;
+    height: 52%;
+  }
+
+  /* Keep content above overlays */
+  .hero-top,
+  .hero-title,
+  .hero-subtitle,
+  .hero-actions,
+  .hero-dots {
+    position: relative;
+    z-index: 5;
+  }
+
+  /* Sheet background (top piece) */
+  .hero-top {
+    margin-top: auto;
+    margin-left: 14px;
+    margin-right: 14px;
+
+    padding: 14px 14px 0 14px;
+    border-radius: 18px 18px 0 0;
+
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-bottom: none;
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
     gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+  }
+
+  /* Middle sheet pieces share same background */
+  .hero-title,
+  .hero-subtitle,
+  .hero-actions,
+  .hero-dots {
+    margin-left: 14px;
+    margin-right: 14px;
+
+    padding-left: 14px;
+    padding-right: 14px;
+
+    background: rgba(255, 255, 255, 0.14);
+    border-left: 1px solid rgba(255, 255, 255, 0.18);
+    border-right: 1px solid rgba(255, 255, 255, 0.18);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  /* Sheet bottom */
+  .hero-dots {
+    padding-bottom: 14px;
+    border-radius: 0 0 18px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  /* Badges compact + premium */
+  .badge,
+  .rating {
+    padding: 6px 10px;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+  }
+  .rating-sub {
+    font-size: 12px;
+  }
+
+  /* Typography tuned for mobile luxury */
+  .hero-title {
+    margin: 0;
+    padding-top: 10px;
+    font-size: 28px;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    text-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  .hero-subtitle {
+    margin: 0;
+    padding-top: 10px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.88);
+    max-width: 100%;
+  }
+
+  /* Premium CTA layout */
+  .hero-actions {
+    padding-top: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: stretch;
+    margin-top: 0;
+  }
+
+  .cta-btn {
+    width: 100%;
+    justify-content: center !important;
+    padding: 11px 12px !important;
+  }
+
+  .cta-btn.primary {
+    grid-column: 1 / -1;
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.28);
+  }
+
+  .cta-btn.secondary {
+    border-color: rgba(255, 255, 255, 0.55) !important;
+  }
+
+  /* Tertiary becomes subtle “link button” */
+  .cta-btn.tertiary {
+    grid-column: 1 / -1;
+    padding: 8px 10px !important;
+    opacity: 0.92;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* Remove clutter on mobile */
+  .hero-meta {
+    display: none;
+  }
+
+  /* Dots centered + minimal */
+  .hero-dots {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 18px;
+    height: 7px;
+    opacity: 0.85;
+  }
+
+  .dot.active {
+    width: 34px;
+    opacity: 1;
   }
 }
 
-/* Mobile (smallest screens) */
-@media (max-width: 480px) {
-  .partner-brands-slider .brand img {
-    height: 200px; /* Further adjust for smaller devices */
+/* Very small phones */
+@media (max-width: 380px) {
+  .hero-title {
+    font-size: 25px;
   }
-
-  .nav-dot {
-    width: 6px;
-    height: 6px;
-  }
-
-  .nav-dots {
-    gap: 8px;
+  .badge,
+  .rating,
+  .meta-item {
+    font-size: 11px;
   }
 }

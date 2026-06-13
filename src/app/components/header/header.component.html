@@ -1,57 +1,474 @@
-<mat-toolbar color="primary" class="header-toolbar">
-  <!-- Left Section: Logo -->
-  <div class="logo-section" (click)="this.router.navigate(['content'])">
-    <img src="./assets/RentLogo.jpg" alt="Company Logo" class="company-logo" />
-    
-  </div>
-  <div class="brand-info" style="display: flex; flex-direction: column; align-items: flex-start; margin-left: 16px;">
-    <span class="product-name" style="font-size: 2rem; font-weight: bold; color: #c3541c; letter-spacing: 2px;">
-      RentiT
-    </span>
-    <!-- Optional tagline below the product name -->
-    <!-- <span class="tagline" style="font-size: 0.9rem; color: #e0e0e0;">Your wardrobe, on demand</span> -->
-  </div>
 
-  <!-- Spacer -->
-  <span class="spacer"></span>
+<!-- ================== Fancy Mobile Bottom Navigation ================== -->
+<nav *ngIf="isMobileView" class="mobile-nav-fancy" role="navigation" aria-label="Bottom navigation">
+  <ul class="nav-list">
+    <!-- Home -->
+    <li
+      class="nav-item"
+      [class.active]="activeNavItem === 'home'"
+      (click)="activeNavItem = 'home'; router.navigate(['content'])"
+      aria-label="Home"
+    >
+      <span class="icon-bg"><mat-icon>home</mat-icon></span>
+      <span class="nav-label">Home</span>
+    </li>
 
-  <!-- Right Section: Icons -->
-  <div class="icon-section">
-    <!-- <button *ngIf="!isAddNewProduct" mat-raised-button style="background-color: #FFFFFF;
-    color: 2px solid #830E0E;
-    border: 1px solid white;
-    border-radius: 15px;
-    border: 2px solid #830E0E;
-    box-shadow: inset 0px 4px 8px rgba(0, 0, 0, 0.25);
-    padding: 16px;
-    border-radius: 4px;" aria-label="Rent It" class="blink" (click)="openAddProductDialog()">	
-      <mat-icon>add_circle</mat-icon>
-      <span class="rent-text" style=" font-weight: 100;">Add Your Product</span>
-    </button> -->
-    
-    <button mat-icon-button aria-label="Language" matTooltip="{{countryCode}}" (click)="openLanguageDialog()"> 
-      <mat-icon>language</mat-icon>
-    </button> 
-    <button mat-icon-button aria-label="Notifications" *ngIf="orderReceived && this.isOwner" matTooltip="{{orderReceived}}" [matBadge]="!isAddNewProduct ? 1 : 0" matBadgePosition="above after" matBadgeColor="accent">
-      <mat-icon>notifications</mat-icon>
-    </button>
-   
-    <button *ngIf="!isAddNewProduct"  [disabled]="cartService.getCartValue() === 0" mat-icon-button class="cart" aria-label="Cart" matBadge="{{cartService.getCartValue()}}" matBadgePosition="above after" matBadgeColor="accent" (click)="openMyCard()">
-      <mat-icon>shopping_cart</mat-icon>
-    </button>
-    <button mat-icon-button aria-label="Dark Mode" (click)="toggleDarkMode()">
-      <mat-icon>brightness_4</mat-icon>
-    </button>
-    
-    <div *ngIf="!isAddNewProduct">
-    <mat-menu  #userMenu="matMenu">
-      <button mat-menu-item (click)="this.router.navigate(['my-account'])">Account</button>
-      <button mat-menu-item>Settings</button>
-      <button mat-menu-item (click)="this.router.navigate([''])">Logout</button>
-    </mat-menu>
-    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Profile">
-      <mat-icon>account_circle</mat-icon>
-    </button>
+    <!-- Search -->
+    <li
+      class="nav-item"
+      [class.active]="activeNavItem === 'search'"
+      (click)="activeNavItem = 'search'; openMobileSearch()"
+      aria-label="Search"
+    >
+      <span class="icon-bg"><mat-icon>search</mat-icon></span>
+      <span class="nav-label">Search</span>
+    </li>
+
+    <!-- Centered Add (FAB-like) -->
+    <li
+      class="nav-item add-center"
+      routerLinkActive="active"
+      aria-label="Add product"
+      (click)="openAddProductDialog()"
+    >
+      <span class="icon-bg add-bg"><mat-icon>add</mat-icon></span>
+    </li>
+
+    <!-- Messages -->
+    <li class="nav-item" [class.active]="activeNavItem === 'message'" aria-label="Messages">
+      <button
+        mat-icon-button
+        class="icon-chip"
+        (click)="activeNavItem = 'message'; openMessageDialog()"
+        [matBadge]="unreadMessages"
+        matBadgeColor="warn"
+        aria-label="Open messages"
+      >
+        <mat-icon>message</mat-icon>
+      </button>
+    </li>
+
+    <!-- Profile -->
+    <li
+      class="nav-item"
+      [class.active]="activeNavItem === 'profile'"
+      (click)="activeNavItem = 'profile'; router.navigate(['my-account'])"
+      aria-label="Profile"
+    >
+      <span class="icon-bg"><mat-icon>person</mat-icon></span>
+      <span class="nav-label">Profile</span>
+    </li>
+  </ul>
+
+  <!-- Mobile Search Overlay -->
+  <div *ngIf="isMobileView && showMobileSearch" class="mobile-search-overlay" role="dialog" aria-modal="true" aria-label="Search dialog">
+    <div class="mobile-search-box">
+      <mat-form-field appearance="outline" class="mobile-search-field">
+        <mat-label>Search</mat-label>
+        <input
+          matInput
+          type="text"
+          [(ngModel)]="searchValue"
+          (input)="search()"
+          (keypress)="handleKeyPress($event)"
+          placeholder="Search for lehenga, sherwani, city, occasion…"
+          aria-label="Search input"
+        />
+        <button *ngIf="searchValue" matSuffix mat-icon-button aria-label="Clear search" (click)="clear()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <button
+        mat-icon-button
+        class="close-search-btn"
+        aria-label="Close search"
+        (click)="closeMobileSearch()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
+</nav>
+
+<!-- ================== Mobile Top Bar ================== -->
+<mat-toolbar class="topbar fancy-topbar" color="primary" *ngIf="isMobileView" role="banner">
+  <div class="topbar-inner">
+    <!-- Animated Hamburger -->
+    <button
+      class="hamburger fancy-hamburger"
+      mat-icon-button
+      (click)="toggleMobileMenu()"
+      [attr.aria-expanded]="showCategoryMenu ? 'true' : 'false'"
+      aria-label="Toggle menu"
+    >
+      <span class="hamburger-icon" [class.open]="showCategoryMenu" aria-hidden="true">
+        <svg viewBox="0 0 100 100" width="24" height="24" aria-hidden="true" focusable="false">
+          <rect class="bar bar1" x="18" y="28" width="64" height="8" rx="4"></rect>
+          <rect class="bar bar2" x="18" y="46" width="64" height="8" rx="4"></rect>
+          <rect class="bar bar3" x="18" y="64" width="64" height="8" rx="4"></rect>
+        </svg>
+      </span>
+    </button>
+
+    <!-- Brand -->
+    <div class="brand" (click)="router.navigate(['content'])" role="button" tabindex="0" aria-label="Go to Home">
+      <img src="assets/Logo.png" alt="TryRentIT" class="logo" />
+    </div>
+
+    <!-- Cart -->
+    <div class="nav-item" routerLinkActive="active" aria-label="Cart">
+      <button
+        *ngIf="!isAddNewProduct"
+        mat-icon-button
+        class="icon-chip"
+        aria-label="Open cart"
+        [matBadge]="cartService.getCartValue()"
+        matBadgePosition="above after"
+        matBadgeColor="warn"
+        (click)="openMyCard()"
+      >
+        <mat-icon>shopping_cart</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-toolbar>
+
+<!-- ================== Mobile Slide-out Menu (Responsive, High Contrast) ================== -->
+<div *ngIf="isMobileView && showCategoryMenu" class="sheet-root">
+  <!-- Scrim -->
+  <div class="sheet-scrim" (click)="closeMenu()" aria-label="Dismiss menu"></div>
+
+  <!-- Right sheet -->
+  <aside
+    #mobileMenu
+    class="sheet fancy-menu"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Quick navigation menu"
+    [style.transform]="menuTransform"
+    (pointerdown)="onDragStart($event)"
+    (pointermove)="onDragMove($event)"
+    (pointerup)="onDragEnd($event)"
+    (pointercancel)="onDragEnd($event)"
+  >
+    <!-- Puller handle -->
+    <div class="sheet-puller" aria-hidden="true"></div>
+
+    <!-- Header: profile + quick toggles -->
+    <header class="sheet-header">
+      <div class="profile-block">
+        <div class="avatar-wrap">
+          <ng-container *ngIf="userService.getUserDetails()?.profilePicture; else initialsAvatar">
+            <img [src]="userService.getUserDetails().profilePicture" alt="Profile" class="avatar" />
+          </ng-container>
+          <ng-template #initialsAvatar>
+            <div class="avatar initials">
+              {{ (userService.getUserDetails()?.name || 'User').slice(0,1) }}
+            </div>
+          </ng-template>
+        </div>
+        <div class="user-info">
+          <div class="user-name">{{ userService.getUserDetails()?.name || 'Guest' }}</div>
+          <div class="user-meta">
+            <mat-icon>location_on</mat-icon>
+            <span>{{ countryCode || 'IN' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-toggles">
+        <!-- Dark mode -->
+        <button
+          class="toggle-switch"
+          role="switch"
+          [attr.aria-checked]="darkMode ? 'true' : 'false'"
+          (click)="toggleDarkMode()"
+          aria-label="Dark mode"
+        >
+          <span class="switch-thumb"></span>
+          <mat-icon class="switch-ico">{{ darkMode ? 'dark_mode' : 'light_mode' }}</mat-icon>
+        </button>
+
+        <!-- Notifications -->
+        <button
+          class="toggle-switch"
+          role="switch"
+          [attr.aria-checked]="notificationsOn ? 'true' : 'false'"
+          (click)="toggleNotifications()"
+          aria-label="Notifications"
+        >
+          <span class="switch-thumb"></span>
+          <mat-icon class="switch-ico">{{ notificationsOn ? 'notifications_active' : 'notifications_off' }}</mat-icon>
+        </button>
+      </div>
+    </header>
+
+    <!-- Scrollable content -->
+    <div class="sheet-content">
+      <!-- Sticky search -->
+      <section class="sheet-search">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Search categories</mat-label>
+          <mat-icon matPrefix>search</mat-icon>
+          <input
+            matInput
+            [(ngModel)]="searchValue"
+            (input)="search()"
+            placeholder="Type to filter…"
+            aria-label="Category search"
+          />
+          <button *ngIf="searchValue" matSuffix mat-icon-button aria-label="Clear search" (click)="clear()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </section>
+
+      <!-- Quick actions grid -->
+      <section class="quick-actions" aria-label="Quick actions">
+        <button class="qa-card" (click)="applyQuickAction('orders')" aria-label="Orders">
+          <div class="qa-ico"><mat-icon>receipt_long</mat-icon></div>
+          <div class="qa-label">Orders</div>
+        </button>
+        <button class="qa-card" (click)="applyQuickAction('wishlist')" aria-label="Wishlist">
+          <div class="qa-ico"><mat-icon>favorite</mat-icon></div>
+          <div class="qa-label">Wishlist</div>
+        </button>
+        <button class="qa-card" (click)="applyQuickAction('rentals')" aria-label="My Rentals">
+          <div class="qa-ico"><mat-icon>event</mat-icon></div>
+          <div class="qa-label">Rentals</div>
+        </button>
+        <button class="qa-card" (click)="applyQuickAction('support')" aria-label="Support">
+          <div class="qa-ico"><mat-icon>support_agent</mat-icon></div>
+          <div class="qa-label">Support</div>
+        </button>
+      </section>
+
+      <!-- Recent & trending chips -->
+      <section class="chips-section">
+        <div class="chips-title">Recent searches</div>
+        <div class="chips-scroll">
+          <button *ngFor="let r of recentSearches" class="chip" (click)="applyTag(r)">{{ r }}</button>
+        </div>
+
+        <div class="chips-title">Trending</div>
+        <div class="chips-scroll">
+          <button *ngFor="let t of trendingTags" class="chip hot" (click)="applyTag(t)">{{ t }}</button>
+        </div>
+      </section>
+
+      <!-- Segmented tabs -->
+      <section class="segmented-tabs" role="tablist" aria-label="Role tabs">
+        <button
+          role="tab"
+          class="seg-btn"
+          [class.active]="activeCategory === 'bride'"
+          (click)="toggleCategory('bride')"
+          [attr.aria-selected]="activeCategory === 'bride' ? 'true' : 'false'"
+          [attr.tabindex]="activeCategory === 'bride' ? '0' : '-1'"
+          id="seg-bride"
+        >
+          <mat-icon>female</mat-icon> Bride
+        </button>
+        <button
+          role="tab"
+          class="seg-btn"
+          [class.active]="activeCategory === 'groom'"
+          (click)="toggleCategory('groom')"
+          [attr.aria-selected]="activeCategory === 'groom' ? 'true' : 'false'"
+          [attr.tabindex]="activeCategory === 'groom' ? '0' : '-1'"
+          id="seg-groom"
+        >
+          <mat-icon>male</mat-icon> Groom
+        </button>
+      </section>
+
+      <!-- Category list -->
+      <section class="category-section" aria-label="Categories">
+        <div class="section-title">
+          <mat-icon>category</mat-icon>
+          <span>Browse categories</span>
+        </div>
+
+        <div class="category-list fancy-category-list">
+          <ng-container *ngFor="let category of filteredCategories">
+            <mat-checkbox
+              color="primary"
+              class="category-checkbox fancy-checkbox"
+              [checked]="category.isSelected"
+              (change)="selectCategory(category.name)"
+            >
+              {{ category.name }}
+            </mat-checkbox>
+          </ng-container>
+        </div>
+      </section>
+
+      <!-- Collections -->
+      <section class="collections" aria-label="Curated collections">
+        <div class="section-title">
+          <mat-icon>auto_awesome</mat-icon>
+          <span>Collections</span>
+        </div>
+        <div class="collections-grid">
+          <button class="collection-card luxe" (click)="applyCollectionFilter('premium')">
+            <div class="col-title">Premium</div>
+            <div class="col-sub">Designer & Couture</div>
+          </button>
+          <button class="collection-card budget" (click)="applyCollectionFilter('budget')">
+            <div class="col-title">Budget</div>
+            <div class="col-sub">Value Picks</div>
+          </button>
+          <button class="collection-card festive" (click)="applyCollectionFilter('festive')">
+            <div class="col-title">Festive</div>
+            <div class="col-sub">Seasonal Highlights</div>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Fixed footer actions -->
+    <footer class="sheet-footer">
+      <button class="footer-btn" (click)="closeMenu()" aria-label="Close menu">
+        <mat-icon>close</mat-icon>
+        <span>Close</span>
+      </button>
+
+      <button
+        *ngIf="!isAddNewProduct"
+        class="footer-btn primary"
+        [matBadge]="cartService.getCartValue()"
+        matBadgePosition="above after"
+        matBadgeColor="warn"
+        (click)="openMyCard()"
+        aria-label="Open cart"
+      >
+        <mat-icon>shopping_cart</mat-icon>
+        <span>Cart</span>
+      </button>
+
+      <button
+        class="footer-btn primary"
+        (click)="openMessageDialog()"
+        [matBadge]="unreadMessages"
+        matBadgeColor="warn"
+        aria-label="Open messages"
+      >
+        <mat-icon>message</mat-icon>
+        <span>Message</span>
+      </button>
+
+      <button class="footer-btn danger" (click)="logout()" aria-label="Logout">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </footer>
+  </aside>
+</div>
+
+<!-- ================== Desktop Header ================== -->
+<mat-toolbar class="topbar fancy-topbar" color="primary" *ngIf="!isMobileView" role="banner">
+  <div class="topbar-inner">
+    <!-- Brand -->
+    <div
+      class="brand"
+      (click)="router.navigate(['content'])"
+      role="button"
+      tabindex="0"
+      aria-label="Go to Home"
+    >
+      <img src="assets/Logo.png" alt="TryRentIT" class="logo" />
+    </div>
+
+    <!-- Primary nav -->
+    <nav class="primary-nav" role="navigation" aria-label="Primary">
+      <button mat-button (click)="onUserRoleChange({ value: 'Bride' })">Bride</button>
+      <button mat-button (click)="onUserRoleChange({ value: 'Groom' })">Groom</button>
+      <button mat-button (click)="selectCategory('Accessories')">Accessories</button>
+      <button mat-button (click)="selectCategory('Jewellery')">Jewellery</button>
+      <button mat-button (click)="selectCategory('Footwear')">Footwear</button>
+    </nav>
+
+    <!-- Search -->
+    <div class="search-wrap">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          type="text"
+          [(ngModel)]="searchValue"
+          (input)="search()"
+          (keypress)="handleKeyPress($event)"
+          placeholder="Search for lehenga, sherwani, city, occasion…"
+          aria-label="Search input"
+        />
+        <button *ngIf="searchValue" matSuffix mat-icon-button aria-label="Clear search" (click)="clear()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <ul class="nav-list actions-nav-list">
+        <!-- Messages -->
+        <li class="nav-item" aria-label="Messages">
+          <button
+            mat-icon-button
+            class="icon-chip"
+            (click)="openMessageDialog()"
+            [matBadge]="unreadMessages"
+            matBadgeColor="warn"
+          >
+            <mat-icon>message</mat-icon>
+          </button>
+        </li>
+
+        <!-- Notifications -->
+        <li class="nav-item" aria-label="Notifications" *ngIf="(orderReceived && isOwner) || true">
+          <button
+            mat-icon-button
+            class="icon-chip"
+            matTooltip="{{ orderReceived }}"
+            [matBadge]="!isAddNewProduct ? 1 : 0"
+            matBadgePosition="above after"
+            matBadgeColor="warn"
+          >
+            <mat-icon>notifications</mat-icon>
+          </button>
+        </li>
+
+        <!-- Cart -->
+        <li class="nav-item" aria-label="Cart" *ngIf="!isAddNewProduct">
+          <button
+            mat-icon-button
+            class="icon-chip"
+            [matBadge]="cartService.getCartValue()"
+            matBadgePosition="above after"
+            matBadgeColor="warn"
+            (click)="openMyCard()"
+          >
+            <mat-icon>shopping_cart</mat-icon>
+          </button>
+        </li>
+
+        <!-- Profile -->
+        <li class="nav-item" aria-label="Profile" *ngIf="!isAddNewProduct">
+          <mat-menu #userMenu="matMenu">
+            <button mat-menu-item (click)="router.navigate(['my-account'])">Account</button>
+            <button mat-menu-item (click)="logout()">Logout</button>
+          </mat-menu>
+
+          <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Profile" class="icon-chip">
+            <ng-container *ngIf="userService.getUserDetails().profilePicture; else defaultProfilePicture">
+              <img [src]="userService.getUserDetails().profilePicture" alt="Profile" class="profile-picture" />
+            </ng-container>
+            <ng-template #defaultProfilePicture>
+              <mat-icon>account_circle</mat-icon>
+            </ng-template>
+          </button>
+        </li>
+      </ul>
+    </div>
   </div>
 </mat-toolbar>

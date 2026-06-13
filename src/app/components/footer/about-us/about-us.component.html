@@ -1,0 +1,76 @@
+<section class="hero">
+    <div class="hero-content">
+      <h1>About TryRenTiT</h1>
+      <p>
+        We’re on a mission to make rentals seamless—built with empathy for renters and owners,
+        powered by modern technology, and guided by trust.
+      </p>
+      <div class="hero-actions">
+        <a routerLink="/contact" class="cta" mat-raised-button color="primary">Get in touch</a>
+        <button class="cta-outline" mat-stroked-button color="primary">Our story</button>
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+<img src="./assets/Designer.png">
+    </div>
+  </section>
+  
+  <mat-divider></mat-divider>
+  
+  <section class="values">
+    <h2>Our Values</h2>
+    <div class="grid">
+      <mat-card class="value-card" *ngFor="let v of values" matRipple>
+        <mat-card-header>
+          <div mat-card-avatar class="avatar">
+            <mat-icon>{{ v.icon }}</mat-icon>
+          </div>
+          <mat-card-title>{{ v.title }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ v.desc }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </section>
+  
+  <section class="team">
+    <h2>Leadership Team</h2>
+    <div class="grid">
+      <mat-card class="team-card" *ngFor="let t of team" matRipple>
+        <img mat-card-image [src]="t.photo" [alt]="t.name" />
+        <mat-card-content>
+          <h3>{{ t.name }}</h3>
+          <p class="role">{{ t.role }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </section>
+  
+  <section class="timeline">
+    <h2>Milestones</h2>
+    <div class="line">
+      <div class="node" *ngFor="let item of timeline">
+        <span class="dot"></span>
+        <mat-card class="node-card" matRipple>
+          <mat-chip color="primary" selected>{{ item.year }}</mat-chip>
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.desc }}</p>
+        </mat-card>
+      </div>
+    </div>
+  </section>
+  
+  <section class="cta-final">
+    <mat-card class="cta-card" matRipple>
+      <div class="cta-content">
+        <h2>Ready to partner with us?</h2>
+        <p>Let’s build a better rental experience together.</p>
+      </div>
+      <div class="cta-buttons">
+        <a routerLink="/contact" mat-raised-button color="primary">Contact Sales</a>
+        <a routerLink="/terms" mat-stroked-button color="primary">View Terms</a>
+      </div>
+    </mat-card>
+  </section>
+  

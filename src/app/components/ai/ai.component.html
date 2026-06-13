@@ -1,0 +1,84 @@
+src/app/components/ai/ai.component.html
+<div class="ai-shell">
+  <div class="ai-panel">
+    <header class="ai-header">
+      <div class="logo">
+        <svg width="36" height="36" viewBox="0 0 24 24" aria-hidden="true">
+          <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#7b61ff"/><stop offset="1" stop-color="#00c2ff"/></linearGradient></defs>
+          <rect width="24" height="24" rx="6" fill="url(#g)"/>
+          <path d="M7 14l3-6 3 6 3-8" stroke="#fff" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="title">
+        <h1>Style Assistant</h1>
+        <p class="subtitle">Get curated color suggestions for outfits</p>
+      </div>
+    </header>
+
+    <main class="ai-body">
+      <label class="prompt-label" for="prompt">Ask anything</label>
+      <textarea
+        id="prompt"
+        class="prompt-input"
+        rows="4"
+        [(ngModel)]="prompt"
+        [attr.aria-busy]="loading"
+        placeholder="e.g. which color match with brown lehenga?"
+      ></textarea>
+
+      <div class="controls">
+        <button class="btn primary" (click)="submit()" [disabled]="loading || !prompt.trim()" [attr.aria-disabled]="loading || !prompt.trim()">
+          <span *ngIf="!loading">Ask</span>
+          <span *ngIf="loading" class="spinner" aria-hidden="true"></span>
+        </button>
+   <button class="btn ghost" (click)="clear()" [disabled]="loading">Clear</button>
+      </div>
+
+      <div class="status-row">
+        <div *ngIf="error" class="error" role="alert" aria-live="polite">{{ error }}</div>
+        <div *ngIf="!error && !responseData && !loading" class="hint">Tip: Ask styling, color pairings, or accessory suggestions.</div>
+      </div>
+
+      <!-- Result card -->
+      <section *ngIf="responseData" class="result-card" aria-live="polite">
+        <div class="result-top">
+          <h2 class="result-title">Recommendations</h2>
+          <span class="badge">Premium</span>
+        </div>
+
+        <p class="intro">{{ responseData.intro }}</p>
+
+        <ul class="points">
+          <li *ngFor="let p of responseData.points">
+            <svg class="point-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" fill="#f4f6ff"/>
+              <path d="M9 12l2 2 4-4" stroke="#4b6cff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="point-text">{{ p }}</span>
+          </li>
+        </ul>
+
+        <div class="followup">
+          <strong>Next:</strong> {{ responseData.followup }}
+        </div>
+
+        <div class="card-actions">
+          <button class="btn outline" (click)="prompt = responseData.followup">Try follow-up</button>
+          <button class="btn subtle" (click)="clear()">Close</button>
+        </div>
+      </section>
+
+      <!-- Loading skeleton (shown inline when loading and no result yet) -->
+      <div *ngIf="loading && !responseData" class="skeleton">
+        <div class="s-line short"></div>
+        <div class="s-line"></div>
+        <div class="s-line"></div>
+        <div class="s-line medium"></div>
+      </div>
+    </main>
+
+    <footer class="ai-footer">
+      <small>Built with care • <span class="muted">Secure backend</span></small>
+    </footer>
+  </div>
+</div>

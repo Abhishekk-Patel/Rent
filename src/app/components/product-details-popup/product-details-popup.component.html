@@ -1,49 +1,135 @@
-<!-- product-details-popup.component.html -->
-
-
-<div class="product-details-popup">
-  <div class="popup-header">
-    <h2>{{ getProductDetails()?.name || getProductDetails()?.productName }}</h2>
-    <button class="close-btn" (click)="closeProductDetailDialog()">&times;</button>
-  </div>
-  <div class="popup-content">
-    <div class="image-container">
-      <button class="nav-btn left" (click)="prevImage()">
-        <mat-icon>chevron_left</mat-icon>
-      </button>
-
-      <img [src]="getProductDetails()?.display_img_urls?.[getProductDetails()?.currentImageIndex ?? 0] ||getProductDetails()?.product?.images?.[getProductDetails()?.product?.currentImageIndex ?? 0]?.url || 
-                    'assets/placeholder.png'" alt="{{ getProductDetails()?.name }}" class="product-image">
-
-      <button class="nav-btn right" (click)="nextImage()">
-        <mat-icon>chevron_right</mat-icon>
-      </button>
-    </div>
-
-    <div class="product-details-columns">
-      <div class="product-details-column">
-        <p class="product-description">
-          {{ getProductDetails()?.description }}
-        </p>
-        <p class="product-category">{{ getProductDetails()?.category }}</p>
+<div class="product-details-modal">
+  <button class="close-btn" (click)="closeProductDetailDialog()">&times;</button>
+  <div class="modal-content">
+    <div class="modal-image-area">
+      <div class="main-image-wrapper">
+        <button class="nav-btn left" (click)="prevImage()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <img [src]="getProductDetails()?.display_img_urls?.[getProductDetails()?.currentImageIndex ?? 0] || getProductDetails()[0]?.images?.[getProductDetails()[0]?.currentImageIndex ?? 0]?.url || this.defaultImg"
+             alt="{{ getProductDetails()?.name }}"
+             class="main-image zoomable-image"
+             (mousemove)="onZoomMove($event)"
+             (mouseleave)="onZoomLeave()"
+             (mouseenter)="onZoomEnter($event)"
+             (error)="onImgError($event)"
+             #mainImg>
+        <div *ngIf="showZoomPreview"
+             class="zoom-preview-box"
+             [ngStyle]="{
+               left: (zoomPreview.x + 40) + 'px',
+               top: (zoomPreview.y - zoomPreview.boxSize/2) + 'px',
+               backgroundImage: 'url(' + zoomPreview.imgUrl + ')',
+               backgroundPosition: zoomPreview.bgPos,
+               backgroundSize: (zoomPreview.scale * 100) + '%',
+               width: zoomPreview.boxSize + 'px',
+               height: zoomPreview.boxSize + 'px',
+               display: 'block'
+             }"
+        ></div>
+        <button class="nav-btn right" (click)="nextImage()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
       </div>
-      <div class="product-details-column">
-        <p class="product-price">
-          Price: ${{ getProductDetails()?.Rent }}
-        </p>
-        <p class="product-valid-until">
-          Valid Until: {{ getProductDetails()?.valid_until | date }}
-        </p>
-        <p class="product-quantity">
-          Quantity: {{ getProductDetails()?.quantity }}
-        </p>
+      <div class="thumbs-row" *ngIf="getProductDetails()?.display_img_urls?.length > 1 || getProductDetails()[0]?.images?.length > 1">
+        <img *ngFor="let img of (getProductDetails()?.display_img_urls || getProductDetails()[0]?.images); let idx = index"
+             [src]="img.url || img || this.defaultImg"
+             [class.selected-thumb]="idx === (getProductDetails()?.currentImageIndex ?? getProductDetails()[0]?.currentImageIndex ?? 0)"
+             (click)="selectImage(idx)"
+             class="thumb-image"
+             alt="Thumbnail"
+              (error)="onImgError($event)">
+             
       </div>
     </div>
-  </div>
+    <div class="modal-details-area">
+      <ng-container *ngIf="getDisplayedProduct() as product">
+        <div class="title-actions">
+          <h1 class="modal-title">{{ product.name || product.productName }}</h1>
+          <div class="title-actions-right">
+            <app-product-rating
+              [rating]="product.ProductRatings && product.ProductRatings[0] ? product.ProductRatings[0].rating : 0"
+              [avgRating]="product.avgRating"
+              [totalUsers]="product.totalUserRated"
+              (ratingChange)="onRatingChange($event, product)"
+              [disabled]="userService.getUserDetails().userId === product.userId"
+            ></app-product-rating>
 
-  <div class="popup-footer">
-    <button class="add-to-cart-btn" (click)="addToCart()">
-      {{isAddNewProduct ? 'Done' : 'Add to Cart'}}
-    </button>
+            <button class="fav-btn" (click)="toggleFavorite(product)" [attr.aria-pressed]="product.isFavorite">
+              <mat-icon color="warn">{{ product.isFavorite ? 'favorite' : 'favorite_border' }}</mat-icon>
+            </button>
+            <button
+  mat-icon-button
+  color="primary"
+  aria-label="Share product"
+  (click)="shareProduct(product)"
+>
+  <mat-icon>share</mat-icon>
+</button>
+
+          </div>
+        </div>
+      </ng-container>
+      <div class="modal-price-row">
+        <span class="modal-price">{{ (getProductDetails()?.Rent || getProductDetails()[0]?.productRent ) | currency: "INR"}}</span>
+        <span class="modal-category">{{ getProductDetails()?.category || getProductDetails()[0]?.category }}</span>
+      </div>
+      <div class="modal-meta-row">
+        <span class="modal-quantity">Qty: {{ getProductDetails()?.quantity || getProductDetails()[0]?.quantity }}</span>
+        <span class="modal-valid-until">
+          <mat-icon class="calendar-icon">event</mat-icon>
+          {{ (getProductDetails()?.valid_until | date )|| (getProductDetails()[0]?.validUntil | date) }}
+        </span>
+      </div>
+
+
+      <!-- Enhanced Product Details Section -->
+      <div class="modal-extra-details">
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="detail-label">City:</span>
+            <span class="detail-value">{{ getProductDetails()?.city || getProductDetails()[0]?.city }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Color:</span>
+            <span class="detail-value">{{ getProductDetails()?.color || getProductDetails()[0]?.color }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Size:</span>
+            <span class="detail-value">{{ getProductDetails()?.size || getProductDetails()[0]?.size }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">User Role:</span>
+            <span class="detail-value">{{ getProductDetails()?.userRole || getProductDetails()[0]?.userRole }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Listed Date:</span>
+            <span class="detail-value">{{ (getProductDetails()?.productListedDate || getProductDetails()[0]?.productListedDate) | date:'mediumDate' }}</span>
+          </div>
+        </div>
+        <div class="owner-section">
+          <div class="owner-title">Owner Details</div>
+          <div class="owner-details">
+            <div class="owner-row"><span class="owner-label">Name:</span> <span class="owner-value">{{ getProductDetails()?.ownerName || getProductDetails()[0]?.ownerName }}</span></div>
+            <div class="owner-row"><span class="owner-label">Email:</span> <span class="owner-value">{{ getProductDetails()?.ownerEmail || getProductDetails()[0]?.ownerEmail }}</span></div>
+            <div class="owner-row"><span class="owner-label">Phone:</span> <span class="owner-value">{{ getProductDetails()?.ownerPhone || getProductDetails()[0]?.ownerPhone }}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-description">
+        {{ getProductDetails()?.description  || getProductDetails()[0]?.description }}
+      </div>
+      <div class="modal-footer">
+        <button class="add-to-cart-btn" (click)="addToCart()">
+          <mat-icon *ngIf="!isAddNewProduct" class="cart-icon">add_shopping_cart</mat-icon>
+          {{isAddNewProduct ? 'Done' : 'Add to Cart'}}
+        </button>
+        <button class="message-btn" (click)="openMessageDialog(getProductDetails())" aria-label="Message">
+          <mat-icon class="message-icon">message</mat-icon>
+          Message to Seller
+        </button>
+      </div>
+    </div>
   </div>
 </div>

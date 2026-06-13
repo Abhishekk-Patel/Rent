@@ -1,3 +1,5 @@
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { UnifiedChatComponent } from './components/unified-chat.component';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
@@ -16,7 +18,7 @@ import { MatInputModule } from '@angular/material/input';
 import { SortPanelComponent } from './components/sort-panel/sort-panel.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatBadgeModule } from '@angular/material/badge';
-import { AlertMsgsComponent } from './components/alert-msgs/alert-msgs.component';
+// import { AlertMsgsComponent } from './components/alert-msgs/alert-msgs.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatMenuModule } from '@angular/material/menu';
@@ -47,6 +49,21 @@ import { EffectsModule } from '@ngrx/effects';
 import { productDataEffects } from './components/Store/productData.effects';
 import { UserProductRatingComponent } from './components/user-rating/user-product-rating.component';
 import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from '@abacritt/angularx-social-login';
+import { AddProductIfSearchEmptyComponent } from './components/add-product-if-search-empty/add-product-if-search-empty';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { AboutUsComponent } from './components/footer/about-us/about-us.component';
+import { ContactUsComponent } from './components/footer/contact-us/contact-us.component';
+import { PrivacyComponent } from './components/footer/privacy/privacy.component';
+import { TermsComponent } from './components/footer/terms/terms.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { FeedbackButtonComponent } from './components/feedback/feedback-button/feedback-button.component';
+import { FeedbackModalComponent } from './components/feedback/feedback-modal/feedback-modal.component';
+import { SocialFeedbackComponent } from './components/feedback/social-feedback/social-feedback.component';
+import { FeedbackDashboardComponent } from './components/feedback/feedback-dashboard/feedback-dashboard.component';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { AIComponent } from './components/ai/ai.component';
+import { ProductSearchAiComponent } from './components/ai/product-search-ai/product-search-ai.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -54,7 +71,6 @@ import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from 
     FooterComponent,
     ContentComponentComponent,
     SortPanelComponent,
-    AlertMsgsComponent,
     MyCartComponent,
     ProductDetailsPopupComponent,
     HomeComponent,
@@ -62,8 +78,22 @@ import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from 
     MyAccountComponent,
     PartnerBrandSliderComponent,
     UserProductRatingComponent,
+  AddProductIfSearchEmptyComponent,
+  UnifiedChatComponent,
+  AboutUsComponent,
+  ContactUsComponent,
+  PrivacyComponent,
+  TermsComponent,
+  ForgotPasswordComponent,
+  FeedbackButtonComponent,
+  FeedbackModalComponent,
+  SocialFeedbackComponent,
+  FeedbackDashboardComponent,
+  AIComponent,
+  ProductSearchAiComponent
   ],
   imports: [
+    HttpClientModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
@@ -93,13 +123,18 @@ import { GoogleLoginProvider, SocialAuthServiceConfig, SocialLoginModule } from 
     MatOptionModule,
     MatButtonToggleModule,
     HttpClientModule,
-    MatTabsModule,
+    MatBottomSheetModule,
+  MatTabsModule,
+  MatCheckboxModule,
     SocialLoginModule,
     StoreModule.forRoot({ productData: productReducer, orderData: orderReducer }),
-    EffectsModule.forRoot([productDataEffects])
+  EffectsModule.forRoot([productDataEffects]),
+  // MatDialogModule already imported above
   ],
   providers: [
     AuthGuard,
+    { provide: LocationStrategy, useClass: HashLocationStrategy }
+    ,
     {
       provide: 'SocialAuthServiceConfig',
       useValue: {

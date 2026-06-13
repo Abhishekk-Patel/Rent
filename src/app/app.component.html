@@ -1,5 +1,16 @@
-<app-header></app-header>
+<app-header *ngIf="showHeaderFooter"></app-header>
+
 <div class="main-content">
   <router-outlet></router-outlet>
 </div>
-<app-footer></app-footer>
+<app-product-search-ai *ngIf="showHeaderFooter"></app-product-search-ai>
+<app-footer *ngIf="showHeaderFooter && !isMobileScreen"></app-footer>
+<amp-ad width="100vw" height="320"
+     type="adsense"
+     data-ad-client="ca-pub-1491216426331188"
+     data-ad-slot="5757943618"
+     data-auto-format="rspv"
+     data-full-width="">
+  <div overflow=""></div>
+</amp-ad>
+<app-feedback-button *ngIf="showHeaderFooter"></app-feedback-button>

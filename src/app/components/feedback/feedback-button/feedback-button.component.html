@@ -1,0 +1,8 @@
+<button class="fab" (click)="open()" aria-label="Feedback">
+  💬 Feedback
+</button>
+
+<app-feedback-modal
+  [open]="isOpen"
+  (closed)="close()">
+</app-feedback-modal>

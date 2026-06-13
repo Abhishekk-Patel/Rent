@@ -1,50 +1,115 @@
-<section class="partner-brands-slider">
-  <div class="main-slider">
-    <div 
-      class="brand" 
-      *ngFor="let brand of brands; let i = index" 
-      [class.active]="i === currentIndex"
-      style="width: 100%; box-sizing: border-box;"
+<div class="brand-slider" role="region" aria-label="Partner brand slider">
+  <section
+    class="brand"
+    *ngFor="let brand of brands; let i = index"
+    [class.active]="i === currentIndex"
+    [attr.aria-hidden]="i !== currentIndex"
+  >
+    <div
+      class="hero-slide"
+      (mouseenter)="pauseSlider()"
+      (mouseleave)="resumeSlider()"
     >
-      <div class="cta-img-wrapper" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-      <img 
-        [src]="brand.imageUrl" 
-        [alt]="brand.name" 
-        class="brand-img"
-        style="max-width: 100%; height: auto; border-radius: 8px;"
-      >
-      <div 
-        class="button-wrapper" 
-        style="display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: center; margin-top: 12px;"
-      >
-        <button 
-        class="cta-btn" 
-        (click)="scrollToContent()" 
-        style="width: 90%; max-width: 250px; font-size: 1rem;"
-        >
-        <span>Browse Collection</span>
-        <mat-icon style="vertical-align: middle; margin-left: 4px;">touch_app</mat-icon>
-        </button>
-        <button 
-        class="cta-btn product-btn" 
-        style="width: 90%; max-width: 250px; margin-left: 0; background-color: #3b82f6; font-size: 1rem;"
-        (click)="addNewProduct()"
-        >
-        <span>List Your Product</span>
-        <mat-icon style="vertical-align: middle; margin-left: 4px;">add_circle</mat-icon>
-        </button>
-      </div>
-      </div>
-    </div>
+      <!-- Background image fills container (container controls height) -->
+      <img
+        class="hero-img"
+        [src]="brand.imageUrl"
+        [alt]="brand.name"
+        loading="lazy"
+        decoding="async"
+      />
 
-    <!-- Animated Dots or Buttons for Navigation -->
-    <div class="nav-dots">
-      <div 
-        *ngFor="let brand of brands; let i = index" 
-        class="nav-dot" 
-        [class.active]="i === currentIndex"
-        (click)="goToSlide(i)">
+      <!-- overlays -->
+      <div class="hero-overlay" aria-hidden="true"></div>
+      <div class="hero-grain" aria-hidden="true"></div>
+
+      <!-- content drives height (no clipping) -->
+      <div class="hero-content">
+        <!-- Top trust row -->
+        <div class="hero-top">
+          <span class="badge">
+            <mat-icon class="badge-ic">verified</mat-icon>
+            Trusted rentals • Hygienically cleaned • Doorstep delivery
+          </span>
+
+          <div class="rating" aria-label="Rating">
+            <mat-icon>star</mat-icon>
+            <span class="rating-text">4.9</span>
+            <span class="rating-sub">/5 • 10k+ customers</span>
+          </div>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="hero-title">
+          Luxury wedding wear,
+          <span class="accent">without the commitment.</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="hero-subtitle">
+          Rent premium lehengas & sherwanis, get perfect-fit assistance, and
+          return with ease. Designed for modern weddings.
+        </p>
+
+        <!-- Actions -->
+        <div class="hero-actions">
+          <button
+            mat-raised-button
+            class="cta-btn primary"
+            (click)="scrollToCatalog()"
+          >
+            <mat-icon>collections_bookmark</mat-icon>
+            <span>Browse Collection</span>
+          </button>
+
+          <!-- <button mat-stroked-button class="cta-btn secondary" (click)="scrollToHowItWorks()">
+            <mat-icon>play_circle</mat-icon>
+            <span>How it works</span>
+          </button> -->
+          <button
+            mat-stroked-button
+            class="cta-btn secondary"
+            type="button"
+            (click)="howItWorksClick.emit()"
+          >
+            <mat-icon>play_circle</mat-icon>
+            <span>How it works</span>
+          </button>
+
+          <button mat-button class="cta-btn tertiary" (click)="addNewProduct()">
+            <mat-icon>add_circle</mat-icon>
+            <span>List your outfit</span>
+          </button>
+        </div>
+
+        <!-- meta chips -->
+        <div class="hero-meta">
+          <div class="meta-item">
+            <mat-icon>local_shipping</mat-icon>
+            <span>Fast delivery</span>
+          </div>
+          <div class="meta-item">
+            <mat-icon>shield</mat-icon>
+            <span>Secure payments</span>
+          </div>
+          <div class="meta-item">
+            <mat-icon>checkroom</mat-icon>
+            <span>Quality checked</span>
+          </div>
+        </div>
+
+        <!-- dots -->
+        <div class="hero-dots" *ngIf="brands.length > 1">
+          <button
+            class="dot"
+            *ngFor="let _ of brands; let idx = index"
+            [class.active]="idx === currentIndex"
+            (click)="goToSlide(idx)"
+            [attr.aria-label]="'Go to slide ' + (idx + 1)"
+            type="button"
+          ></button>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
