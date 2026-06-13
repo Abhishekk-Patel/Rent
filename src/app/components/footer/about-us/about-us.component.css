@@ -12,7 +12,7 @@
   gap: 32px;
   align-items: center;
   padding: 48px 24px;
-  background: linear-gradient(135deg, #ffecd2, #fcb69f);
+  background: linear-gradient(135deg, #e8d5f7, #c9a0d4);
   border-radius: 16px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }
@@ -97,13 +97,13 @@ mat-divider {
 .value-card .avatar {
   display: grid;
   place-items: center;
-  background: #ffe1d2;
+  background: rgba(196,124,137,0.12);
   /* border-radius: 50%; */
 }
 
 /* Angular Material icon color inside value-card */
 .value-card mat-icon {
-  color: #ff6f61;
+  color: #c47c89;
 }
 
 /* Hover state (fixed & not escaped) */
@@ -166,7 +166,7 @@ mat-divider {
   top: 10px;
   width: 10px;
   height: 10px;
-  background: #ff6f61;
+  background: #c47c89;
   border-radius: 50%;
   box-shadow: 0 0 0 4px rgba(255, 111, 97, 0.2);
 }

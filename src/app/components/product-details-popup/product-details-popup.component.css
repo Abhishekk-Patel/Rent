@@ -21,12 +21,12 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #830e0e;
+  color: #0f3460;
   font-weight: 300;
 }
 .detail-label {
   font-weight: 500;
-  color: #830e0e;
+  color: #0f3460;
   min-width: 90px;
   font-size: 14px;
 }
@@ -45,7 +45,7 @@
 .owner-title {
   font-size: 16px;
   font-weight: 700;
-  color: #830e0e;
+  color: #0f3460;
   margin-bottom: 8px;
   font-family: 'Segoe UI', Arial, sans-serif;
 }
@@ -58,12 +58,12 @@
   display: flex;
   gap: 10px;
   font-size: 14px;
-  color: #830e0e;
+  color: #0f3460;
   font-weight: 300;
 }
 .owner-label {
   font-weight: 500;
-  color: #830e0e;
+  color: #0f3460;
   min-width: 60px;
   font-size: 14px;
 }
@@ -182,7 +182,7 @@
   background: #f3f3f3;
 }
 .selected-thumb {
-  border: 2px solid #3b82f6;
+  border: 2px solid #0f3460;
   box-shadow: 0 2px 8px rgba(59,130,246,0.13);
 }
 
@@ -210,7 +210,7 @@
   right: 10px;
 }
 .nav-btn:hover {
-  background: #3b82f6;
+  background: #0f3460;
 }
 
 .modal-details-area {
@@ -264,7 +264,7 @@
   width: 100%;
 }
 .modal-price {
-  color: #3b82f6;
+  color: #0f3460;
   font-weight: 700;
   font-size: 1.5rem;
 }
@@ -298,7 +298,7 @@
 }
 .calendar-icon {
   font-size: 20px;
-  color: #3b82f6;
+  color: #0f3460;
 }
 .modal-description {
   font-size: 1.1rem;
@@ -330,7 +330,7 @@
 
 .add-to-cart-btn,
 .message-btn {
-  background: linear-gradient(90deg, #3b82f6 60%, #2563eb 100%);
+  background: linear-gradient(90deg, #0f3460 60%, #0a2a55 100%);
   color: #fff;
   border: none;
   padding: 16px 40px;
@@ -356,7 +356,7 @@
 }
 
 .add-to-cart-btn:hover {
-  background: linear-gradient(90deg, #2563eb 60%, #1d4ed8 100%);
+  background: linear-gradient(90deg, #0a2a55 60%, #1d4ed8 100%);
   box-shadow: 0 4px 16px rgba(59,130,246,0.13);
   transform: translateY(-2px);
 }
@@ -451,7 +451,7 @@
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  border: 2px solid #3b82f6;
+  border: 2px solid #0f3460;
   box-shadow: 0 2px 12px rgba(59,130,246,0.18);
   background-repeat: no-repeat;
   background-size: 200% 200%; /* Will be overridden inline */
@@ -460,7 +460,7 @@
   transition: background-position 0.1s, background-size 0.1s;
   /* Optional: add a slight glass effect */
   backdrop-filter: blur(1.5px) brightness(1.1);
-  border: 2.5px solid #2563eb;
+  border: 2.5px solid #0a2a55;
 }
 
 /* Zoom preview box for rectangular zoom effect */
@@ -471,7 +471,7 @@
   transform: translateY(-50%);
   pointer-events: none;
   border-radius: 12px;
-  border: 2px solid #3b82f6;
+  border: 2px solid #0f3460;
   box-shadow: 0 2px 12px rgba(59,130,246,0.18);
   background-repeat: no-repeat;
   background-size: 220% 220%; /* Will be overridden inline */

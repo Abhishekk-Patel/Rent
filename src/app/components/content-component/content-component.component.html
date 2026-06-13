@@ -1,10 +1,8 @@
-<!-- Top brand slider + social feedback -->
+<!-- Top brand slider -->
 <app-partner-brand-slider
   *ngIf="!searchValue"
   (howItWorksClick)="openHowItWorksSheet()"
 ></app-partner-brand-slider>
-
-<app-social-feedback></app-social-feedback>
 
 <!-- ===========================
      HOW IT WORKS: Bottom Sheet
@@ -405,6 +403,23 @@
               (error)="onImgError($event)"
             />
 
+            <!-- Image dots counter -->
+            <div class="image-dots" *ngIf="reward.display_img_urls?.length > 1" role="tablist" aria-label="Image navigation">
+              <button
+                class="dot-item"
+                *ngFor="let _; let i = index"
+                [class.active]="i === reward.currentImageIndex"
+                (click)="setImageIndex(reward, i)"
+                (keydown.enter)="setImageIndex(reward, i)"
+                (keydown.space)="setImageIndex(reward, i)"
+                [attr.aria-selected]="i === reward.currentImageIndex"
+                role="tab"
+                [attr.tabindex]="i === reward.currentImageIndex ? 0 : -1"
+                type="button"
+                [attr.aria-label]="'Image ' + (i + 1)"
+              ></button>
+            </div>
+
             <!-- Wishlist -->
             <button
               class="wish"
@@ -469,7 +484,7 @@
               <div class="size" *ngIf="reward.size">Size: {{ reward.size }}</div>
             </div>
 
-            <div class="badge" *ngIf="reward.quantity && reward.quantity <= reward.low_quantity">
+            <div class="badge pulse-dot" *ngIf="reward.quantity && reward.quantity <= reward.low_quantity">
               High Demand · Only {{ reward.quantity }} left
             </div>
           </div>
@@ -550,3 +565,6 @@
     <mat-icon>arrow_upward</mat-icon>
   </button>
 </section>
+
+<!-- Social Feedback - Trust Building Section -->
+<app-social-feedback></app-social-feedback>

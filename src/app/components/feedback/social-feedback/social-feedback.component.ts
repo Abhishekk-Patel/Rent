@@ -13,9 +13,10 @@ export class SocialFeedbackComponent implements OnInit, OnDestroy {
 
   isMobile = false;
   activeIndex = 0;
+  avgRating = 0;
 
-  // ✅ mobile "view all" state
-  mobileExpanded = false;
+  // ✅ Feedback modal state
+  showFeedbackModal = false;
 
   private timer: any;
 
@@ -31,6 +32,12 @@ export class SocialFeedbackComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.items = res.items || [];
         this.loading = false;
+
+        // Calculate average rating
+        if (this.items.length > 0) {
+          const totalRating = this.items.reduce((sum, item) => sum + (item.rating || 0), 0);
+          this.avgRating = parseFloat((totalRating / this.items.length).toFixed(1));
+        }
 
         // Start slideshow only on desktop
         if (!this.isMobile && this.items.length > 1) {
@@ -107,22 +114,31 @@ export class SocialFeedbackComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ===== Mobile CTA actions =====
-  openAllFeedback(): void {
-    this.mobileExpanded = true;
+  // ===== Feedback modal =====
+  openFeedbackModal(): void {
+    this.showFeedbackModal = true;
     this.stopAutoSlide();
   }
 
-  closeAllFeedback(): void {
-    this.mobileExpanded = false;
+  closeFeedbackModal(): void {
+    this.showFeedbackModal = false;
+    // Reload testimonials after modal closes in case user submitted
+    this.reloadTestimonials();
+  }
 
-    // optional: reset carousel index when going back
-    this.activeIndex = 0;
-    setTimeout(() => {
-      // scroll carousel back to first card (only if track exists)
-      const track = this.trackRef?.nativeElement;
-      if (track) track.scrollTo({ left: 0, behavior: 'smooth' });
-    }, 0);
+  private reloadTestimonials(): void {
+    this.feedback.getPublic(10).subscribe({
+      next: (res) => {
+        this.items = res.items || [];
+        if (this.items.length > 0) {
+          const totalRating = this.items.reduce((sum, item) => sum + (item.rating || 0), 0);
+          this.avgRating = parseFloat((totalRating / this.items.length).toFixed(1));
+        }
+        if (!this.isMobile && this.items.length > 1) {
+          this.startAutoSlide();
+        }
+      }
+    });
   }
 
   // ===== UI helpers =====

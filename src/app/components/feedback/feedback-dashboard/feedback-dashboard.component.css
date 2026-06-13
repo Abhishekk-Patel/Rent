@@ -21,8 +21,8 @@
   cursor: pointer;
 }
 .tabs button.active{
-  background: #8b2d2d;
-  border-color: #8b2d2d;
+  background: #0f3460;
+  border-color: #0f3460;
   color: #fff;
 }
 

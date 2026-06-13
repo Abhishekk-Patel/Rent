@@ -7,7 +7,7 @@
   align-items: center;
   flex-wrap: wrap;
   padding: 20px 40px;
-  /* background: linear-gradient(135deg, #ffecd2, #fcb69f); */
+  /* background: linear-gradient(135deg, #e8d5f7, #c9a0d4); */
 
   background: url('src/assets/svg/footer.svg') no-repeat center / cover; 
   color: #333;
@@ -56,7 +56,7 @@
 }
 
 .footer-center .footer-nav a:hover {
-  color: #ff6f61;
+  color: #c47c89;
 }
 
 /* Right column */
@@ -82,7 +82,7 @@
 }
 
 .social-icons a:hover {
-  color: #ff6f61;
+  color: #c47c89;
   transform: scale(1.2);
 }
 

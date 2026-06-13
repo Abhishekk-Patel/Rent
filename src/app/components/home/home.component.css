@@ -9,7 +9,7 @@
 
 :root{
   /* Core palette */
-  --ink: #0b1020;
+  --ink: #0a1628;
   --ink-2: rgba(11,16,32,.86);
   --muted: rgba(11,16,32,.64);
   --muted-2: rgba(11,16,32,.52);
@@ -26,10 +26,10 @@
   --line-2: rgba(11,16,32,.16);
 
   /* Premium accents */
-  --champagne: #c8ab6a;
-  --champagne-2: #e2d0ab;
-  --oxblood: #5a0e16;
-  --plum: #7b2b38;
+  --champagne: #c9a96e;
+  --champagne-2: #e8d9bb;
+  --oxblood: #0f3460;
+  --plum: #533483;
   --noir: #111827;
 
   /* Radii */
@@ -497,7 +497,7 @@
 
 /* Premium primary (deep gradient + crisp glow) */
 :host ::ng-deep .btn--primary.mat-mdc-raised-button{
-  background: linear-gradient(135deg, #4d0b11, #7b2b38) !important;
+  background: linear-gradient(135deg, #4d0b11, #533483) !important;
   color: #fff !important;
   box-shadow:
     0 24px 60px rgba(77,11,17,.28),

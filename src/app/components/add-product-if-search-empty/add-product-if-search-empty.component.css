@@ -14,7 +14,7 @@
 
 .no-search-icon {
   font-size: 64px;
-  color: #c3541c;
+  color: #533483;
   margin-bottom: 16px;
   display: flex;
   align-items: center;
@@ -36,7 +36,7 @@
 }
 
 .add-product-btn {
-  background-color: #3b82f6;
+  background-color: #0f3460;
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -52,7 +52,7 @@
   margin-top: 8px;
 }
 .add-product-btn:hover {
-  background-color: #2563eb;
+  background-color: #0a2a55;
   transform: scale(1.04);
 }
 

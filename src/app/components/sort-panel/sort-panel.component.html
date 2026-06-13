@@ -10,44 +10,50 @@
   <div class="content">
     <!-- Alphabetical Sorting -->
     <div class="section">
-      <h4>Alphabetical</h4>
+      <h4>Sort By Name</h4>
       <div class="sort-btns-container">
         <button
           class="sort-btn"
           [ngClass]="{ 'btn-disabled': isAscApplied }"
-          [disabled]="isAscApplied"
+          [attr.aria-pressed]="isAscApplied"
           (click)="applySort('asc')"
+          type="button"
         >
-          A to Z
+          <mat-icon *ngIf="isAscApplied" style="font-size: 14px; width: 14px; height: 14px; margin-right: 4px;">check</mat-icon>
+          A→Z
         </button>
         <button
           class="sort-btn"
           [ngClass]="{ 'btn-disabled': isDescApplied }"
-          [disabled]="isDescApplied"
+          [attr.aria-pressed]="isDescApplied"
           (click)="applySort('desc')"
+          type="button"
         >
-          Z to A
+          <mat-icon *ngIf="isDescApplied" style="font-size: 14px; width: 14px; height: 14px; margin-right: 4px;">check</mat-icon>
+          Z→A
         </button>
       </div>
     </div>
 
     <!-- Price Filter -->
     <div class="section">
-      <h4>Price</h4>
+      <h4>Price Range</h4>
       <div class="price-filter">
-        <label for="minPrice">Min:</label>
+        <label for="minPrice">Min (₹)</label>
         <input
           type="number"
           id="minPrice"
           [(ngModel)]="minPrice"
           placeholder="0"
+          min="0"
         />
-        <label for="maxPrice">Max:</label>
+        <label for="maxPrice">Max (₹)</label>
         <input
           type="number"
           id="maxPrice"
           [(ngModel)]="maxPrice"
-          placeholder="1000"
+          placeholder="100000"
+          min="0"
         />
       </div>
     </div>
@@ -60,8 +66,9 @@
           type="text"
           id="location"
           [(ngModel)]="location"
-          placeholder="Enter location"
+          placeholder="City or pincode"
           class="location-input"
+          aria-label="Search by location"
         />
       </div>
     </div>

@@ -53,7 +53,7 @@ textarea, input, select{
 }
 
 textarea:focus, input:focus, select:focus{
-  border-color: #8b2d2d;
+  border-color: #0f3460;
 }
 
 .public{ margin-top: 10px; }
@@ -68,7 +68,7 @@ textarea:focus, input:focus, select:focus{
 
 .primary{
   border: none;
-  background: #8b2d2d;
+  background: #0f3460;
   color: #fff;
   padding: 10px 14px;
   border-radius: 999px;

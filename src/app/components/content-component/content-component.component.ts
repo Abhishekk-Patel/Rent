@@ -12,6 +12,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { debounceTime, fromEvent, Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
@@ -29,6 +30,14 @@ import { Category_LIST } from 'src/mock-data';
   templateUrl: './content-component.component.html',
   styleUrls: ['./content-component.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('fadeInCard', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(18px)' }),
+        animate('320ms cubic-bezier(.4,0,.2,1)', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ])
+  ]
 })
 export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestroy {
   alertMsg = 'No matches found';
@@ -505,6 +514,11 @@ export class ContentComponentComponent implements OnInit, AfterViewInit, OnDestr
     this.userRole = event.value || 'Bride';
     this.updateCategoriesForRole();
     this.resetAndLoad();
+  }
+
+  setImageIndex(reward: any, index: number) {
+    reward.currentImageIndex = index;
+    this.cdr.markForCheck();
   }
 
   // kept from your older code (if you still use it elsewhere)

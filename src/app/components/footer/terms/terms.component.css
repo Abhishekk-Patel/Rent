@@ -10,7 +10,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 40px 20px;
-  background: linear-gradient(135deg, #ffecd2, #fcb69f);
+  background: linear-gradient(135deg, #e8d5f7, #c9a0d4);
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
@@ -102,12 +102,12 @@
 }
 
 .toc .toc-card mat-nav-list a.mat-list-item:hover {
-  background: #fcb69f33;
-  color: #ff6f61;
+  background: #c9a0d433;
+  color: #c47c89;
 }
 
 .toc .toc-card mat-nav-list a.mat-list-item mat-icon {
-  color: #ff6f61;
+  color: #c47c89;
 }
 
 /* -------------------- Content -------------------- */

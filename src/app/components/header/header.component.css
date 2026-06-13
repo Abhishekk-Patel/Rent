@@ -3,7 +3,7 @@
   --brand-pink: #d81b60;
   --brand-blue: black;
   --brand-amber: #f7b267;
-  --brand-brown: #c3541c;
+  --brand-brown: #533483;
   --brand-cyan: #0288d1;
 
   --text-strong: #111;
@@ -64,7 +64,7 @@ body.no-scroll {
 .primary-nav {
   display: flex;
   gap: 0.5rem;
-  color: #830e0e;
+  color: #0f3460;
 }
 
 .primary-nav button {
@@ -134,7 +134,7 @@ body.no-scroll {
 }
 
 .mat-icon {
- color:  #830e0e !important;
+ color:  #0f3460 !important;
 }
 
 .profile-picture {

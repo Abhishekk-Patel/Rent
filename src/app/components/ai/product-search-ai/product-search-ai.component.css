@@ -8,7 +8,7 @@
   height: 56px;
   border-radius: 50%;
   border: none;
-  background: #8b2d2d;
+  background: #0f3460;
   color: white;
   cursor: pointer;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
@@ -49,7 +49,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 14px;
-  background: #8b2d2d;;
+  background: #0f3460;;
   color: white;
 }
 
@@ -107,7 +107,7 @@ textarea:focus {
   padding: 10px;
   border-radius: 10px;
   border: none;
-  background: #8b2d2d;;
+  background: #0f3460;;
   color: white;
   font-weight: 800;
   cursor: pointer;
@@ -254,7 +254,7 @@ textarea:focus {
 }
 
 .btn-primary {
-  background: #8b2d2d;;
+  background: #0f3460;;
   color: #fff;
   box-shadow: 0 12px 24px rgba(106, 92, 255, 0.18);
 }

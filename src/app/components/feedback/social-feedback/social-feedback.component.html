@@ -1,121 +1,129 @@
 <section class="wrap">
-  <div class="head">
-    <div>
-      <h2>What users say about RentIt</h2>
-      <p>Real app experience feedback (approved).</p>
+  <div class="inner">
+    <!-- Header -->
+    <div class="head">
+      <div class="head-left">
+        <h2>Loved by Couples</h2>
+        <p>Real stories from brides & grooms across India</p>
+      </div>
+
+      <div class="head-right">
+        <button
+          mat-stroked-button
+          class="share-cta"
+          type="button"
+          aria-label="Share your story"
+          (click)="openFeedbackModal()">
+          <mat-icon>edit</mat-icon>
+          Share your story
+        </button>
+      </div>
     </div>
-  </div>
 
-  <div *ngIf="loading" class="state">Loading…</div>
-  <div *ngIf="!loading && error" class="state error">{{ error }}</div>
+    <!-- Stats Row -->
+    <div class="stats" *ngIf="!loading && !error && items.length > 0">
+      <div class="stat-pill">
+        <span class="stat-count">{{ items.length }}</span>
+        <span class="stat-label">Stories</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-stars">★</span>
+        <span class="stat-rating">{{ avgRating }}</span>
+      </div>
+    </div>
 
-  <div *ngIf="!loading && !error && items.length === 0" class="state">
-    No testimonials yet.
-  </div>
+    <!-- Loading / Error / Empty States -->
+    <div *ngIf="loading" class="state">
+      <p>Loading testimonials...</p>
+    </div>
+    <div *ngIf="!loading && error" class="state error">{{ error }}</div>
+    <div *ngIf="!loading && !error && items.length === 0" class="state">
+      <p>Be first to share your story</p>
+    </div>
 
-  <!-- Carousel (desktop + normal mobile) -->
-  <div
-    *ngIf="!loading && !error && items.length > 0 && !(isMobile && mobileExpanded)"
-    class="viewport"
-    (mouseenter)="pause()"
-    (mouseleave)="resume()">
+    <!-- Carousel -->
+    <div
+      *ngIf="!loading && !error && items.length > 0"
+      class="viewport"
+      (mouseenter)="pause()"
+      (mouseleave)="resume()">
 
-    <div class="track" #track>
-      <article class="card" *ngFor="let it of (isMobile ? items.slice(0,1) : items)">
-        <div class="top">
-          <div class="avatar">{{ initials(it.displayName) }}</div>
+      <div class="track" #track>
+        <article class="card" *ngFor="let it of items">
+          <!-- Quote watermark -->
+          <div class="quote-mark">"</div>
 
-          <div class="meta">
-            <div class="name">
-              {{ it.displayName?.trim() ? it.displayName : 'Anonymous' }}
-              <span class="city" *ngIf="it.city">· {{ it.city }}</span>
+          <!-- Card content -->
+          <div class="card-content">
+            <!-- Avatar + Name + City -->
+            <div class="card-top">
+              <div class="avatar">{{ initials(it.displayName) }}</div>
+              <div class="card-meta">
+                <div class="name">{{ it.displayName?.trim() ? it.displayName : 'Anonymous' }}</div>
+                <div class="city" *ngIf="it.city">
+                  <mat-icon class="city-icon">location_on</mat-icon>
+                  {{ it.city }}
+                </div>
+              </div>
             </div>
 
-            <div class="stars" *ngIf="it.rating">
-              <span *ngFor="let s of stars(it.rating)">★</span>
-              <span class="rating">{{ it.rating }}/5</span>
+            <!-- Stars + Rating badge -->
+            <div class="stars-row" *ngIf="it.rating">
+              <div class="stars">
+                <span *ngFor="let s of stars(it.rating)" class="star">★</span>
+              </div>
+              <div class="rating-badge">{{ it.rating }}/5</div>
             </div>
+
+            <!-- Message -->
+            <p class="msg">"{{ it.message }}"</p>
+
+            <!-- Date chip -->
+            <div class="date-chip">{{ it.createdAt | date:'MMM dd, yyyy' }}</div>
           </div>
-        </div>
+        </article>
+      </div>
 
-        <p class="msg">“{{ it.message }}”</p>
-
-        <div class="date">
-          {{ it.createdAt | date:'mediumDate' }}
-        </div>
-      </article>
-    </div>
-
-    <!-- Desktop arrows -->
-    <button
-      type="button"
-      class="nav prev"
-      mat-icon-button
-      *ngIf="!isMobile && items.length > 1"
-      (click)="prev()"
-      aria-label="Previous feedback">
-      <mat-icon>chevron_left</mat-icon>
-    </button>
-
-    <button
-      type="button"
-      class="nav next"
-      mat-icon-button
-      *ngIf="!isMobile && items.length > 1"
-      (click)="next()"
-      aria-label="Next feedback">
-      <mat-icon>chevron_right</mat-icon>
-    </button>
-
-    <!-- Desktop dots -->
-    <div class="dots" *ngIf="!isMobile && items.length > 1">
+      <!-- Navigation buttons (always visible) -->
       <button
         type="button"
-        class="dot"
-        *ngFor="let _ of items; let i = index"
-        [class.active]="i === activeIndex"
-        (click)="goTo(i)">
+        class="nav prev"
+        mat-icon-button
+        *ngIf="items.length > 1"
+        (click)="prev()"
+        aria-label="Previous testimonial">
+        <mat-icon>chevron_left</mat-icon>
       </button>
+
+      <button
+        type="button"
+        class="nav next"
+        mat-icon-button
+        *ngIf="items.length > 1"
+        (click)="next()"
+        aria-label="Next testimonial">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+
+      <!-- Dot indicators -->
+      <div class="dots" *ngIf="items.length > 1">
+        <button
+          type="button"
+          class="dot"
+          *ngFor="let dot of items; let i = index"
+          [class.active]="i === activeIndex"
+          (click)="goTo(i)"
+          [attr.aria-label]="'Testimonial ' + (i + 1)"
+          role="tab"
+          [attr.aria-selected]="i === activeIndex">
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- Mobile full list (View all) -->
-  <div class="mobile-list" *ngIf="isMobile && mobileExpanded && !loading && !error && items.length > 0">
-    <article class="card" *ngFor="let it of items">
-      <div class="top">
-        <div class="avatar">{{ initials(it.displayName) }}</div>
-
-        <div class="meta">
-          <div class="name">
-            {{ it.displayName?.trim() ? it.displayName : 'Anonymous' }}
-            <span class="city" *ngIf="it.city">· {{ it.city }}</span>
-          </div>
-
-          <div class="stars" *ngIf="it.rating">
-            <span *ngFor="let s of stars(it.rating)">★</span>
-            <span class="rating">{{ it.rating }}/5</span>
-          </div>
-        </div>
-      </div>
-
-      <p class="msg">“{{ it.message }}”</p>
-
-      <div class="date">
-        {{ it.createdAt | date:'mediumDate' }}
-      </div>
-    </article>
-
-    <button type="button" class="back-btn" (click)="closeAllFeedback()">
-      ← Back
-    </button>
-  </div>
-
-  <!-- Mobile CTA -->
-  <button
-    type="button"
-    class="view-all"
-    *ngIf="isMobile && !loading && !error && items.length > 1 && !mobileExpanded"
-    (click)="openAllFeedback()">
-    View all feedback →
-  </button>
+  <!-- Feedback Modal -->
+  <app-feedback-modal
+    [open]="showFeedbackModal"
+    (closed)="closeFeedbackModal()">
+  </app-feedback-modal>
 </section>

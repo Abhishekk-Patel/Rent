@@ -6,9 +6,9 @@
 /* Theme tokens */
 :root {
   --ff: 'Poppins', sans-serif;
-  --grad-start: #ffecd2;
-  --grad-end: #fcb69f;
-  --accent: #ff6f61;
+  --grad-start: #e8d5f7;
+  --grad-end: #c9a0d4;
+  --accent: #c47c89;
   --text: #2b2b2b;
   --text-2: #555;
   --muted: #888;
@@ -136,13 +136,13 @@
 }
 
 .list-item:hover {
-  background: #fff7f1;
+  background: #f5f0fc;
   box-shadow: var(--shadow-xs);
   transform: translateY(-1px);
 }
 
 .list-item.selected {
-  background: #fff1e5;
+  background: #efe7f9;
   box-shadow: var(--shadow-sm);
   border-left: 4px solid var(--blue);
 }
@@ -161,7 +161,7 @@
   height: 38px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #ffe9df;
+  border: 2px solid #ede5f7;
   background: #fff;
   box-shadow: var(--shadow-xs);
 }
@@ -250,7 +250,7 @@
   height: 44px;
   border-radius: var(--radius-sm);
   object-fit: cover;
-  border: 2px solid #ffe9df;
+  border: 2px solid #ede5f7;
   background: #fff;
   box-shadow: var(--shadow-xs);
 }
@@ -567,7 +567,7 @@
   height: 86px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #ffe9df;
+  border: 3px solid #ede5f7;
   box-shadow: var(--shadow-xs);
 }
 
@@ -640,7 +640,7 @@
   width: 92px;
   height: 92px;
   border-radius: 50%;
-  border: 3px solid #ffe9df;
+  border: 3px solid #ede5f7;
   object-fit: cover;
   box-shadow: var(--shadow-sm);
 }
@@ -756,7 +756,7 @@
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  border: 3px solid #ffe9df;
+  border: 3px solid #ede5f7;
   object-fit: cover;
   box-shadow: var(--shadow-sm);
 }
